@@ -2,6 +2,8 @@
 # Ten plik .gitignore został utworzony automatycznie przez Microsoft(R) Visual Studio.
 ################################################################################
 
-/API/API/obj
+/API/obj
 /.vs
+/API/bin/Debug
 /API/.vs/API/v16
+/packages
