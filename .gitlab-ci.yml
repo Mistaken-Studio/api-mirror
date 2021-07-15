@@ -27,7 +27,7 @@ build-plugins:
     - 'msbuild Api.sln /p:ReferencePath="$env:MISTAKEN_REFERENCES" /p:CompanyName=Mistaken /p:OutputPath="build"'
   artifacts:
     paths:
-      - api\build\Mistaken.api.dll
+      - Api\build\0Mistaken.Api.dll
 
 test-plugins:
   needs: [build-plugins]
@@ -55,7 +55,7 @@ build-plugins-publish:
     - 'msbuild Api.sln /p:ReferencePath="$env:MISTAKEN_REFERENCES" /p:CompanyName=Mistaken /p:OutputPath="build"'
   artifacts:
     paths:
-      - api\build\Mistaken.api.dll
+      - Api\build\0Mistaken.Api.dll
 
 test-plugins-publish:
   needs: [build-plugins-publish]
@@ -81,7 +81,7 @@ publish-plugins:
   dependencies:
     - build-plugins-publish
   script:
-    - 'curl -InFile "Mistaken.Api.dll" -Method "Put" -H @{"PRIVATE-TOKEN"= "$API_KEY"} "https://git.mistaken.pl/api/v4/projects/scp-sl%2Fapi/packages/generic/plugins/$wersja/plugins.tar.gz" -UseBasicParsing'
+    - 'curl -InFile "0Mistaken.Api.dll" -Method "Put" -H @{"PRIVATE-TOKEN"= "$API_KEY"} "https://git.mistaken.pl/api/v4/projects/scp-sl%2Fapi/packages/generic/plugins/$wersja/plugins.tar.gz" -UseBasicParsing'
     - $env:asset = "{`"name`":`"Plugins`",`"url`":`"https://git.mistaken.pl/api/v4/projects/scp-sl%2Fapi/packages/generic/plugins/$wersja/plugins.tar.gz`"}"
     - $env:assetjson = $env:asset | ConvertTo-Json
     - C:\GitLab\Release-CLI\bin\release-cli create --name $wersja --description "Release $wersja" --tag-name $wersja --assets-link=$env:assetjson
