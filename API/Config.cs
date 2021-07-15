@@ -13,7 +13,7 @@ namespace Mistaken.API
         public bool AutoUpdateVerbouseOutput { get; set; }
 
         /// <inheritdoc/>
-        public string AutoUpdateURL { get; set; }
+        public string AutoUpdateUrl { get; set; }
 
         /// <inheritdoc/>
         public AutoUpdateType AutoUpdateType { get; set; }

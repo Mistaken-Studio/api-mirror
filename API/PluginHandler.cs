@@ -16,7 +16,7 @@ namespace Mistaken.API
         public override string Author => "Mistaken Devs";
 
         /// <inheritdoc/>
-        public override string Name => "MistakenAPI";
+        public override string Name => "Mistaken API";
 
         /// <inheritdoc/>
         public override string Prefix => "MAPI";
