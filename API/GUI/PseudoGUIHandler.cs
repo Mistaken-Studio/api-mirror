@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PseudoGUIHandlerComponent.cs" company="Mistaken">
+// <copyright file="PseudoGUIHandler.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -15,19 +15,19 @@ namespace Mistaken.API.GUI
     /// <summary>
     /// PseudGUIHandler component.
     /// </summary>
-    public partial class PseudoGUIHandlerComponent : MonoBehaviour
+    public partial class PseudoGUIHandler : MonoBehaviour
     {
         /// <summary>
-        /// Gets instance of <see cref="PseudoGUIHandlerComponent"/>.
+        /// Gets instance of <see cref="PseudoGUIHandler"/>.
         /// </summary>
-        public static PseudoGUIHandlerComponent Instance { get; private set; }
+        public static PseudoGUIHandler Instance { get; private set; }
 
         /// <summary>
-        /// Adds <see cref="PseudoGUIHandlerComponent"/> to <see cref="Server.Host"/>'s gameObject.
+        /// Adds <see cref="PseudoGUIHandler"/> to <see cref="Server.Host"/>'s gameObject.
         /// </summary>
         public static void Ini()
         {
-            Server.Host.GameObject.AddComponent<PseudoGUIHandlerComponent>();
+            Server.Host.GameObject.AddComponent<PseudoGUIHandler>();
         }
 
         /// <summary>

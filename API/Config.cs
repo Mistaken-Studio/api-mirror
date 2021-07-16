@@ -10,7 +10,7 @@ namespace Mistaken.API
     public class Config : IAutoUpdatableConfig
     {
         /// <inheritdoc/>
-        public bool AutoUpdateVerbouseOutput { get; set; }
+        public bool VerbouseOutput { get; set; }
 
         /// <inheritdoc/>
         public string AutoUpdateUrl { get; set; }

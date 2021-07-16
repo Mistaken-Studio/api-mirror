@@ -30,6 +30,8 @@ namespace Mistaken.API
         /// <inheritdoc/>
         public override void OnEnabled()
         {
+            Instance = this;
+
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
 
             this.harmony = new HarmonyLib.Harmony("com.mistaken.api");
@@ -55,11 +57,13 @@ namespace Mistaken.API
             base.OnDisabled();
         }
 
+        internal static PluginHandler Instance { get; private set; }
+
         private HarmonyLib.Harmony harmony;
 
         private void Server_WaitingForPlayers()
         {
-            GUI.PseudoGUIHandlerComponent.Ini();
+            GUI.PseudoGUIHandler.Ini();
         }
     }
 }

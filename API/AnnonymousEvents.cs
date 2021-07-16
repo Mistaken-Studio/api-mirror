@@ -22,7 +22,7 @@ namespace Mistaken.API
         /// <param name="arg">Event args.</param>
         public static void Call(string name, object arg)
         {
-            Log.Debug("Running " + name);
+            Log.Debug("Running " + name, PluginHandler.Instance.Config.VerbouseOutput);
             if (Subscribers.TryGetValue(name, out List<Action<object>> handlers))
             {
                 foreach (var item in handlers)
@@ -37,7 +37,7 @@ namespace Mistaken.API
         /// <param name="handler">Event handler.</param>
         public static void Subscribe(string name, Action<object> handler)
         {
-            Log.Debug("Subscribing to " + name);
+            Log.Debug("Subscribing to " + name, PluginHandler.Instance.Config.VerbouseOutput);
             if (!Subscribers.ContainsKey(name))
                 Subscribers[name] = new List<Action<object>>();
             Subscribers[name].Add(handler);
@@ -50,7 +50,7 @@ namespace Mistaken.API
         /// <param name="handler">Event handler.</param>
         public static void UnSubscribe(string name, Action<object> handler)
         {
-            Log.Debug("UnSubscribing to " + name);
+            Log.Debug("UnSubscribing to " + name, PluginHandler.Instance.Config.VerbouseOutput);
             if (Subscribers.ContainsKey(name))
                 Subscribers[name].Remove(handler);
         }

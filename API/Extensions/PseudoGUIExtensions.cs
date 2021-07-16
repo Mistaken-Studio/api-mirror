@@ -23,7 +23,7 @@ namespace Mistaken.API.Extensions
         /// <param name="content">content.</param>
         /// <param name="duration">duration.</param>
         public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content, float duration) =>
-            PseudoGUIHandlerComponent.Set(player, key, type, content, duration);
+            PseudoGUIHandler.Set(player, key, type, content, duration);
 
         /// <summary>
         /// Sets GUI Element.
@@ -33,6 +33,6 @@ namespace Mistaken.API.Extensions
         /// <param name="type">position.</param>
         /// <param name="content">content.</param>
         public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content) =>
-            PseudoGUIHandlerComponent.Set(player, key, type, content);
+            PseudoGUIHandler.Set(player, key, type, content);
     }
 }

@@ -26,7 +26,7 @@ namespace Mistaken.API.Diagnostics
         public ModuleLogger(string module) => this.module = module;
 
         /// <inheritdoc cref="Log.Debug(object, bool)"/>
-        public void Debug(object message, bool canBeSant = true) => Log.Debug($"[{this.module}] {message}", canBeSant);
+        public void Debug(object message, bool canBeSant/* = true*/) => Log.Debug($"[{this.module}] {message}", canBeSant);
 
         /// <inheritdoc cref="Log.Info(object)"/>
         public void Info(object message) => Log.Info($"[{this.module}] {message}");

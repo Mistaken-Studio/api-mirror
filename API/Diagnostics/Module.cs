@@ -69,7 +69,7 @@ namespace Mistaken.API.Diagnostics
             foreach (var item in Modules[plugin].Where(i => i.Enabled))
             {
                 MasterHandler.Ini();
-                Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}");
+                Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                 try
                 {
                     item.OnEnable();
@@ -79,7 +79,7 @@ namespace Mistaken.API.Diagnostics
                     MasterHandler.LogError(ex, item, "ENABLING");
                 }
 
-                Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}");
+                Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
             }
         }
 
@@ -92,7 +92,7 @@ namespace Mistaken.API.Diagnostics
             foreach (var item in Modules[plugin].Where(i => i.Enabled))
             {
                 MasterHandler.Ini();
-                Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}");
+                Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                 try
                 {
                     item.OnDisable();
@@ -102,7 +102,7 @@ namespace Mistaken.API.Diagnostics
                     MasterHandler.LogError(ex, item, "DISABLING");
                 }
 
-                Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}");
+                Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
             }
         }
 
@@ -117,7 +117,7 @@ namespace Mistaken.API.Diagnostics
                 foreach (var item in module.Value.Where(i => i.Enabled && !i.IsBasic))
                 {
                     MasterHandler.Ini();
-                    Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}");
+                    Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                     try
                     {
                         item.OnEnable();
@@ -127,7 +127,7 @@ namespace Mistaken.API.Diagnostics
                         MasterHandler.LogError(ex, item, "ENABLING");
                     }
 
-                    Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}");
+                    Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace Mistaken.API.Diagnostics
                 foreach (var item in module.Value.Where(i => i.Enabled && !i.IsBasic))
                 {
                     MasterHandler.Ini();
-                    Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}");
+                    Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                     try
                     {
                         item.OnDisable();
@@ -153,7 +153,7 @@ namespace Mistaken.API.Diagnostics
                         MasterHandler.LogError(ex, item, "DISABLING");
                     }
 
-                    Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}");
+                    Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                 }
             }
         }

@@ -118,7 +118,7 @@ namespace Mistaken.API.Diagnostics
 
         internal static void Ini()
         {
-            Log.Debug($"Called Ini");
+            Log.Debug($"Called Ini", PluginHandler.Instance.Config.VerbouseOutput);
             if (initiated)
                 return;
             if (CI_TEST_SERVER_PORTS.Contains(Server.Port))
@@ -138,15 +138,15 @@ namespace Mistaken.API.Diagnostics
 
         private static IEnumerator<float> SaveLoop()
         {
-            Log.Debug($"Starting Loop");
+            Log.Debug($"Starting Loop", PluginHandler.Instance.Config.VerbouseOutput);
             if (!Directory.Exists($"{Paths.Configs}/{Server.Port}/"))
             {
                 Directory.CreateDirectory($"{Paths.Configs}/{Server.Port}/");
-                Log.Debug($"{Paths.Configs}/{Server.Port}/ Created");
+                Log.Debug($"{Paths.Configs}/{Server.Port}/ Created", PluginHandler.Instance.Config.VerbouseOutput);
             }
             else
             {
-                Log.Debug($"{Paths.Configs}/{Server.Port}/ Exists");
+                Log.Debug($"{Paths.Configs}/{Server.Port}/ Exists", PluginHandler.Instance.Config.VerbouseOutput);
             }
 
             string lastDay = DateTime.Now.ToString("yyyy-MM-dd");
@@ -165,7 +165,7 @@ namespace Mistaken.API.Diagnostics
                     if (!Directory.Exists($"{Paths.Configs}/{Server.Port}/{day}/"))
                     {
                         Directory.CreateDirectory($"{Paths.Configs}/{Server.Port}/{day}/");
-                        Log.Debug($"Created {Paths.Configs}/{Server.Port}/{day}/");
+                        Log.Debug($"Created {Paths.Configs}/{Server.Port}/{day}/", PluginHandler.Instance.Config.VerbouseOutput);
                     }
 
                     // Log.Debug($"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now.ToString("yyyy-MM-dd_HH")}.log");

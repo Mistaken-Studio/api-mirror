@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="GUI\PseudoGUIHandlerComponent.cs" />
+    <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
