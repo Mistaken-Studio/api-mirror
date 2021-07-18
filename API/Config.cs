@@ -4,6 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using Mistaken.Updater.Config;
 
@@ -23,6 +24,6 @@ namespace Mistaken.API
 
         /// <inheritdoc/>
         [Description("Auto Update Settings")]
-        public AutoUpdateConfig AutoUpdateConfig { get; set; }
+        public Dictionary<string, string> AutoUpdateConfig { get; set; }
     }
 }
