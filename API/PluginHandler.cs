@@ -6,11 +6,12 @@
 
 using System;
 using Exiled.API.Enums;
+using Exiled.API.Features;
 
 namespace Mistaken.API
 {
     /// <inheritdoc/>
-    public class PluginHandler : AutoUpdatablePlugin<Config>
+    public class PluginHandler : Plugin<Config>
     {
         /// <inheritdoc/>
         public override string Author => "Mistaken Devs";
