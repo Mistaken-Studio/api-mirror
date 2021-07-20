@@ -66,9 +66,9 @@ namespace Mistaken.API.Diagnostics
         /// <param name="plugin">Plugin.</param>
         public static void OnEnable(IPlugin<IConfig> plugin)
         {
+            MasterHandler.Ini();
             foreach (var item in Modules[plugin].Where(i => i.Enabled))
             {
-                MasterHandler.Ini();
                 Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                 try
                 {
