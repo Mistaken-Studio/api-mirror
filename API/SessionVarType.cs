@@ -37,6 +37,7 @@ namespace Mistaken.API
         CC_IGNORE_CHANGE_ROLE,
         CI_GUARD_COMMANDER_KEYCARD_OWNER,
         CC_TAU5,
+        PLAYER_PREFERENCES,
 #pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
     }
 }
