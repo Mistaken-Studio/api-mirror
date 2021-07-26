@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="SessionVarType.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
@@ -29,6 +29,8 @@ namespace Mistaken.API
         CI_SCP1499,
         CI_GRENADE_LAUNCHER,
         CI_GUARD_COMMANDER_KEYCARD,
+        CI_STICKY_GRENADE,
+        CI_HEALGUN,
         CC_ZONE_MANAGER_KEYCARD,
         CC_DEPUTY_FACILITY_MANAGER_KEYCARD,
         CC_GUARD_COMMANDER,
@@ -37,6 +39,9 @@ namespace Mistaken.API
         CC_IGNORE_CHANGE_ROLE,
         CI_GUARD_COMMANDER_KEYCARD_OWNER,
         CC_TAU5,
+        CC_MTF_MEDIC,
+        CC_MTF_CONTAINMENT_ENGINNER,
+        CC_MTF_EXPLOSIVES_SPECIALIST,
         PLAYER_PREFERENCES,
 #pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
     }
