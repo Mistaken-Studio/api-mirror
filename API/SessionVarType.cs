@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="SessionVarType.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
@@ -31,7 +31,6 @@ namespace Mistaken.API
         CI_GUARD_COMMANDER_KEYCARD,
         CI_STICKY_GRENADE,
         CI_HEALGUN,
-        CI_HIBANA,
         CC_ZONE_MANAGER_KEYCARD,
         CC_DEPUTY_FACILITY_MANAGER_KEYCARD,
         CC_GUARD_COMMANDER,
