@@ -31,6 +31,12 @@ namespace Mistaken.API
         }
 
         /// <summary>
+        /// Gets random list of players.
+        /// </summary>
+        public static IEnumerable<Player> RandomList =>
+            Extensions.Extensions.Shuffle(List.ToArray());
+
+        /// <summary>
         /// Returns players that belong to specified team.
         /// </summary>
         /// <param name="value">Team.</param>
