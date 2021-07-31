@@ -261,5 +261,21 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player to check.</param>
         /// <returns><see langword="true"/> if player is sprinting else <see langword="false"/>.</returns>
         public static bool IsPressingShift(this Player player) => player.ReferenceHub.animationController.curAnim == 1;
+
+        /// <summary>
+        /// Spawns BoxCollider.
+        /// </summary>
+        /// <param name="pos">Position.</param>
+        /// <param name="scale">Scale.</param>
+        /// <returns>GameObject with BoxCollider.</returns>
+        public static GameObject SpawnBoxCollider(Vector3 pos, Vector3 scale)
+        {
+            var obj = new GameObject();
+            obj.AddComponent<BoxCollider>();
+            obj.transform.position = pos;
+            obj.transform.rotation = Quaternion.identity;
+            obj.transform.localScale = scale;
+            return obj;
+        }
     }
 }
