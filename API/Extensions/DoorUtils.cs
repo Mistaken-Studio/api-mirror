@@ -4,6 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Exiled.API.Features;
 using Interactables.Interobjects;
@@ -93,6 +94,17 @@ namespace Mistaken.API.Extensions
         }
 
         /// <summary>
+        /// Changes lock setting for plugin door lock.
+        /// </summary>
+        /// <param name="door">Door to update.</param>
+        /// <param name="type">Lock.</param>
+        /// <param name="active">Should lock be enabled or disabled.</param>
+        public static void ServerChangeLock(this DoorVariant door, PluginDoorLockReason type, bool active)
+        {
+            door?.ServerChangeLock((DoorLockReason)type, active);
+        }
+
+        /// <summary>
         /// Door Type.
         /// </summary>
         public enum DoorType
@@ -101,6 +113,19 @@ namespace Mistaken.API.Extensions
             EZ_BREAKABLE,
             HCZ_BREAKABLE,
             LCZ_BREAKABLE,
+#pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+        }
+
+        /// <summary>
+        /// Door lock reason.
+        /// </summary>
+        [Flags]
+        public enum PluginDoorLockReason : ushort
+        {
+#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+            COOLDOWN = 512,
+            BLOCKED_BY_SOMETHING = 1024,
+            REQUIREMENTS_NOT_MET = 2048,
 #pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
         }
 
