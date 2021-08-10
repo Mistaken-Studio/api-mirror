@@ -72,6 +72,9 @@
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
+    <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />
+    <Compile Include="Patches\Grenades\GrenadeFixChainingPatch.cs" />
+    <Compile Include="Patches\Grenades\GrenadeFixInRangePatch.cs" />
     <Compile Include="PlayerPreferences.cs" />
     <Compile Include="PluginHandler.cs" />
     <Compile Include="BetterWarheadHandler.cs" />
