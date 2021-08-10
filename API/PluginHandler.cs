@@ -65,6 +65,7 @@ namespace Mistaken.API
         private void Server_WaitingForPlayers()
         {
             GUI.PseudoGUIHandler.Ini();
+            RoundPlus.IncRoundId();
         }
     }
 }
