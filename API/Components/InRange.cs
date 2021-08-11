@@ -110,6 +110,8 @@ namespace Mistaken.API.Components
             }
         }
 
+        private readonly HashSet<GameObject> safetyCheck = new HashSet<GameObject>();
+
         private Action<Player> onEnter;
         private Action<Player> onExit;
 
@@ -121,12 +123,20 @@ namespace Mistaken.API.Components
             {
                 if (Vector3.Distance(item.transform.position, this.transform.position) > 100)
                 {
-                    Log.Error("[InRange] Failed to remove object from trigger");
-                    Diagnostics.MasterHandler.LogError(new Exception("[InRange] Failed to remove object from trigger"), null, "InRange.FixedUpdate");
-                    this.ColliderInArea.Remove(item);
-                    var player = Player.Get(item.gameObject);
-                    this.onExit?.Invoke(player);
+                    if (!this.safetyCheck.Contains(item))
+                        this.safetyCheck.Add(item);
+                    else
+                    {
+                        Log.Error("[InRange] Failed to remove object from trigger");
+                        Diagnostics.MasterHandler.LogError(new Exception("[InRange] Failed to remove object from trigger"), null, "InRange.FixedUpdate");
+                        this.ColliderInArea.Remove(item);
+                        var player = Player.Get(item.gameObject);
+                        this.onExit?.Invoke(player);
+                        this.safetyCheck.Remove(item);
+                    }
                 }
+                else
+                    this.safetyCheck.Remove(item);
             }
         }
 
