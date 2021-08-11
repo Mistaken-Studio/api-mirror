@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="GrenadeFixPatch3.cs" company="Mistaken">
+// <copyright file="GrenadeFixInRangePatch.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -18,7 +18,7 @@ using UnityEngine;
 namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(Grenades.FragGrenade), nameof(Grenades.FragGrenade.ServersideExplosion))]
-    static class GrenadeFixPatch3
+    static class GrenadeFixInRangePatch
     {
         internal static readonly List<GameObject> disabledGoList = new List<GameObject>();
         public static bool Prefix(FragGrenade __instance)
