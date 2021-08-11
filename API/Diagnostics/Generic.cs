@@ -29,11 +29,6 @@ namespace Mistaken.API.Diagnostics
                 TimeSpan diff;
                 void Tor(T ev)
                 {
-                    /*if(ev is Exiled.Events.EventArgs.InteractingDoorEventArgs)
-                    {
-                        Log.Warn($"[{module.Name}: {ev.GetType().Name}] Denied running {ev}");
-                        return;
-                    }*/
                     start = DateTime.Now;
                     try
                     {
@@ -45,10 +40,10 @@ namespace Mistaken.API.Diagnostics
                         Log.Error(ex.Message);
                         Log.Error(ex.StackTrace);
                         LogError(ex, module, name);
-                        ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module.Name}: {name}] Caused Exception");
-                        ErrorBacklog.Add(ex.Message);
-                        ErrorBacklog.Add(ex.StackTrace);
 
+                        // ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module.Name}: {name}] Caused Exception");
+                        // ErrorBacklog.Add(ex.Message);
+                        // ErrorBacklog.Add(ex.StackTrace);
                         OnError?.Invoke(ex, module, name);
                     }
 
