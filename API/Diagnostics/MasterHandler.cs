@@ -36,6 +36,9 @@ namespace Mistaken.API.Diagnostics
         /// <param name="name">Catching function name.</param>
         public static void LogError(System.Exception ex, Module module, string name)
         {
+            ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module?.Name ?? "Rouge"}: {name}] Caused Exception");
+            ErrorBacklog.Add(ex.Message);
+            ErrorBacklog.Add(ex.StackTrace);
             if (!CI_TEST_SERVER_PORTS.Contains(Server.Port))
                 return;
             CurrentStatus.StatusCode = 1;
@@ -77,10 +80,10 @@ namespace Mistaken.API.Diagnostics
                     Log.Error(ex.Message);
                     Log.Error(ex.StackTrace);
                     LogError(ex, module, name);
-                    ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module.Name}: {name}] Caused Exception");
-                    ErrorBacklog.Add(ex.Message);
-                    ErrorBacklog.Add(ex.StackTrace);
 
+                    // ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module.Name}: {name}] Caused Exception");
+                    // ErrorBacklog.Add(ex.Message);
+                    // ErrorBacklog.Add(ex.StackTrace);
                     OnError?.Invoke(ex, module, name);
                 }
 
