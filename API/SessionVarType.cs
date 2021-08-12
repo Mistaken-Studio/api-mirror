@@ -43,6 +43,8 @@ namespace Mistaken.API
         CC_MTF_CONTAINMENT_ENGINNER,
         CC_MTF_EXPLOSIVES_SPECIALIST,
         PLAYER_PREFERENCES,
+        ADMIN_MARK,
+        SPAWN_PROTECT,
 #pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
     }
 }

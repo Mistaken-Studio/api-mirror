@@ -75,6 +75,12 @@
     <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixChainingPatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixInRangePatch.cs" />
+    <Compile Include="Patches\Vars\BypassPatch.cs" />
+    <Compile Include="Patches\Vars\EnableVarPatchs.cs" />
+    <Compile Include="Patches\Vars\GodModePatch.cs" />
+    <Compile Include="Patches\Vars\NicknamePatch.cs" />
+    <Compile Include="Patches\Vars\NoClipPatch.cs" />
+    <Compile Include="Patches\Vars\OverwatchPatch.cs" />
     <Compile Include="PlayerPreferences.cs" />
     <Compile Include="PluginHandler.cs" />
     <Compile Include="BetterWarheadHandler.cs" />
@@ -103,6 +109,7 @@
     <Compile Include="Utilities\OverheatLevel.cs" />
     <Compile Include="Utilities\TeslaMode.cs" />
     <Compile Include="Utilities\UtilitiesHandler.cs" />
+    <Compile Include="VanishHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
