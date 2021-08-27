@@ -26,9 +26,9 @@ namespace Mistaken.API.Diagnostics
         public ModuleLogger(string module) => this.module = module;
 
         /// <inheritdoc cref="Log.Debug(object, bool)"/>
-        public void Debug(object message, bool canBeSant/* = true*/)
+        public void Debug(object message, bool canBeSent/* = true*/)
         {
-            if (canBeSant)
+            if (canBeSent)
                 Log.Send($"[{this.module}] {message}", Discord.LogLevel.Debug, ConsoleColor.Green);
         }
 

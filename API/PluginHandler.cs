@@ -26,7 +26,7 @@ namespace Mistaken.API
         public override PluginPriority Priority => PluginPriority.Higher;
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion => new Version(2, 11, 0);
+        public override Version RequiredExiledVersion => new Version(3, 0, 0, 57);
 
         /// <inheritdoc/>
         public override void OnEnabled()
@@ -42,6 +42,9 @@ namespace Mistaken.API
             new BetterWarheadHandler(this);
             new CustomInfoHandler(this);
             new VanishHandler(this);
+            new CustomSlots.CustomSlotsHandler(this);
+
+            Extensions.DoorUtils.Ini();
 
             API.Diagnostics.Module.OnEnable(this);
 

@@ -25,8 +25,8 @@ namespace Mistaken.API.Extensions
         /// <param name="color">Kolor.</param>
         public static void TargetSetBadge(this Player player, Player target, string name, string color)
         {
-            MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.NetworkMyText), name);
-            MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.NetworkMyColor), color);
+            MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myText), name);
+            MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myColor), color);
         }
 
         /// <summary>

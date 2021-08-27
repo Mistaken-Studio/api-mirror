@@ -12,7 +12,7 @@ namespace Mistaken.API.Patches
     /// <summary>
     /// Patch used to allow for custom door locks.
     /// </summary>
-    [HarmonyPatch(typeof(DoorLockUtils), "GetMode")]
+    /*[HarmonyPatch(typeof(DoorLockUtils), "GetMode")]
     public static class DoorLockPatch
     {
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
@@ -27,5 +27,5 @@ namespace Mistaken.API.Patches
 
             return true;
         }
-    }
+    }*/
 }
