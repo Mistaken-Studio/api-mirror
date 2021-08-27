@@ -155,7 +155,7 @@ namespace Mistaken.API.Components
         private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
         {
             Log.Debug("CR_0", DEBUG);
-            if (ev.ShouldPreservePosition)
+            if (ev.Lite)
             {
                 Log.Debug("CR_1", DEBUG);
                 return;

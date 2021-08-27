@@ -7,7 +7,6 @@
 #pragma warning disable
 
 using Exiled.API.Features;
-using Grenades;
 using HarmonyLib;
 using Mirror;
 using System;
@@ -16,7 +15,7 @@ using UnityEngine;
 
 namespace Mistaken.API.Patches
 {
-    [HarmonyPatch(typeof(Grenades.Grenade), nameof(Grenades.Grenade.FullInitData))]
+    /*[HarmonyPatch(typeof(Grenades.Grenade), nameof(Grenades.Grenade.FullInitData))]
     static class GrenadeFixOnLeavePatch
     {
         public static bool Prefix(ref GrenadeManager player, Vector3 position, Quaternion rotation, Vector3 linearVelocity, Vector3 angularVelocity, global::Team originalTeam)
@@ -25,5 +24,5 @@ namespace Mistaken.API.Patches
                 player = ReferenceHub.HostHub.GetComponent<GrenadeManager>();
             return true;
         }
-    }
+    }*/
 }

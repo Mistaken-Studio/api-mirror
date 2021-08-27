@@ -21,6 +21,8 @@ namespace Mistaken.API
         [Description("If true then debug will be displayed")]
         public bool VerbouseOutput { get; set; }
 
+        public bool CustomSlotsEnabled { get; set; } = false;
+
         /// <inheritdoc/>
         [Description("Auto Update Settings")]
         public System.Collections.Generic.Dictionary<string, string> AutoUpdateConfig { get; set; } = new System.Collections.Generic.Dictionary<string, string>

@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Exiled.API.Features;
+using Exiled.API.Features.Items;
+using InventorySystem;
+using InventorySystem.Items;
 using Mirror;
 using NorthwoodLib.Pools;
 using RemoteAdmin;
@@ -33,7 +36,7 @@ namespace Mistaken.API
 
             set
             {
-                GameObject.FindObjectOfType<LureSubjectContainer>().SetState(value);
+                GameObject.FindObjectOfType<LureSubjectContainer>().SetState(value, value);
             }
         }
 
@@ -92,15 +95,19 @@ namespace Mistaken.API
         /// <param name="rotation">Spawn rotation.</param>
         /// <param name="size">Pickup size.</param>
         /// <returns>Spawned object.</returns>
-        public static Pickup Spawn(Inventory.SyncItemInfo item, Vector3 position, Quaternion rotation, Vector3 size)
+        public static ItemBase Spawn(ItemType item, Vector3 position, Quaternion rotation, Vector3 size)
         {
             var inv = Server.Host.Inventory;
-            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(inv.pickupPrefab);
-            var originalScale = gameObject.transform.localScale;
-            gameObject.transform.localScale = new Vector3(size.x * originalScale.x, size.y * originalScale.y, size.z * originalScale.z);
-            NetworkServer.Spawn(gameObject);
-            gameObject.GetComponent<Pickup>().SetupPickup(item.id, item.durability, inv.gameObject, new Pickup.WeaponModifiers(true, item.modSight, item.modBarrel, item.modOther), position, rotation);
-            return gameObject.GetComponent<Pickup>();
+            if (!InventoryItemLoader.AvailableItems.TryGetValue(item, out ItemBase value))
+                return null;
+
+            ItemBase itemBase = UnityEngine.Object.Instantiate(value, inv._itemWorkspace);
+            itemBase.transform.localPosition = Vector3.zero;
+            itemBase.transform.localRotation = Quaternion.identity;
+            var originalScale = itemBase.transform.localScale;
+            itemBase.transform.localScale = new Vector3(size.x * originalScale.x, size.y * originalScale.y, size.z * originalScale.z);
+            itemBase.Owner = Server.Host.ReferenceHub;
+            return itemBase;
         }
 
         /// <summary>

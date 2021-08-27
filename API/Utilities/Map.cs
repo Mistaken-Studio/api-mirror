@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
+using MapGeneration.Distributors;
 using MEC;
 
 namespace Mistaken.API.Utilities
@@ -53,7 +54,7 @@ namespace Mistaken.API.Utilities
         public static void OpenAllDoors()
         {
             foreach (var d in Exiled.API.Features.Map.Doors)
-                d.NetworkTargetState = true;
+                d.Open = true;
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Mistaken.API.Utilities
         public static void CloseAllDoors()
         {
             foreach (var d in Exiled.API.Features.Map.Doors)
-                d.NetworkTargetState = false;
+                d.Open = false;
         }
 
         /// <summary>
@@ -126,7 +127,11 @@ namespace Mistaken.API.Utilities
                 {
                     try
                     {
-                        Generator079.mainGenerator.ServerOvercharge(Map.Blackout.Length, Map.Blackout.OnlyHCZ);
+                        foreach (var item in Exiled.API.Features.Map.Rooms)
+                        {
+                            if (!Map.Blackout.OnlyHCZ || item.Zone == Exiled.API.Enums.ZoneType.HeavyContainment)
+                                item.TurnOffLights(Map.Blackout.Length);
+                        }
                     }
                     catch (System.Exception ex)
                     {
@@ -332,7 +337,8 @@ namespace Mistaken.API.Utilities
                                 "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
                                 0.35f,
                                 0.30f);
-                            Generator079.mainGenerator.ServerOvercharge(3000, false);
+                            foreach (var item in Exiled.API.Features.Map.Rooms)
+                                item.TurnOffLights(3000);
                             LockBlackout = true;
                             yield return MEC.Timing.WaitForSeconds(90);
                             break;
@@ -355,7 +361,8 @@ namespace Mistaken.API.Utilities
                                     "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
                                     false,
                                     false);
-                                Generator079.mainGenerator.ServerOvercharge(3000, false);
+                                foreach (var item in Exiled.API.Features.Map.Rooms)
+                                    item.TurnOffLights(3000);
                                 LockBlackout = true;
                             }
                             else
@@ -446,13 +453,13 @@ namespace Mistaken.API.Utilities
                             RespawnLock = false;
                             foreach (var player in RealPlayers.List)
                             {
-                                player.ReferenceHub.characterClassManager.TargetDeathScreen(player.Connection, new PlayerStats.HitInfo(-1f, "*Facility Reactor", new DamageTypes.DamageType("Facility Reactor"), 0));
+                                player.ReferenceHub.characterClassManager.TargetDeathScreen(player.Connection, new PlayerStats.HitInfo(-1f, "*Facility Reactor", new DamageTypes.DamageType("Facility Reactor"), 0, true));
                                 player.Role = RoleType.Spectator;
                             }
 
                             Round.IsLocked = false;
                             LockBlackout = false;
-                            Generator079.mainGenerator.ServerOvercharge(0, false);
+                            Recontainer079.FindObjectOfType<Recontainer079>().BeginOvercharge();
                             break;
                         }
 

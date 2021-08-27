@@ -135,7 +135,7 @@ namespace Mistaken.API
                     bool cond = player.IsHuman && player.Position.y < -1900;
                     foreach (var seenPlayer in Player.List)
                     {
-                        if (cond)
+                        if (cond && false)
                         {
                             Hide(player, seenPlayer.Id);
                             continue;
