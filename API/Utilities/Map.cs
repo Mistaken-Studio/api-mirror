@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
-using MapGeneration.Distributors;
 using MEC;
 
 namespace Mistaken.API.Utilities
@@ -54,7 +53,7 @@ namespace Mistaken.API.Utilities
         public static void OpenAllDoors()
         {
             foreach (var d in Exiled.API.Features.Map.Doors)
-                d.Open = true;
+                d.IsOpen = true;
         }
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace Mistaken.API.Utilities
         public static void CloseAllDoors()
         {
             foreach (var d in Exiled.API.Features.Map.Doors)
-                d.Open = false;
+                d.IsOpen = false;
         }
 
         /// <summary>
