@@ -26,7 +26,7 @@ namespace Mistaken.API
         public override PluginPriority Priority => PluginPriority.Higher;
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion => new Version(3, 0, 0, 57);
+        public override Version RequiredExiledVersion => new Version(3, 0, 3);
 
         /// <inheritdoc/>
         public override void OnEnabled()

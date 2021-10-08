@@ -256,13 +256,6 @@ namespace Mistaken.API.Extensions
         public static bool IsReadyPlayer(this Player me) => me.IsConnected && me.IsVerified && !me.GetSessionVar<bool>("IsNPC") && me.UserId != null;
 
         /// <summary>
-        /// If player is sprinting.
-        /// </summary>
-        /// <param name="player">Player to check.</param>
-        /// <returns><see langword="true"/> if player is sprinting else <see langword="false"/>.</returns>
-        public static bool IsPressingShift(this Player player) => player.ReferenceHub.animationController.curAnim == 1;
-
-        /// <summary>
         /// Spawns BoxCollider.
         /// </summary>
         /// <param name="pos">Position.</param>
