@@ -15,7 +15,7 @@ namespace Mistaken.API.Patches
     /// <summary>
     /// Patch used to block some door from beeing opened by RA.
     /// </summary>
-    [HarmonyPatch(typeof(CommandProcessor), "ProcessDoorQuery", typeof(CommandSender), typeof(string), typeof(string))]
+    /*[HarmonyPatch(typeof(CommandProcessor), "ProcessDoorQuery", typeof(CommandSender), typeof(string), typeof(string))]
     public static class DoorPatch
     {
         /// <summary>
@@ -116,5 +116,5 @@ namespace Mistaken.API.Patches
 
             return false;
         }
-    }
+    }*/
 }

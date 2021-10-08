@@ -7,7 +7,6 @@
 #pragma warning disable
 
 using Exiled.API.Features;
-using Grenades;
 using HarmonyLib;
 using Mirror;
 using Mistaken.API.Extensions;
@@ -17,7 +16,7 @@ using UnityEngine;
 
 namespace Mistaken.API.Patches
 {
-    [HarmonyPatch(typeof(Grenades.FragGrenade), nameof(Grenades.FragGrenade.ServersideExplosion))]
+    /*[HarmonyPatch(typeof(Grenades.FragGrenade), nameof(Grenades.FragGrenade.ServersideExplosion))]
     static class GrenadeFixInRangePatch
     {
         internal static readonly List<GameObject> disabledGoList = new List<GameObject>();
@@ -102,5 +101,5 @@ namespace Mistaken.API.Patches
             }
             disabledGoList.Clear();
         }
-    }
+    }*/
 }

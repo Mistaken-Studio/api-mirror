@@ -207,7 +207,7 @@ namespace Mistaken.API.Extensions
         /// <returns>Name.</returns>
         public static string GetDisplayName(this Player player) => player == null ? "NULL" : player.DisplayNickname ?? player.Nickname;
 
-        /// <summary>
+        /*/// <summary>
         /// Drops greneade under player.
         /// </summary>
         /// <param name="me">Player.</param>
@@ -223,7 +223,7 @@ namespace Mistaken.API.Extensions
                 component.InitData(grenadeManager, Vector3.zero, Vector3.down);
                 NetworkServer.Spawn(component.gameObject);
             }
-        }
+        }*/
 
         /// <summary>
         /// Kills player with message.
@@ -232,7 +232,7 @@ namespace Mistaken.API.Extensions
         /// <param name="reason">Kill reason.</param>
         public static void Kill(this Player me, string reason)
         {
-            me.ReferenceHub.playerStats.HurtPlayer(new PlayerStats.HitInfo(float.MaxValue, $"*{reason}", DamageTypes.None, -1), me.GameObject);
+            me.ReferenceHub.playerStats.HurtPlayer(new PlayerStats.HitInfo(float.MaxValue, $"*{reason}", DamageTypes.None, -1, true), me.GameObject);
         }
 
         /// <summary>
@@ -254,13 +254,6 @@ namespace Mistaken.API.Extensions
         /// <param name="me">Playet to check.</param>
         /// <returns>If player is ready, real player.</returns>
         public static bool IsReadyPlayer(this Player me) => me.IsConnected && me.IsVerified && !me.GetSessionVar<bool>("IsNPC") && me.UserId != null;
-
-        /// <summary>
-        /// If player is sprinting.
-        /// </summary>
-        /// <param name="player">Player to check.</param>
-        /// <returns><see langword="true"/> if player is sprinting else <see langword="false"/>.</returns>
-        public static bool IsPressingShift(this Player player) => player.ReferenceHub.animationController.curAnim == 1;
 
         /// <summary>
         /// Spawns BoxCollider.

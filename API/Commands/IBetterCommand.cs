@@ -224,6 +224,25 @@ namespace Mistaken.API.Commands
                 }
             }
 
+            while (newQuery.Contains("@\""))
+            {
+                int index1 = newQuery.IndexOf("@\"") + 2;
+                int index2 = newQuery.IndexOf('"', index1 + 1);
+
+                var value = newQuery.Substring(index1, index2 - index1);
+                foreach (var player in RealPlayers.List)
+                {
+                    if (value == player.Nickname || value == player.DisplayNickname)
+                    {
+                        newQuery = newQuery.Replace($"@\"{value}\"", player.Id.ToString());
+                        Log.Debug($"Replaced @\"{value}\" with {player.Id}");
+                        break;
+                    }
+                }
+
+                Log.Debug($"Not Replaced @\"{value}\"");
+            }
+
             response = string.Join("\n", this.Execute(sender, newQuery.Split(' ').Skip(1).ToArray(), out bool successfull));
             if (bc)
                 sender.GetPlayer().Broadcast(this.Command, 10, string.Join("\n", response));

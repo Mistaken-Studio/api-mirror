@@ -7,7 +7,7 @@
 #pragma warning disable
 
 using Exiled.API.Features;
-using Grenades;
+using InventorySystem.Items.ThrowableProjectiles;
 using HarmonyLib;
 using Mirror;
 using System;
@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Mistaken.API.Patches
 {
-    [HarmonyPatch(typeof(Grenades.Grenade), nameof(Grenades.Grenade.InitData), typeof(FragGrenade), typeof(Pickup))]
+    /*[HarmonyPatch(typeof(Grenade), nameof(Grenades.Grenade.InitData), typeof(FragGrenade), typeof(Pickup))]
     static class GrenadeFixChainingPatch
     {
         public static bool Prefix(Grenade __instance, FragGrenade original, global::Pickup item)
@@ -35,5 +35,5 @@ namespace Mistaken.API.Patches
             __instance.currentChainLength = original.currentChainLength + 1;
             return false;
         }
-    }
+    }*/
 }
