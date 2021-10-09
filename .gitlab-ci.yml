@@ -110,6 +110,7 @@ publish-plugins:
     - git config user.email "ci@git.mistaken.pl"
     - git config user.name "Gitlab-CI"
     - git checkout master
+    - git reset --hard
     - git pull
     - echo $wersja > version
     - git add version
