@@ -19,6 +19,6 @@ namespace Mistaken.API
         /// <summary>
         /// Increments Round Id.
         /// </summary>
-        public static void IncRoundId() => RoundId++;
+        internal static void IncRoundId() => RoundId++;
     }
 }

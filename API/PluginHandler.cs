@@ -26,7 +26,7 @@ namespace Mistaken.API
         public override PluginPriority Priority => PluginPriority.Higher;
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion => new Version(2, 11, 0);
+        public override Version RequiredExiledVersion => new Version(3, 0, 3);
 
         /// <inheritdoc/>
         public override void OnEnabled()
@@ -35,11 +35,16 @@ namespace Mistaken.API
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
 
-            this.harmony = new HarmonyLib.Harmony("com.mistaken.api");
-            this.harmony.PatchAll();
+            this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
+            this.Harmony.PatchAll();
+            Patches.Vars.EnableVarPatchs.Patch();
 
             new BetterWarheadHandler(this);
             new CustomInfoHandler(this);
+            new VanishHandler(this);
+            new CustomSlots.CustomSlotsHandler(this);
+
+            Extensions.DoorUtils.Ini();
 
             API.Diagnostics.Module.OnEnable(this);
 
@@ -51,7 +56,7 @@ namespace Mistaken.API
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= this.Server_WaitingForPlayers;
 
-            this.harmony.UnpatchAll();
+            this.Harmony.UnpatchAll();
 
             API.Diagnostics.Module.OnDisable(this);
 
@@ -60,11 +65,12 @@ namespace Mistaken.API
 
         internal static PluginHandler Instance { get; private set; }
 
-        private HarmonyLib.Harmony harmony;
+        internal HarmonyLib.Harmony Harmony { get; private set; }
 
         private void Server_WaitingForPlayers()
         {
             GUI.PseudoGUIHandler.Ini();
+            RoundPlus.IncRoundId();
         }
     }
 }

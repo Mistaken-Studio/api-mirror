@@ -26,16 +26,23 @@ namespace Mistaken.API.Diagnostics
         public ModuleLogger(string module) => this.module = module;
 
         /// <inheritdoc cref="Log.Debug(object, bool)"/>
-        public void Debug(object message, bool canBeSant/* = true*/) => Log.Debug($"[{this.module}] {message}", canBeSant);
+        public void Debug(object message, bool canBeSent/* = true*/)
+        {
+            if (canBeSent)
+                Log.Send($"[{this.module}] {message}", Discord.LogLevel.Debug, ConsoleColor.Green);
+        }
 
         /// <inheritdoc cref="Log.Info(object)"/>
-        public void Info(object message) => Log.Info($"[{this.module}] {message}");
+        public void Info(object message)
+            => Log.Send($"[{this.module}] {message}", Discord.LogLevel.Info, ConsoleColor.Cyan);
 
         /// <inheritdoc cref="Log.Warn(object)"/>
-        public void Warn(object message) => Log.Warn($"[{this.module}] {message}");
+        public void Warn(object message)
+            => Log.Send($"[{this.module}] {message}", Discord.LogLevel.Warn, ConsoleColor.DarkYellow);
 
         /// <inheritdoc cref="Log.Error(object)"/>
-        public void Error(object message) => Log.Error($"[{this.module}] {message}");
+        public void Error(object message)
+            => Log.Send($"[{this.module}] {message}", Discord.LogLevel.Error, ConsoleColor.DarkRed);
 
         private readonly string module;
     }
