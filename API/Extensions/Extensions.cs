@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommandSystem;
 using Exiled.API.Features;
@@ -196,7 +197,30 @@ namespace Mistaken.API.Extensions
             if (player.IsDev())
                 return true;
             else
+            {
+                try
+                {
+                    var perms = new List<string>();
+                    string group = player.GroupName;
+
+                    while (!string.IsNullOrWhiteSpace(group))
+                    {
+                        var groupObj = Exiled.Permissions.Extensions.Permissions.Groups[group];
+                        perms.AddRange(groupObj.Permissions);
+                        group = groupObj.Inheritance.FirstOrDefault();
+                    }
+
+                    if (perms.Contains(".*") || perms.Contains(permission) || perms.Contains(permission.Split('.')[0] + ".*"))
+                        return true;
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error(ex.Message);
+                    Log.Error(ex.StackTrace);
+                }
+
                 return Exiled.Permissions.Extensions.Permissions.CheckPermission(player, permission);
+            }
         }
 
         /// <summary>
