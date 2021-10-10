@@ -1,27 +1,39 @@
-﻿using System.Collections.Generic;
+﻿// -----------------------------------------------------------------------
+// <copyright file="CustomSlotsHandler.cs" company="Mistaken">
+// Copyright (c) Mistaken. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+using System.Collections.Generic;
 using Exiled.API.Features;
 using LiteNetLib.Utils;
 using Mistaken.API.Diagnostics;
 
 namespace Mistaken.API.CustomSlots
 {
+    /// <inheritdoc/>
     public class CustomSlotsHandler : Module
     {
-        public override bool IsBasic => true;
-
-        public override bool Enabled => PluginHandler.Instance.Config.CustomSlotsEnabled;
-
-        public static int RealSlots => CustomNetworkManager.slots + ConnectedDynamicSlots.Count;
-
+        /// <summary>
+        /// Players with dynamic reserved slots.
+        /// </summary>
         public static readonly HashSet<string> DynamicReservedSlots = new HashSet<string>();
 
-        public CustomSlotsHandler(PluginHandler plugin)
-            : base(plugin)
-        {
-        }
+        /// <summary>
+        /// Gets real number of slots.
+        /// </summary>
+        public static int RealSlots => CustomNetworkManager.slots + ConnectedDynamicSlots.Count;
 
+        /// <inheritdoc/>
+        public override bool IsBasic => true;
+
+        /// <inheritdoc/>
+        public override bool Enabled => PluginHandler.Instance.Config.CustomSlotsEnabled;
+
+        /// <inheritdoc/>
         public override string Name => "CustomSlots";
 
+        /// <inheritdoc/>
         public override void OnEnable()
         {
             Exiled.Events.Handlers.Player.PreAuthenticating += this.Handle<Exiled.Events.EventArgs.PreAuthenticatingEventArgs>((ev) => this.Player_PreAuthenticating(ev));
@@ -31,6 +43,7 @@ namespace Mistaken.API.CustomSlots
             PluginHandler.Instance.Harmony.Patch(typeof(ReservedSlot).GetMethod(nameof(ReservedSlot.HasReservedSlot)), new HarmonyLib.HarmonyMethod(typeof(ReservedSlotPatch).GetMethod(nameof(ReservedSlotPatch.Prefix))));
         }
 
+        /// <inheritdoc/>
         public override void OnDisable()
         {
             Exiled.Events.Handlers.Player.PreAuthenticating -= this.Handle<Exiled.Events.EventArgs.PreAuthenticatingEventArgs>((ev) => this.Player_PreAuthenticating(ev));
@@ -39,6 +52,14 @@ namespace Mistaken.API.CustomSlots
 
             PluginHandler.Instance.Harmony.Unpatch(typeof(ReservedSlot).GetMethod(nameof(ReservedSlot.HasReservedSlot)), typeof(ReservedSlotPatch).GetMethod(nameof(ReservedSlotPatch.Prefix)));
         }
+
+        internal CustomSlotsHandler(PluginHandler plugin)
+            : base(plugin)
+        {
+        }
+
+        private static readonly HashSet<string> ConnectedDynamicSlots = new HashSet<string>();
+        private static readonly HashSet<string> ConnectedReservedSlots = new HashSet<string>();
 
         private void Server_RestartingRound()
         {
@@ -106,8 +127,5 @@ namespace Mistaken.API.CustomSlots
                 Exiled.API.Features.Log.Info($"Rejecting {ev.UserId} with reason: {reason}");
             }
         }
-
-        private static readonly HashSet<string> ConnectedDynamicSlots = new HashSet<string>();
-        private static readonly HashSet<string> ConnectedReservedSlots = new HashSet<string>();
     }
 }

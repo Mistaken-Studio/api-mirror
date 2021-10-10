@@ -68,7 +68,7 @@
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="CustomWhitelist\CustomWhitelistHandler.cs" />
+    <Compile Include="CustomWhitelist\CustomSlotsHandler.cs" />
     <Compile Include="CustomWhitelist\Patch.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
@@ -107,6 +107,7 @@
     <Compile Include="RoundPlus.cs" />
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Extensions\SyncVar.cs" />
+    <Compile Include="Shield.cs" />
     <Compile Include="ShieldedManager.cs" />
     <Compile Include="Utilities\Map.cs" />
     <Compile Include="Utilities\OverheatLevel.cs" />

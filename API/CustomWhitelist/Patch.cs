@@ -1,4 +1,10 @@
-﻿#pragma warning disable
+﻿// -----------------------------------------------------------------------
+// <copyright file="Patch.cs" company="Mistaken">
+// Copyright (c) Mistaken. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+#pragma warning disable
 
 using HarmonyLib;
 using System;
