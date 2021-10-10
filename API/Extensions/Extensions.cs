@@ -196,8 +196,7 @@ namespace Mistaken.API.Extensions
             if (player.IsDev())
                 return true;
             else
-                Exiled.Permissions.Extensions.Permissions.CheckPermission(player, permission);
-            return false;
+                return Exiled.Permissions.Extensions.Permissions.CheckPermission(player, permission);
         }
 
         /// <summary>
