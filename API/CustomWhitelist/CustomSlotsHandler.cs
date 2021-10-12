@@ -77,6 +77,12 @@ namespace Mistaken.API.CustomSlots
         {
             this.Log.Debug("Connecting player", PluginHandler.Instance.Config.VerbouseOutput);
 
+            if (ev.ServerFull)
+            {
+                this.Log.Warn("Server is full, can't grant reserved slots");
+                return;
+            }
+
             if (ReservedSlot.Users.Contains(ev.UserId))
                 this.Log.Debug("Connecting player with static reserved slot", PluginHandler.Instance.Config.VerbouseOutput);
             if (DynamicReservedSlots.Contains(ev.UserId))
