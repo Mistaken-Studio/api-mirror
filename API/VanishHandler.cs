@@ -133,6 +133,7 @@ namespace Mistaken.API
                 foreach (var player in RealPlayers.List)
                 {
                     bool cond = player.IsHuman && player.Position.y < -1900;
+                    player.TargetGhostsHashSet.Clear();
                     foreach (var seenPlayer in Player.List)
                     {
                         if (cond && false)
