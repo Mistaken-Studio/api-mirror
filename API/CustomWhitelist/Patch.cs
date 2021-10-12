@@ -11,7 +11,7 @@ using System;
 
 namespace Mistaken.API.CustomSlots
 {
-    // [HarmonyPatch(typeof(ReservedSlot), "HasReservedSlot", new Type[] { typeof(string) })]
+    [HarmonyPatch(typeof(ReservedSlot), "HasReservedSlot", new Type[] { typeof(string) })]
     internal static class ReservedSlotPatch
     {
         internal static bool Prefix(ref bool __result, string userId)
