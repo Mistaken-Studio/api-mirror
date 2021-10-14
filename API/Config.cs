@@ -21,6 +21,10 @@ namespace Mistaken.API
         [Description("If true then debug will be displayed")]
         public bool VerbouseOutput { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether custom slots module is enabled.
+        /// </summary>
+        [Description("If true then custom slots module will be enabled")]
         public bool CustomSlotsEnabled { get; set; } = false;
 
         /// <inheritdoc/>
