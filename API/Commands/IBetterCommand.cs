@@ -231,6 +231,10 @@ namespace Mistaken.API.Commands
                     int index1 = newQuery.IndexOf("@\"") + 2;
                     int index2 = newQuery.IndexOf('"', index1 + 1);
 
+                    if (index2 == -1)
+                        break;
+
+                    bool changed = false;
                     var value = newQuery.Substring(index1, index2 - index1);
                     foreach (var player in RealPlayers.List)
                     {
@@ -238,11 +242,16 @@ namespace Mistaken.API.Commands
                         {
                             newQuery = newQuery.Replace($"@\"{value}\"", player.Id.ToString());
                             Log.Debug($"Replaced @\"{value}\" with {player.Id}", PluginHandler.Instance.Config.VerbouseOutput);
+                            changed = true;
                             break;
                         }
                     }
 
-                    Log.Debug($"Not Replaced @\"{value}\"", PluginHandler.Instance.Config.VerbouseOutput);
+                    if (!changed)
+                    {
+                        Log.Debug($"Not Replaced @\"{value}\"", PluginHandler.Instance.Config.VerbouseOutput);
+                        break;
+                    }
                 }
 
                 while (newQuery.Contains("@"))
@@ -268,7 +277,10 @@ namespace Mistaken.API.Commands
                     }
 
                     if (!changed)
+                    {
                         Log.Debug($"Not Replaced @{value}", PluginHandler.Instance.Config.VerbouseOutput);
+                        break;
+                    }
                 }
             }
 
