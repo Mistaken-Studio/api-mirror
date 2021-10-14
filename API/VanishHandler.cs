@@ -132,16 +132,9 @@ namespace Mistaken.API
                 var start = DateTime.Now;
                 foreach (var player in RealPlayers.List)
                 {
-                    bool cond = player.IsHuman && player.Position.y < -1900;
                     player.TargetGhostsHashSet.Clear();
                     foreach (var seenPlayer in Player.List)
                     {
-                        if (cond && false)
-                        {
-                            Hide(player, seenPlayer.Id);
-                            continue;
-                        }
-
                         if (Vanished.Count == 0)
                             continue;
                         if (seenPlayer == player)
