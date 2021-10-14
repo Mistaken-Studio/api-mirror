@@ -10,6 +10,7 @@ using System.Linq;
 using CommandSystem;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.API.Features.Items;
 using Mistaken.API.Extensions;
 
 namespace Mistaken.API.Commands
@@ -256,7 +257,7 @@ namespace Mistaken.API.Commands
 
                 while (newQuery.Contains("@"))
                 {
-                    int index1 = newQuery.IndexOf("@") + 2;
+                    int index1 = newQuery.IndexOf("@") + 1;
                     int index2 = newQuery.IndexOf('.', index1 + 1);
 
                     if (index2 == -1)
@@ -283,7 +284,6 @@ namespace Mistaken.API.Commands
                     }
                 }
             }
-
             response = string.Join("\n", this.Execute(sender, newQuery.Split(' ').Skip(1).ToArray(), out bool successfull));
             if (bc)
                 sender.GetPlayer().Broadcast(this.Command, 10, string.Join("\n", response));
