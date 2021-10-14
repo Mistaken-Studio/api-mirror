@@ -10,6 +10,7 @@ using System.Linq;
 using CommandSystem;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.API.Features.Items;
 using Mistaken.API.Extensions;
 
 namespace Mistaken.API.Commands
@@ -78,171 +79,211 @@ namespace Mistaken.API.Commands
             }
 
             var newQuery = argsString;
-            if (argsString.Contains("@!me"))
-                newQuery = argsString.Replace("@!me", string.Join(".", RealPlayers.List.Where(p => p.Id != playerId).Select(p => p.Id)));
-            if (argsString.Contains("@all"))
-                newQuery = argsString.Replace("@all", string.Join(".", RealPlayers.List.Select(p => p.Id)));
-            if (argsString.Contains("@team:"))
+            if (!newQuery.StartsWith("@"))
             {
-                foreach (var item in args.Where(arg => arg.StartsWith("@team:")))
+                if (argsString.Contains("@!me"))
+                    newQuery = argsString.Replace("@!me", string.Join(".", RealPlayers.List.Where(p => p.Id != playerId).Select(p => p.Id)));
+                if (argsString.Contains("@all"))
+                    newQuery = argsString.Replace("@all", string.Join(".", RealPlayers.List.Select(p => p.Id)));
+                if (argsString.Contains("@team:"))
                 {
-                    var values = item.Split(':');
-                    if (values.Length > 0)
+                    foreach (var item in args.Where(arg => arg.StartsWith("@team:")))
                     {
-                        var value = values[1];
-                        if (int.TryParse(value, out int teamId))
+                        var values = item.Split(':');
+                        if (values.Length > 0)
                         {
-                            if (teamId > -1 && teamId < 7)
+                            var value = values[1];
+                            if (int.TryParse(value, out int teamId))
                             {
-                                newQuery = argsString.Replace("@team:" + value, string.Join(".", RealPlayers.Get((Team)teamId).Select(p => p.Id)));
+                                if (teamId > -1 && teamId < 7)
+                                {
+                                    newQuery = argsString.Replace("@team:" + value, string.Join(".", RealPlayers.Get((Team)teamId).Select(p => p.Id)));
+                                }
                             }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < 7; i++)
+                            else
                             {
-                                if (((Team)i).ToString().ToLower() == value.ToLower())
-                                    newQuery = argsString.Replace("@team:" + value, string.Join(".", RealPlayers.Get((Team)i).Select(p => p.Id)));
+                                for (int i = 0; i < 7; i++)
+                                {
+                                    if (((Team)i).ToString().ToLower() == value.ToLower())
+                                        newQuery = argsString.Replace("@team:" + value, string.Join(".", RealPlayers.Get((Team)i).Select(p => p.Id)));
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (argsString.Contains("@!team:"))
-            {
-                foreach (var item in args.Where(arg => arg.StartsWith("@!team:")))
+                if (argsString.Contains("@!team:"))
                 {
-                    var values = item.Split(':');
-                    if (values.Length > 0)
+                    foreach (var item in args.Where(arg => arg.StartsWith("@!team:")))
                     {
-                        var value = values[1];
-                        if (int.TryParse(value, out int teamId))
+                        var values = item.Split(':');
+                        if (values.Length > 0)
                         {
-                            if (teamId > -1 && teamId < 7)
+                            var value = values[1];
+                            if (int.TryParse(value, out int teamId))
                             {
-                                newQuery = argsString.Replace("@!team:" + value, string.Join(".", RealPlayers.Get((Team)teamId).Select(p => p.Id)));
+                                if (teamId > -1 && teamId < 7)
+                                {
+                                    newQuery = argsString.Replace("@!team:" + value, string.Join(".", RealPlayers.Get((Team)teamId).Select(p => p.Id)));
+                                }
                             }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < 7; i++)
+                            else
                             {
-                                if (((Team)i).ToString().ToLower() == value.ToLower())
-                                    newQuery = argsString.Replace("@!team:" + value, string.Join(".", RealPlayers.Get((Team)i).Select(p => p.Id)));
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (argsString.Contains("@role:"))
-            {
-                foreach (var item in args.Where(arg => arg.StartsWith("@role:")))
-                {
-                    var values = item.Split(':');
-                    if (values.Length > 0)
-                    {
-                        var value = values[1];
-                        if (int.TryParse(value, out int roleId))
-                        {
-                            if (roleId > -1 && roleId < 18)
-                            {
-                                newQuery = argsString.Replace("@role:" + value, string.Join(".", RealPlayers.Get((RoleType)roleId).Select(p => p.Id)));
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < 18; i++)
-                            {
-                                if (((RoleType)i).ToString().ToLower() == value.ToLower())
-                                    newQuery = argsString.Replace("@role:" + value, string.Join(".", RealPlayers.Get((RoleType)i).Select(p => p.Id)));
+                                for (int i = 0; i < 7; i++)
+                                {
+                                    if (((Team)i).ToString().ToLower() == value.ToLower())
+                                        newQuery = argsString.Replace("@!team:" + value, string.Join(".", RealPlayers.Get((Team)i).Select(p => p.Id)));
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (argsString.Contains("@!role:"))
-            {
-                foreach (var item in args.Where(arg => arg.StartsWith("@!role:")))
+                if (argsString.Contains("@role:"))
                 {
-                    var values = item.Split(':');
-                    if (values.Length > 0)
+                    foreach (var item in args.Where(arg => arg.StartsWith("@role:")))
                     {
-                        var value = values[1];
-                        if (int.TryParse(value, out int roleId))
+                        var values = item.Split(':');
+                        if (values.Length > 0)
                         {
-                            if (roleId > -1 && roleId < 18)
+                            var value = values[1];
+                            if (int.TryParse(value, out int roleId))
                             {
-                                newQuery = argsString.Replace("@!role:" + value, string.Join(".", RealPlayers.List.Where(p => p.Role != (RoleType)roleId).Select(p => p.Id)));
+                                if (roleId > -1 && roleId < 18)
+                                {
+                                    newQuery = argsString.Replace("@role:" + value, string.Join(".", RealPlayers.Get((RoleType)roleId).Select(p => p.Id)));
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < 18; i++)
+                                {
+                                    if (((RoleType)i).ToString().ToLower() == value.ToLower())
+                                        newQuery = argsString.Replace("@role:" + value, string.Join(".", RealPlayers.Get((RoleType)i).Select(p => p.Id)));
+                                }
                             }
                         }
-                        else
+                    }
+                }
+
+                if (argsString.Contains("@!role:"))
+                {
+                    foreach (var item in args.Where(arg => arg.StartsWith("@!role:")))
+                    {
+                        var values = item.Split(':');
+                        if (values.Length > 0)
                         {
-                            for (int i = 0; i < 18; i++)
+                            var value = values[1];
+                            if (int.TryParse(value, out int roleId))
                             {
-                                if (((RoleType)i).ToString().ToLower() == value.ToLower())
-                                    newQuery = argsString.Replace("@!role:" + value, string.Join(".", RealPlayers.List.Where(p => p.Role != (RoleType)i).Select(p => p.Id)));
+                                if (roleId > -1 && roleId < 18)
+                                {
+                                    newQuery = argsString.Replace("@!role:" + value, string.Join(".", RealPlayers.List.Where(p => p.Role != (RoleType)roleId).Select(p => p.Id)));
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < 18; i++)
+                                {
+                                    if (((RoleType)i).ToString().ToLower() == value.ToLower())
+                                        newQuery = argsString.Replace("@!role:" + value, string.Join(".", RealPlayers.List.Where(p => p.Role != (RoleType)i).Select(p => p.Id)));
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (argsString.Contains("@zone:"))
-            {
-                foreach (var item in args.Where(arg => arg.StartsWith("@zone:")))
+                if (argsString.Contains("@zone:"))
                 {
-                    var values = item.Split(':');
-                    if (values.Length > 0)
+                    foreach (var item in args.Where(arg => arg.StartsWith("@zone:")))
                     {
-                        var value = values[1];
-                        for (int i = 0; i < 4; i++)
+                        var values = item.Split(':');
+                        if (values.Length > 0)
                         {
-                            if (((ZoneType)i).ToString().ToLower() == value.ToLower())
-                                newQuery = argsString.Replace("@zone:" + value, string.Join(".", RealPlayers.List.Where(p => p.CurrentRoom.Zone == (ZoneType)i).Select(p => p.Id)));
+                            var value = values[1];
+                            for (int i = 0; i < 4; i++)
+                            {
+                                if (((ZoneType)i).ToString().ToLower() == value.ToLower())
+                                    newQuery = argsString.Replace("@zone:" + value, string.Join(".", RealPlayers.List.Where(p => p.CurrentRoom.Zone == (ZoneType)i).Select(p => p.Id)));
+                            }
                         }
                     }
                 }
-            }
 
-            if (argsString.Contains("@!zone:"))
-            {
-                foreach (var item in args.Where(arg => arg.StartsWith("@!zone:")))
+                if (argsString.Contains("@!zone:"))
                 {
-                    var values = item.Split(':');
-                    if (values.Length > 0)
+                    foreach (var item in args.Where(arg => arg.StartsWith("@!zone:")))
                     {
-                        var value = values[1];
-                        for (int i = 0; i < 4; i++)
+                        var values = item.Split(':');
+                        if (values.Length > 0)
                         {
-                            if (((ZoneType)i).ToString().ToLower() == value.ToLower())
-                                newQuery = argsString.Replace("@!zone:" + value, string.Join(".", RealPlayers.List.Where(p => p.CurrentRoom.Zone != (ZoneType)i).Select(p => p.Id)));
+                            var value = values[1];
+                            for (int i = 0; i < 4; i++)
+                            {
+                                if (((ZoneType)i).ToString().ToLower() == value.ToLower())
+                                    newQuery = argsString.Replace("@!zone:" + value, string.Join(".", RealPlayers.List.Where(p => p.CurrentRoom.Zone != (ZoneType)i).Select(p => p.Id)));
+                            }
                         }
                     }
                 }
-            }
 
-            while (newQuery.Contains("@\""))
-            {
-                int index1 = newQuery.IndexOf("@\"") + 2;
-                int index2 = newQuery.IndexOf('"', index1 + 1);
-
-                var value = newQuery.Substring(index1, index2 - index1);
-                foreach (var player in RealPlayers.List)
+                while (newQuery.Contains("@\""))
                 {
-                    if (value == player.Nickname || value == player.DisplayNickname)
+                    int index1 = newQuery.IndexOf("@\"") + 2;
+                    int index2 = newQuery.IndexOf('"', index1 + 1);
+
+                    if (index2 == -1)
+                        break;
+
+                    bool changed = false;
+                    var value = newQuery.Substring(index1, index2 - index1);
+                    foreach (var player in RealPlayers.List)
                     {
-                        newQuery = newQuery.Replace($"@\"{value}\"", player.Id.ToString());
-                        Log.Debug($"Replaced @\"{value}\" with {player.Id}");
+                        if (value == player.Nickname || value == player.DisplayNickname)
+                        {
+                            newQuery = newQuery.Replace($"@\"{value}\"", player.Id.ToString());
+                            Log.Debug($"Replaced @\"{value}\" with {player.Id}", PluginHandler.Instance.Config.VerbouseOutput);
+                            changed = true;
+                            break;
+                        }
+                    }
+
+                    if (!changed)
+                    {
+                        Log.Debug($"Not Replaced @\"{value}\"", PluginHandler.Instance.Config.VerbouseOutput);
                         break;
                     }
                 }
 
-                Log.Debug($"Not Replaced @\"{value}\"");
-            }
+                while (newQuery.Contains("@"))
+                {
+                    int index1 = newQuery.IndexOf("@") + 1;
+                    int index2 = newQuery.IndexOf('.', index1 + 1);
 
+                    if (index2 == -1)
+                        break;
+
+                    bool changed = false;
+
+                    var value = newQuery.Substring(index1, index2 - index1);
+                    foreach (var player in RealPlayers.List)
+                    {
+                        if (value == player.Nickname || value == player.DisplayNickname)
+                        {
+                            newQuery = newQuery.Replace($"@{value}", player.Id.ToString());
+                            Log.Debug($"Replaced @{value}. with {player.Id}", PluginHandler.Instance.Config.VerbouseOutput);
+                            changed = true;
+                            break;
+                        }
+                    }
+
+                    if (!changed)
+                    {
+                        Log.Debug($"Not Replaced @{value}", PluginHandler.Instance.Config.VerbouseOutput);
+                        break;
+                    }
+                }
+            }
             response = string.Join("\n", this.Execute(sender, newQuery.Split(' ').Skip(1).ToArray(), out bool successfull));
             if (bc)
                 sender.GetPlayer().Broadcast(this.Command, 10, string.Join("\n", response));
