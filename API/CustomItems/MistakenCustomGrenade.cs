@@ -39,6 +39,10 @@ namespace Mistaken.API.CustomItems
         public abstract MistakenCustomItems CustomItem { get; }
 
         /// <inheritdoc/>
-        public override uint Id => (uint)this.CustomItem;
+        public override uint Id
+        {
+            get => (uint)this.CustomItem;
+            set => _ = value;
+        }
     }
 }

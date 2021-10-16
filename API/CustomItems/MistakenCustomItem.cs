@@ -4,6 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System;
 using Exiled.API.Features.Items;
 using Exiled.CustomItems.API.Features;
 using UnityEngine;
@@ -39,6 +40,10 @@ namespace Mistaken.API.CustomItems
         public abstract MistakenCustomItems CustomItem { get; }
 
         /// <inheritdoc/>
-        public override uint Id => (uint)this.CustomItem;
+        public override uint Id
+        {
+            get => (uint)this.CustomItem;
+            set => _ = value;
+        }
     }
 }
