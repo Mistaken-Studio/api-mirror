@@ -186,7 +186,7 @@ namespace Mistaken.API.Diagnostics
                     Log.Error(ex.StackTrace);
                 }
 
-                yield return MEC.Timing.WaitForSeconds(1);
+                yield return Timing.WaitForSeconds(1);
             }
         }
 

@@ -4,17 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Timers;
 using Exiled.API.Features;
-using MEC;
-using Mistaken.API.Diagnostics;
-using PlayableScps.Interfaces;
 using UnityEngine;
 
 namespace Mistaken.API.Shield
 {
+    /// <summary>
+    /// Scritp used to handle shield for players.
+    /// </summary>
     public abstract class Shield : MonoBehaviour
     {
         /// <summary>
@@ -34,25 +32,39 @@ namespace Mistaken.API.Shield
             return instance;
         }
 
-#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
-#pragma warning disable SA1401 // Fields should be private
-        protected bool canRegen;
-        protected float prevArtificialHpDelay;
-        protected float prevArtificialHpRatio;
-        protected int prevMaxArtificialHp;
-#pragma warning restore SA1401 // Fields should be private
-#pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+        /// <summary>
+        /// Gets a value indicating whether shield can regenerate.
+        /// </summary>
+        protected bool CanRegen { get; private set; }
 
-        protected Player Player { get; set; }
+        /// <summary>
+        /// Gets player with shield.
+        /// </summary>
+        protected Player Player { get; private set; }
 
+        /// <summary>
+        /// Gets max value of shield.
+        /// </summary>
         protected abstract int MaxShield { get; }
 
+        /// <summary>
+        /// Gets shield's recharage rate per second.
+        /// </summary>
         protected abstract float ShieldRechargeRate { get; }
 
+        /// <summary>
+        /// Gets shield effectivnes.
+        /// </summary>
         protected abstract float ShielEffectivnes { get; }
 
+        /// <summary>
+        /// Gets time that has to pass since last damage to start regerenrating shield.
+        /// </summary>
         protected abstract float TimeUntilShieldRecharge { get; }
 
+        private float prevArtificialHpDelay;
+        private float prevArtificialHpRatio;
+        private int prevMaxArtificialHp;
         private float timeUntilShieldRecharge;
 
         private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
@@ -63,7 +75,7 @@ namespace Mistaken.API.Shield
             if (!ev.IsAllowed)
                 return;
 
-            GameObject.Destroy(this);
+            Destroy(this);
         }
 
         private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
@@ -86,7 +98,7 @@ namespace Mistaken.API.Shield
             Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
             Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
 
-            this.Player.MaxArtificialHealth = this.MaxShield;
+            this.Player.MaxArtificialHealth += this.MaxShield;
             this.Player.ArtificialHealthDecay = 0;
             this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.ShielEffectivnes;
         }
@@ -105,15 +117,11 @@ namespace Mistaken.API.Shield
         {
             this.timeUntilShieldRecharge -= Time.fixedDeltaTime;
 
-            this.canRegen = this.timeUntilShieldRecharge <= 0f;
-            if (this.canRegen)
-            {
-                this.Player.ArtificialHealthDecay = -this.ShieldRechargeRate;
-            }
+            this.CanRegen = this.timeUntilShieldRecharge <= 0f;
+            if (this.CanRegen)
+                this.Player.ArtificialHealthDecay = -(this.ShieldRechargeRate * Time.fixedDeltaTime);
             else
-            {
                 this.Player.ArtificialHealthDecay = 0f;
-            }
         }
     }
 
@@ -122,24 +130,11 @@ namespace Mistaken.API.Shield
     [System.Obsolete("Use Shield script", true)]
     public class Shielded
     {
-        internal Player player { get; }
-
         public ushort MaxShield
         {
-            get
-            {
-                return this.maxShield;
-            }
-
-            set
-            {
-                if (this.player != null)
-                    this.player.MaxArtificialHealth += value - this.maxShield;
-                this.maxShield = value;
-            }
+            get => throw new System.Exception("Use Shield MonoBehaviour script");
+            set => throw new System.Exception("Use Shield MonoBehaviour script");
         }
-
-        private ushort maxShield = 0;
 
         public ushort Regeneration { get; set; }
 
@@ -147,122 +142,16 @@ namespace Mistaken.API.Shield
 
         public float ShieldEffectivnes { get; }
 
-        private readonly float originalShieldEffectivnes;
-
         public float ShieldDecay { get; set; }
-
-        private readonly float originalShieldDecay;
-
-        private readonly Timer safeTimer;
-        private bool isSafe = true;
 
         public bool IsSafe
         {
-            get
-            {
-                return this.isSafe;
-            }
-
-            private set
-            {
-                if (value)
-                    this.isSafe = true;
-                else
-                {
-                    this.safeTimer.Start();
-                    this.isSafe = false;
-                }
-            }
+            get => throw new System.Exception("Use Shield MonoBehaviour script");
         }
 
         public Shielded(Player p, ushort maxShield, ushort regeneration, float safeTime = -1, float shieldDecay = -1, float shieldEffectivnes = -1)
         {
-            Log.Debug($"Enabling shield for {p.Nickname}");
-            this.MaxShield = maxShield;
-            this.Regeneration = regeneration;
-            this.SafeTime = safeTime;
-            this.ShieldDecay = shieldDecay;
-            this.ShieldEffectivnes = shieldEffectivnes;
-            this.player = p;
-
-            this.safeTimer = new Timer(this.SafeTime * 1000);
-            this.safeTimer.Elapsed += (_, __) =>
-            {
-                this.IsSafe = true;
-                this.safeTimer.Stop();
-            };
-
-            Exiled.Events.Handlers.Player.Left += this.Player_Left;
-            Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
-            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
-
-            var ps = p.ReferenceHub.playerStats;
-            this.originalShieldDecay = ps.ArtificialHpDecay;
-            this.originalShieldEffectivnes = ps.ArtificialNormalRatio;
-            if (this.ShieldDecay != -1)
-                ps.ArtificialHpDecay = this.ShieldDecay;
-            if (this.ShieldEffectivnes != -1)
-                ps.ArtificialNormalRatio = this.ShieldEffectivnes;
-        }
-
-        private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
-        {
-            if (ev.Player.Id == this.player.Id)
-                this.Disable();
-        }
-
-        private void Player_Left(Exiled.Events.EventArgs.LeftEventArgs ev)
-        {
-            if (ev.Player.Id == this.player.Id)
-                this.Disable();
-        }
-
-        private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
-        {
-            if (ev.Target.Id == this.player.Id)
-                this.IsSafe = false;
-        }
-
-        internal void DoRegenerationCicle()
-        {
-            if (this.player.ArtificialHealth > this.MaxShield)
-            {
-                if (this.ShieldDecay != -1)
-                    this.player.ReferenceHub.playerStats.ArtificialHpDecay = this.originalShieldDecay;
-                return;
-            }
-            else
-            {
-                if (this.ShieldDecay != -1)
-                    this.player.ReferenceHub.playerStats.ArtificialHpDecay = this.ShieldDecay;
-            }
-
-            if (this.player.ArtificialHealth == this.MaxShield)
-                return;
-
-            if (this.SafeTime == -1 || !this.IsSafe)
-                return;
-            this.player.ArtificialHealth += this.Regeneration;
-            if (this.player.ArtificialHealth > this.MaxShield)
-                this.player.ArtificialHealth = this.MaxShield;
-        }
-
-        internal void Disable()
-        {
-            Log.Debug($"Disabling shield for {this.player.Nickname}");
-            Exiled.Events.Handlers.Player.Left -= this.Player_Left;
-            Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
-            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
-
-            this.player.MaxArtificialHealth = 75;
-            this.player.ArtificialHealth = 0;
-            var ps = this.player.ReferenceHub.playerStats;
-            if (this.ShieldEffectivnes != -1)
-                ps.ArtificialNormalRatio = this.originalShieldEffectivnes;
-            if (this.ShieldDecay != -1)
-                ps.ArtificialHpDecay = this.originalShieldDecay;
-
-            ShieldedManager.Shieldeds.Remove(this.player);
+            throw new System.Exception("Use Shield MonoBehaviour script");
         }
     }
 }

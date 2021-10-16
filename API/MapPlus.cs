@@ -31,12 +31,12 @@ namespace Mistaken.API
         {
             get
             {
-                return GameObject.FindObjectOfType<LureSubjectContainer>().NetworkallowContain;
+                return UnityEngine.Object.FindObjectOfType<LureSubjectContainer>().NetworkallowContain;
             }
 
             set
             {
-                GameObject.FindObjectOfType<LureSubjectContainer>().SetState(value, value);
+                UnityEngine.Object.FindObjectOfType<LureSubjectContainer>().SetState(value, value);
             }
         }
 
@@ -121,7 +121,7 @@ namespace Mistaken.API
         /// <returns>Dummy.</returns>
         public static GameObject SpawnDummy(RoleType role, Vector3 position, Quaternion rotation, Vector3 size, string name)
         {
-            GameObject obj = GameObject.Instantiate(NetworkManager.singleton.spawnPrefabs.FirstOrDefault(p => p.gameObject.name == "Player"));
+            GameObject obj = UnityEngine.Object.Instantiate(NetworkManager.singleton.spawnPrefabs.FirstOrDefault(p => p.gameObject.name == "Player"));
             CharacterClassManager ccm = obj.GetComponent<CharacterClassManager>();
             if (ccm == null)
                 Log.Error("[SPAWN DUMMY] CCM is null");

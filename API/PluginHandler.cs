@@ -46,7 +46,7 @@ namespace Mistaken.API
 
             Extensions.DoorUtils.Ini();
 
-            API.Diagnostics.Module.OnEnable(this);
+            Diagnostics.Module.OnEnable(this);
 
             base.OnEnabled();
         }
@@ -58,7 +58,7 @@ namespace Mistaken.API
 
             this.Harmony.UnpatchAll();
 
-            API.Diagnostics.Module.OnDisable(this);
+            Diagnostics.Module.OnDisable(this);
 
             base.OnDisabled();
         }

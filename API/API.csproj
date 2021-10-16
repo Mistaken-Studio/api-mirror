@@ -39,6 +39,8 @@
     <Reference Include="Exiled.API" HintPath="$(MISTAKEN_REFERENCES)\Exiled.API.dll" />
     <Reference Include="Exiled.Events" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Events.dll" />
     <Reference Include="Exiled.Permissions" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Permissions.dll" />
+    <Reference Include="Exiled.CustomRoles" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomRoles.dll" />
+    <Reference Include="Exiled.CustomItems" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomItems.dll" />
     <Reference Include="0Harmony" HintPath="$(MISTAKEN_REFERENCES)\0Harmony.dll" />
     <Reference Include="Mistaken.Updater" HintPath="$(MISTAKEN_REFERENCES)\Mistaken.Updater.dll" />
     <Reference Include="Newtonsoft.Json" HintPath="$(MISTAKEN_REFERENCES)\Newtonsoft.Json.dll" />
@@ -68,10 +70,20 @@
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="CustomWhitelist\CustomSlotsHandler.cs" />
-    <Compile Include="CustomWhitelist\Patch.cs" />
+    <Compile Include="CustomItems\Extensions.cs" />
+    <Compile Include="CustomItems\MistakenCustomGrenade.cs" />
+    <Compile Include="CustomItems\MistakenCustomWeapon.cs" />
+    <Compile Include="CustomRoles\Extensions.cs" />
+    <Compile Include="CustomRoles\MistakenCustomRole.cs" />
+    <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
+    <Compile Include="CustomSlots\Patch.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
+    <Compile Include="CustomItems\IMistakenCustomItem.cs" />
+    <Compile Include="CustomRoles\IMistakenCustomRole.cs" />
+    <Compile Include="CustomItems\MistakenCustomItem.cs" />
+    <Compile Include="CustomItems\MistakenCustomItems.cs" />
+    <Compile Include="CustomRoles\MistakenCustomRoles.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />
@@ -105,8 +117,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealPlayers.cs" />
     <Compile Include="RoundPlus.cs" />
-    <Compile Include="SessionVarType.cs" />
     <Compile Include="Extensions\SyncVar.cs" />
+    <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield.cs" />
     <Compile Include="ShieldedManager.cs" />
     <Compile Include="Utilities\Map.cs" />

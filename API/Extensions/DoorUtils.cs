@@ -71,9 +71,9 @@ namespace Mistaken.API.Extensions
         public static DoorVariant SpawnDoor(DoorType type, Vector3 position, Vector3 rotation, Vector3 size, bool shouldSpawn = true, string name = null)
         {
             DoorVariant doorVariant = UnityEngine.Object.Instantiate(GetPrefab(type), position, Quaternion.Euler(rotation));
-            GameObject.Destroy(doorVariant.GetComponent<DoorEventOpenerExtension>());
+            UnityEngine.Object.Destroy(doorVariant.GetComponent<DoorEventOpenerExtension>());
             if (doorVariant.TryGetComponent<Scp079Interactable>(out var scp079Interactable))
-                GameObject.Destroy(scp079Interactable);
+                UnityEngine.Object.Destroy(scp079Interactable);
             doorVariant.transform.localScale = size;
             if (doorVariant is BasicDoor door)
                 door._portalCode = 1;

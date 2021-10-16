@@ -17,7 +17,7 @@ namespace Mistaken.API
         /// </summary>
         public static WarheadStatus Warhead { get; } = new WarheadStatus();
 
-        /// <inheritdoc cref="Module.Module(Exiled.API.Interfaces.IPlugin{Exiled.API.Interfaces.IConfig})"/>
+        /// <inheritdoc cref="Module(Exiled.API.Interfaces.IPlugin{Exiled.API.Interfaces.IConfig})"/>
         public BetterWarheadHandler(PluginHandler p)
             : base(p)
         {
@@ -53,7 +53,7 @@ namespace Mistaken.API
         /// </summary>
         public class WarheadStatus
         {
-            /// <inheritdoc cref="Exiled.API.Features.Warhead.IsInProgress"/>
+            /// <inheritdoc cref="Warhead.IsInProgress"/>
             public bool CountingDown
             {
                 get => Exiled.API.Features.Warhead.IsInProgress;
@@ -66,7 +66,7 @@ namespace Mistaken.API
                 }
             }
 
-            /// <inheritdoc cref="Exiled.API.Features.Warhead.DetonationTimer"/>
+            /// <inheritdoc cref="Warhead.DetonationTimer"/>
             public float TimeLeft => Exiled.API.Features.Warhead.DetonationTimer;
 
             /// <summary>
@@ -89,17 +89,17 @@ namespace Mistaken.API
             /// </summary>
             public bool ButtonLock { get; set; } = false;
 
-            /// <inheritdoc cref="Exiled.API.Features.Warhead.IsKeycardActivated"/>
+            /// <inheritdoc cref="Warhead.IsKeycardActivated"/>
             public bool ButtonOpen
             {
                 get => Exiled.API.Features.Warhead.IsKeycardActivated;
                 set => Exiled.API.Features.Warhead.IsKeycardActivated = value;
             }
 
-            /// <inheritdoc cref="Exiled.API.Features.Warhead.IsDetonated"/>
+            /// <inheritdoc cref="Warhead.IsDetonated"/>
             public bool Detonated => Exiled.API.Features.Warhead.IsDetonated;
 
-            /// <inheritdoc cref="Exiled.API.Features.Warhead.LeverStatus"/>
+            /// <inheritdoc cref="Warhead.LeverStatus"/>
             public bool Enabled
             {
                 get => Exiled.API.Features.Warhead.LeverStatus;
