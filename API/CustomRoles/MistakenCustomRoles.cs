@@ -10,10 +10,10 @@ namespace Mistaken.API.CustomRoles
     /// Enum containing list of all custom roles made by Mistaken Devs.
     /// Used for storing role ids.
     /// </summary>
-    public enum MistakenCustomRoles : uint
+    public enum MistakenCustomRoles : int
     {
         /// <plugin>CustomScientists</plugin>
-        ZONE_MANAGER = 4026531840,
+        ZONE_MANAGER = 2026531840,
 
         /// <plugin>CustomScientists</plugin>
         DEPUTY_FACILITY_MANAGER,
