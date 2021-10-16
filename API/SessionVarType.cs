@@ -11,40 +11,45 @@ namespace Mistaken.API
     /// </summary>
     public enum SessionVarType
     {
-#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+        /// <plugin>.</plugin>
+        [System.Obsolete("Not used, will be removed", true)]
         RUN_SPEED,
+
+        /// <plugin>.</plugin>
+        [System.Obsolete("Not used, will be removed", true)]
         WALK_SPEED,
+
+        /// <plugin>CommandsExtender-Admin</plugin>
         TALK,
+
+        /// <plugin>Globaly used</plugin>
         ITEM_LESS_CLSSS_CHANGE,
+
+        /// <plugin>RAMod</plugin>
         HIDDEN,
+
+        /// <plugin>PrivateSystems?</plugin>
         LONG_OVERWATCH,
+
+        /// <plugin>PrivateSystems</plugin>
         NO_SPAWN_PROTECT,
+
+        /// <plugin>API</plugin>
         VANISH,
-        CI_ARMOR,
-        CI_LIGHT_ARMOR,
-        CI_HEAVY_ARMOR,
-        CI_TASER,
-        CI_SNAV,
-        CI_IMPACT,
-        CI_SCP1499,
-        CI_GRENADE_LAUNCHER,
-        CI_GUARD_COMMANDER_KEYCARD,
-        CI_STICKY_GRENADE,
-        CI_HEALGUN,
-        CC_ZONE_MANAGER_KEYCARD,
-        CC_DEPUTY_FACILITY_MANAGER_KEYCARD,
-        CC_GUARD_COMMANDER,
-        CC_ZONE_MANAGER,
-        CC_DEPUTY_FACILITY_MANAGER,
-        CC_IGNORE_CHANGE_ROLE,
-        CI_GUARD_COMMANDER_KEYCARD_OWNER,
-        CC_TAU5,
-        CC_MTF_MEDIC,
-        CC_MTF_CONTAINMENT_ENGINNER,
-        CC_MTF_EXPLOSIVES_SPECIALIST,
+
+        /// <plugin>PrivateSystems</plugin>
         PLAYER_PREFERENCES,
+
+        /// <plugin>CommandsExtender-Admin</plugin>
         ADMIN_MARK,
+
+        /// <plugin>PrivateSystems</plugin>
         SPAWN_PROTECT,
-#pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+
+        /// <summary>
+        /// Used to grant SCPs access to human voice chat
+        /// </summary>
+        /// <plugin>BetterSCP</plugin>
+        HUMAN_VC_ACCESS,
     }
 }

@@ -72,6 +72,8 @@
     <Compile Include="CustomWhitelist\Patch.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
+    <Compile Include="MistakenCustomItems.cs" />
+    <Compile Include="MistakenCustomRoles.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />

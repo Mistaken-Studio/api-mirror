@@ -7,11 +7,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CommandSystem;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Items;
 using Mistaken.API.Extensions;
+using Utils;
 
 namespace Mistaken.API.Commands
 {
@@ -227,7 +229,24 @@ namespace Mistaken.API.Commands
                     }
                 }
 
-                while (newQuery.Contains("@\""))
+                newQuery = Regex.Replace(newQuery, RAUtils.PlayerNameRegex, new MatchEvaluator((match) =>
+                {
+                    if (!match.Success)
+                        return match.Value;
+                    foreach (var player in RealPlayers.List)
+                    {
+                        if (match.Value == player.Nickname || match.Value == player.DisplayNickname)
+                        {
+                            Log.Debug($"Replaced {match.Value} with {player.Id}", PluginHandler.Instance.Config.VerbouseOutput);
+                            return player.Id.ToString();
+                        }
+                    }
+
+                    Log.Debug($"No mach found for {match.Value}", PluginHandler.Instance.Config.VerbouseOutput);
+                    return match.Value;
+                }));
+
+                /*while (newQuery.Contains("@\""))
                 {
                     int index1 = newQuery.IndexOf("@\"") + 2;
                     int index2 = newQuery.IndexOf('"', index1 + 1);
@@ -282,8 +301,9 @@ namespace Mistaken.API.Commands
                         Log.Debug($"Not Replaced @{value}", PluginHandler.Instance.Config.VerbouseOutput);
                         break;
                     }
-                }
+                }*/
             }
+
             response = string.Join("\n", this.Execute(sender, newQuery.Split(' ').Skip(1).ToArray(), out bool successfull));
             if (bc)
                 sender.GetPlayer().Broadcast(this.Command, 10, string.Join("\n", response));
