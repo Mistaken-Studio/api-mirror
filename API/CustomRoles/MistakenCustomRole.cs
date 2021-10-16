@@ -29,6 +29,10 @@ namespace Mistaken.API.CustomRoles
         public abstract MistakenCustomRoles CustomRole { get; }
 
         /// <inheritdoc/>
-        public override uint Id => (uint)this.CustomRole;
+        public override uint Id
+        {
+            get => (uint)this.CustomRole;
+            set => _ = value;
+        }
     }
 }
