@@ -10,10 +10,10 @@ namespace Mistaken.API
     /// Enum containing list of all custom items made by Mistaken Devs.
     /// Used for storing item ids.
     /// </summary>
-    public enum MistakenCustomItems
+    public enum MistakenCustomItems : uint
     {
         /// <plugin>CustomScientists</plugin>
-        ZONE_MANAGER_KEYCARD,
+        ZONE_MANAGER_KEYCARD = 4026531840,
 
         /// <plugin>CustomScientists</plugin>
         DEPUTY_FACILITY_MANAGER_KEYCARD,
