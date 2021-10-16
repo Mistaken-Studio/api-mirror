@@ -30,7 +30,7 @@ namespace Mistaken.API.Components
         {
             try
             {
-                var obj = GameObject.Instantiate(Prefab, pos, Quaternion.identity);
+                var obj = Instantiate(Prefab, pos, Quaternion.identity);
                 var component = obj.GetComponent<InRangeBall>();
                 component.onEnter = onEnter;
                 component.onExit = onExit;
@@ -40,7 +40,7 @@ namespace Mistaken.API.Components
 
                 return component;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex.Message);
                 Log.Error(ex.StackTrace);
@@ -62,7 +62,7 @@ namespace Mistaken.API.Components
         {
             try
             {
-                var obj = GameObject.Instantiate(Prefab, parrent);
+                var obj = Instantiate(Prefab, parrent);
                 obj.transform.localPosition = offset;
                 obj.transform.rotation = Quaternion.identity;
                 var component = obj.GetComponent<InRangeBall>();
@@ -74,7 +74,7 @@ namespace Mistaken.API.Components
 
                 return component;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex.Message);
                 Log.Error(ex.StackTrace);

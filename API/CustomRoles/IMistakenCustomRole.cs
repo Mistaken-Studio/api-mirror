@@ -4,7 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Mistaken.API
+using Exiled.CustomRoles.API.Features;
+
+namespace Mistaken.API.CustomRoles
 {
     /// <summary>
     /// Interace used to mark Mistaken's Custom Roles.

@@ -4,18 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+#pragma warning disable SA1119 // Statement should not use unnecessary parenthesis
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 using System;
 using System.Collections.Generic;
+using CommandSystem;
+using CommandSystem.Commands.RemoteAdmin.Doors;
 using HarmonyLib;
 using Interactables.Interobjects.DoorUtils;
-using RemoteAdmin;
 
 namespace Mistaken.API.Patches
 {
     /// <summary>
     /// Patch used to block some door from beeing opened by RA.
     /// </summary>
-    /*[HarmonyPatch(typeof(CommandProcessor), "ProcessDoorQuery", typeof(CommandSender), typeof(string), typeof(string))]
     public static class DoorPatch
     {
         /// <summary>
@@ -23,98 +26,355 @@ namespace Mistaken.API.Patches
         /// </summary>
         public static readonly HashSet<DoorVariant> IgnoredDoor = new HashSet<DoorVariant>();
 
-        private static bool Prefix(CommandSender sender, string command, string door)
+        [HarmonyPatch(typeof(CloseDoorCommand), nameof(CloseDoorCommand.Execute))]
+        private static class CloseDoor
         {
-            if (!CommandProcessor.CheckPermissions(sender, command.ToUpper(), PlayerPermissions.FacilityManagement, string.Empty, true))
-                return false;
-            if (string.IsNullOrEmpty(door))
+            private static bool Prefix(CloseDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
             {
-                sender.RaReply(command + "#Please select door first.", false, true, "DoorsManagement");
-                return false;
-            }
-
-            if (!(door == "**" || door == "*" || door == "!*"))
-                return true;
-            bool flag = false;
-            DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
-            int i = -1;
-            while (i + 1 < array.Length)
-            {
-                i++;
-                DoorVariant doorVariant = array[i];
-                if (IgnoredDoor.Contains(doorVariant))
-                    continue;
-                if (door != "**")
+                if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
                 {
-                    if (doorVariant.TryGetComponent<DoorNametagExtension>(out _))
-                    {
-                        if (door == "!*")
-                            continue;
-                    }
-                    else if (door == "*")
+                    __result = false;
+                    return false;
+                }
+
+                if (arguments.Count < 1)
+                {
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    __result = false;
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(arguments.At(0)))
+                {
+                    response = "Please select door first.";
+                    __result = false;
+                    return false;
+                }
+
+                bool flag = false;
+                string text = arguments.At(0).ToUpper();
+                DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
+                foreach (DoorVariant doorVariant in array)
+                {
+                    if (IgnoredDoor.Contains(doorVariant))
                         continue;
-                }
 
-                switch (command)
-                {
-                    case "OPEN":
-                        doorVariant.NetworkTargetState = true;
-                        break;
-                    case "CLOSE":
-                        doorVariant.NetworkTargetState = false;
-                        break;
-                    case "LOCK":
-                        doorVariant.ServerChangeLock(DoorLockReason.AdminCommand, true);
-                        break;
-                    case "UNLOCK":
-                        doorVariant.ServerChangeLock(DoorLockReason.AdminCommand, true);
-                        break;
-                    case "UNLOCKALL":
-                        doorVariant.NetworkActiveLocks = 0;
-                        break;
-                    case "DESTROY":
-                        IDamageableDoor damageableDoor;
-                        if ((damageableDoor = doorVariant as IDamageableDoor) != null)
-                            damageableDoor.ServerDamage(65535f, DoorDamageType.ServerCommand);
-                        break;
-                }
-
-                flag = true;
-            }
-
-            bool flag2 = command.EndsWith("e", StringComparison.OrdinalIgnoreCase);
-            sender.RaReply(
-                command + "#" + (flag ? string.Concat(new string[]
-                {
-                    "Door ",
-                    door,
-                    " ",
-                    command.ToLower(),
-                    flag2 ? "d." : "ed.",
-                }) : ("Can't find door " + door + ".")),
-                flag,
-                true,
-                "DoorsManagement");
-            if (flag)
-            {
-                ServerLogs.AddLog(
-                    ServerLogs.Modules.Administrative,
-                    string.Concat(new string[]
+                    if (text != "**")
                     {
-                        sender.Nickname,
-                        " ",
-                        (sender is PlayerCommandSender) ? ("(" + sender.SenderId + ") ") : string.Empty,
-                        command.ToLower(),
-                        flag2 ? "d" : "ed",
-                        " door ",
-                        door,
-                        ".",
-                    }),
-                    ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging,
-                    false);
-            }
+                        if (doorVariant.TryGetComponent(out DoorNametagExtension component))
+                        {
+                            if (text != "*" && !string.Equals(component.GetName, text, StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (text != "!*")
+                        {
+                            continue;
+                        }
+                    }
 
-            return false;
+                    IDamageableDoor damageableDoor;
+                    if ((damageableDoor = (doorVariant as IDamageableDoor)) != null && damageableDoor.IsDestroyed)
+                    {
+                        sender.Respond("ERROR: Cannot close door " + text + " because it is destroyed!");
+                        continue;
+                    }
+
+                    doorVariant.NetworkTargetState = false;
+                    flag = true;
+                }
+
+                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                if (flag)
+                {
+                    ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
+                }
+
+                response = (flag ? ("Door " + text + " " + arguments.Array[0].ToLower() + (flag2 ? "d." : "ed.")) : ("Can't find door " + text + "."));
+                __result = flag;
+                return false;
+            }
         }
-    }*/
+
+        [HarmonyPatch(typeof(OpenDoorCommand), nameof(OpenDoorCommand.Execute))]
+        private static class OpenDoor
+        {
+            private static bool Prefix(OpenDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            {
+                if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
+                {
+                    __result = false;
+                    return false;
+                }
+
+                if (arguments.Count < 1)
+                {
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    __result = false;
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(arguments.At(0)))
+                {
+                    response = "Please select door first.";
+                    __result = false;
+                    return false;
+                }
+
+                bool flag = false;
+                string text = arguments.At(0).ToUpper();
+                DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
+                foreach (DoorVariant doorVariant in array)
+                {
+                    if (IgnoredDoor.Contains(doorVariant))
+                        continue;
+
+                    if (text != "**")
+                    {
+                        if (doorVariant.TryGetComponent(out DoorNametagExtension component))
+                        {
+                            if (text != "*" && !string.Equals(component.GetName, text, StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (text != "!*")
+                        {
+                            continue;
+                        }
+                    }
+
+                    IDamageableDoor damageableDoor;
+                    if ((damageableDoor = (doorVariant as IDamageableDoor)) != null && damageableDoor.IsDestroyed)
+                    {
+                        sender.Respond("ERROR: Cannot open door " + text + " because it is destroyed!");
+                        continue;
+                    }
+
+                    doorVariant.NetworkTargetState = true;
+                    flag = true;
+                }
+
+                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                if (flag)
+                {
+                    ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
+                }
+
+                response = (flag ? ("Door " + text + " " + arguments.Array[0].ToLower() + (flag2 ? "d." : "ed.")) : ("Can't find door " + text + "."));
+
+                __result = flag;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(DestroyDoorCommand), nameof(DestroyDoorCommand.Execute))]
+        private static class DestroyDoor
+        {
+            private static bool Prefix(DestroyDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            {
+                if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
+                {
+                    __result = false;
+                    return false;
+                }
+
+                if (arguments.Count < 1)
+                {
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    __result = false;
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(arguments.At(0)))
+                {
+                    response = "Please select door first.";
+                    __result = false;
+                    return false;
+                }
+
+                bool flag = false;
+                string text = arguments.At(0).ToUpper();
+                DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
+                foreach (DoorVariant doorVariant in array)
+                {
+                    if (IgnoredDoor.Contains(doorVariant))
+                        continue;
+
+                    if (text != "**")
+                    {
+                        if (doorVariant.TryGetComponent(out DoorNametagExtension component))
+                        {
+                            if (text != "*" && !string.Equals(component.GetName, text, StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (text != "!*")
+                        {
+                            continue;
+                        }
+                    }
+
+                    IDamageableDoor damageableDoor;
+                    if ((damageableDoor = (doorVariant as IDamageableDoor)) != null && !damageableDoor.IsDestroyed)
+                    {
+                        damageableDoor.ServerDamage(65535f, DoorDamageType.ServerCommand);
+                    }
+
+                    flag = true;
+                }
+
+                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                if (flag)
+                {
+                    ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
+                }
+
+                response = (flag ? ("Door " + text + " " + arguments.Array[0].ToLower() + (flag2 ? "d." : "ed.")) : ("Can't find door " + text + "."));
+                __result = flag;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(LockDoorCommand), nameof(LockDoorCommand.Execute))]
+        private static class LockDoor
+        {
+            private static bool Prefix(LockDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            {
+                if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
+                {
+                    __result = false;
+                    return false;
+                }
+
+                if (arguments.Count < 1)
+                {
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    __result = false;
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(arguments.At(0)))
+                {
+                    response = "Please select door first.";
+                    __result = false;
+                    return false;
+                }
+
+                bool flag = false;
+                string text = arguments.At(0).ToUpper();
+                DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
+                foreach (DoorVariant doorVariant in array)
+                {
+                    if (IgnoredDoor.Contains(doorVariant))
+                        continue;
+
+                    if (text != "**")
+                    {
+                        if (doorVariant.TryGetComponent(out DoorNametagExtension component))
+                        {
+                            if (text != "*" && !string.Equals(component.GetName, text, StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (text != "!*")
+                        {
+                            continue;
+                        }
+                    }
+
+                    IDamageableDoor damageableDoor;
+                    if ((damageableDoor = (doorVariant as IDamageableDoor)) != null && damageableDoor.IsDestroyed)
+                    {
+                        sender.Respond("ERROR: Cannot lock door " + text + " because it is destroyed!");
+                        continue;
+                    }
+
+                    doorVariant.ServerChangeLock(DoorLockReason.AdminCommand, newState: true);
+                    flag = true;
+                }
+
+                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                if (flag)
+                {
+                    ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
+                }
+
+                response = (flag ? ("Door " + text + " " + arguments.Array[0].ToLower() + (flag2 ? "d." : "ed.")) : ("Can't find door " + text + "."));
+                __result = flag;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(UnlockDoorCommand), nameof(UnlockDoorCommand.Execute))]
+        private static class UnlockDoor
+        {
+            private static bool Prefix(UnlockDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            {
+                if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
+                {
+                    __result = false;
+                    return false;
+                }
+
+                if (arguments.Count < 1)
+                {
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    __result = false;
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(arguments.At(0)))
+                {
+                    response = "Please select door first.";
+                    __result = false;
+                    return false;
+                }
+
+                bool flag = false;
+                string text = arguments.At(0).ToUpper();
+                DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
+                foreach (DoorVariant doorVariant in array)
+                {
+                    if (text != "**")
+                    {
+                        if (doorVariant.TryGetComponent(out DoorNametagExtension component))
+                        {
+                            if (text != "*" && !string.Equals(component.GetName, text, StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (text != "!*")
+                        {
+                            continue;
+                        }
+                    }
+
+                    IDamageableDoor damageableDoor;
+                    if ((damageableDoor = (doorVariant as IDamageableDoor)) != null && damageableDoor.IsDestroyed)
+                    {
+                        sender.Respond("ERROR: Cannot unlock door " + text + " because it is destroyed!");
+                        continue;
+                    }
+
+                    doorVariant.ServerChangeLock(DoorLockReason.AdminCommand, newState: false);
+                    flag = true;
+                }
+
+                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                if (flag)
+                {
+                    ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
+                }
+
+                response = (flag ? ("Door " + text + " " + arguments.Array[0].ToLower() + (flag2 ? "d." : "ed.")) : ("Can't find door " + text + "."));
+                __result = flag;
+                return false;
+            }
+        }
+    }
 }

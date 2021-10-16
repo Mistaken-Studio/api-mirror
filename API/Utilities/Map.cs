@@ -117,28 +117,28 @@ namespace Mistaken.API.Utilities
                 OnlyHCZ = false;
             }
 
-            private static MEC.CoroutineHandle? handle;
+            private static CoroutineHandle? handle;
             private static bool enabled = false;
 
             private static IEnumerator<float> ExecuteBlackout()
             {
-                while (Map.Blackout.Enabled)
+                while (Enabled)
                 {
                     try
                     {
                         foreach (var item in Exiled.API.Features.Map.Rooms)
                         {
-                            if (!Map.Blackout.OnlyHCZ || item.Zone == Exiled.API.Enums.ZoneType.HeavyContainment)
-                                item.TurnOffLights(Map.Blackout.Length);
+                            if (!OnlyHCZ || item.Zone == Exiled.API.Enums.ZoneType.HeavyContainment)
+                                item.TurnOffLights(Length);
                         }
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         Log.Error(ex.Message);
                         Log.Error(ex.StackTrace);
                     }
 
-                    yield return MEC.Timing.WaitForSeconds(Map.Blackout.Delay);
+                    yield return Timing.WaitForSeconds(Delay);
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace Mistaken.API.Utilities
             }
 
             private static int ohLevel = -1;
-            private static MEC.CoroutineHandle? handle;
+            private static CoroutineHandle? handle;
 
             private static IEnumerator<float> HandleOverheat(int roundId, int proggressLevel, int startLevel)
             {
@@ -191,7 +191,7 @@ namespace Mistaken.API.Utilities
                                 "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 30 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
                                 0.15f,
                                 0.10f);
-                            yield return MEC.Timing.WaitForSeconds(300);
+                            yield return Timing.WaitForSeconds(300);
                             break;
                         }
 
@@ -214,7 +214,7 @@ namespace Mistaken.API.Utilities
                                     0.15f);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(300);
+                            yield return Timing.WaitForSeconds(300);
                             break;
                         }
 
@@ -237,7 +237,7 @@ namespace Mistaken.API.Utilities
                                     0.15f);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(300);
+                            yield return Timing.WaitForSeconds(300);
                             break;
                         }
 
@@ -260,7 +260,7 @@ namespace Mistaken.API.Utilities
                                     0.15f);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(300);
+                            yield return Timing.WaitForSeconds(300);
                             break;
                         }
 
@@ -283,7 +283,7 @@ namespace Mistaken.API.Utilities
                                     0.20f);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(300);
+                            yield return Timing.WaitForSeconds(300);
                             break;
                         }
 
@@ -306,7 +306,7 @@ namespace Mistaken.API.Utilities
                                     0.25f);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(120);
+                            yield return Timing.WaitForSeconds(120);
                             break;
                         }
 
@@ -339,7 +339,7 @@ namespace Mistaken.API.Utilities
                             foreach (var item in Exiled.API.Features.Map.Rooms)
                                 item.TurnOffLights(3000);
                             LockBlackout = true;
-                            yield return MEC.Timing.WaitForSeconds(90);
+                            yield return Timing.WaitForSeconds(90);
                             break;
                         }
 
@@ -372,7 +372,7 @@ namespace Mistaken.API.Utilities
                                     0.35f);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(30);
+                            yield return Timing.WaitForSeconds(30);
                             break;
                         }
 
@@ -390,7 +390,7 @@ namespace Mistaken.API.Utilities
                                     false);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(30);
+                            yield return Timing.WaitForSeconds(30);
                             break;
                         }
 
@@ -408,7 +408,7 @@ namespace Mistaken.API.Utilities
                                     false);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(20);
+                            yield return Timing.WaitForSeconds(20);
                             break;
                         }
 
@@ -426,7 +426,7 @@ namespace Mistaken.API.Utilities
                                     false);
                             }
 
-                            yield return MEC.Timing.WaitForSeconds(5);
+                            yield return Timing.WaitForSeconds(5);
                             break;
                         }
 
@@ -440,7 +440,7 @@ namespace Mistaken.API.Utilities
                                 yield break;
                             else
                                 Warhead.Shake();
-                            yield return MEC.Timing.WaitForSeconds(1);
+                            yield return Timing.WaitForSeconds(1);
                             break;
                         }
 
@@ -458,7 +458,7 @@ namespace Mistaken.API.Utilities
 
                             Round.IsLocked = false;
                             LockBlackout = false;
-                            Recontainer079.FindObjectOfType<Recontainer079>().BeginOvercharge();
+                            UnityEngine.Object.FindObjectOfType<Recontainer079>().BeginOvercharge();
                             break;
                         }
 
@@ -506,7 +506,7 @@ namespace Mistaken.API.Utilities
         {
             while (Cassie.IsSpeaking)
                 yield return Timing.WaitForOneFrame;
-            Exiled.API.Features.Cassie.Message("FACILITY DOOR SYSTEM REACTIVATION IN 3 . 2 . 1 . . . . . PROCEDURE SUCCESSFUL", false, true);
+            Cassie.Message("FACILITY DOOR SYSTEM REACTIVATION IN 3 . 2 . 1 . . . . . PROCEDURE SUCCESSFUL", false, true);
             yield return Timing.WaitForSeconds(8);
             CloseAllDoors();
         }

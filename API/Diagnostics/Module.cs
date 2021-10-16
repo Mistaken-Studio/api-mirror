@@ -34,7 +34,7 @@ namespace Mistaken.API.Diagnostics
                 {
                     action();
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MasterHandler.LogError(ex, null, name);
                     Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex.Message}");
@@ -61,7 +61,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <summary>
-        /// Enables all modules that has <see cref="Module.Enabled"/> set to <see langword="true"/> from specific plugin.
+        /// Enables all modules that has <see cref="Enabled"/> set to <see langword="true"/> from specific plugin.
         /// </summary>
         /// <param name="plugin">Plugin.</param>
         public static void OnEnable(IPlugin<IConfig> plugin)
@@ -74,7 +74,7 @@ namespace Mistaken.API.Diagnostics
                 {
                     item.OnEnable();
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MasterHandler.LogError(ex, item, "ENABLING");
                 }
@@ -84,7 +84,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <summary>
-        /// Disables all modules that has <see cref="Module.Enabled"/> set to <see langword="true"/> from specific plugin.
+        /// Disables all modules that has <see cref="Enabled"/> set to <see langword="true"/> from specific plugin.
         /// </summary>
         /// <param name="plugin">Plugin.</param>
         public static void OnDisable(IPlugin<IConfig> plugin)
@@ -97,7 +97,7 @@ namespace Mistaken.API.Diagnostics
                 {
                     item.OnDisable();
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MasterHandler.LogError(ex, item, "DISABLING");
                 }
@@ -107,7 +107,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <summary>
-        /// Enables all modules that has <see cref="Module.Enabled"/> set to <see langword="true"/> and <see cref="Module.IsBasic"/> set to <see langword="false"/> except from <paramref name="plugin"/>.
+        /// Enables all modules that has <see cref="Enabled"/> set to <see langword="true"/> and <see cref="IsBasic"/> set to <see langword="false"/> except from <paramref name="plugin"/>.
         /// </summary>
         /// <param name="plugin">Plugin.</param>
         public static void EnableAllExcept(IPlugin<IConfig> plugin)
@@ -122,7 +122,7 @@ namespace Mistaken.API.Diagnostics
                     {
                         item.OnEnable();
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         MasterHandler.LogError(ex, item, "ENABLING");
                     }
@@ -133,7 +133,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <summary>
-        /// Disables all modules that has <see cref="Module.Enabled"/> set to <see langword="true"/> and <see cref="Module.IsBasic"/> set to <see langword="false"/> except from <paramref name="plugin"/>.
+        /// Disables all modules that has <see cref="Enabled"/> set to <see langword="true"/> and <see cref="IsBasic"/> set to <see langword="false"/> except from <paramref name="plugin"/>.
         /// </summary>
         /// <param name="plugin">Plugin.</param>
         public static void DisableAllExcept(IPlugin<IConfig> plugin)
@@ -148,7 +148,7 @@ namespace Mistaken.API.Diagnostics
                     {
                         item.OnDisable();
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         MasterHandler.LogError(ex, item, "DISABLING");
                     }
@@ -218,7 +218,7 @@ namespace Mistaken.API.Diagnostics
                 {
                     action();
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MasterHandler.LogError(ex, this, name);
                     this.Log.Error($"[{this.Name}: {name}] {ex.Message}");

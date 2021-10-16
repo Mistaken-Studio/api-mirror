@@ -116,7 +116,7 @@ namespace Mistaken.API
                     ev.Player.Broadcast("VANISH", 10, "Ghostmode: <color=red><b>DISABLED</b></color>");
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 this.Log.Error(ex.Message);
                 this.Log.Error(ex.StackTrace);
@@ -159,7 +159,7 @@ namespace Mistaken.API
                     }
                 }
 
-                Diagnostics.MasterHandler.LogTime("VanisHandler", "IRoundStarted", start, DateTime.Now);
+                MasterHandler.LogTime("VanisHandler", "IRoundStarted", start, DateTime.Now);
             }
         }
     }

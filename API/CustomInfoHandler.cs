@@ -90,7 +90,7 @@ namespace Mistaken.API
             ToUpdate.Add(player);
         }
 
-        /// <inheritdoc cref="Module.Module(Exiled.API.Interfaces.IPlugin{Exiled.API.Interfaces.IConfig})"/>
+        /// <inheritdoc cref="Module(Exiled.API.Interfaces.IPlugin{Exiled.API.Interfaces.IConfig})"/>
         public CustomInfoHandler(PluginHandler p)
             : base(p)
         {
@@ -133,10 +133,10 @@ namespace Mistaken.API
 
         private IEnumerator<float> DoRoundLoop()
         {
-            yield return MEC.Timing.WaitForSeconds(1);
+            yield return Timing.WaitForSeconds(1);
             while (Round.IsStarted)
             {
-                yield return MEC.Timing.WaitForSeconds(2);
+                yield return Timing.WaitForSeconds(2);
                 if (ToUpdate.Count == 0)
                     continue;
                 foreach (var item in ToUpdate.ToArray())
@@ -147,7 +147,7 @@ namespace Mistaken.API
                             this.Update(item);
                         ToUpdate.Remove(item);
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         this.Log.Error(ex.Message);
                         this.Log.Error(ex.StackTrace);

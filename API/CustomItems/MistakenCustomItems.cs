@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Mistaken.API
+namespace Mistaken.API.CustomItems
 {
     /// <summary>
     /// Enum containing list of all custom items made by Mistaken Devs.

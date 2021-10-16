@@ -44,7 +44,7 @@ namespace Mistaken.API.Extensions
             return basePos;
         }
 
-        /// <inheritdoc cref="MapPlus.Broadcast(string, ushort, string, global::Broadcast.BroadcastFlags)"/>
+        /// <inheritdoc cref="MapPlus.Broadcast(string, ushort, string, Broadcast.BroadcastFlags)"/>
         public static void Broadcast(this Player me, string tag, ushort duration, string message, Broadcast.BroadcastFlags flags = global::Broadcast.BroadcastFlags.Normal)
         {
             me.Broadcast(duration, $"<color=orange>[<color=green>{tag}</color>]</color> {message}", flags);
@@ -151,7 +151,7 @@ namespace Mistaken.API.Extensions
         /// <param name="type">Session Var.</param>
         /// <param name="defaultValue">Default Value.</param>
         /// <returns>Value.</returns>
-        public static T GetSessionVar<T>(this Player me, SessionVarType type, T defaultValue = default) => me.GetSessionVar<T>(type.ToString(), defaultValue);
+        public static T GetSessionVar<T>(this Player me, SessionVarType type, T defaultValue = default) => me.GetSessionVar(type.ToString(), defaultValue);
 
         /// <summary>
         /// Returns SessionVarValue or <paramref name="defaultValue"/> if was not found.
@@ -219,7 +219,7 @@ namespace Mistaken.API.Extensions
                     if (perms.Contains(".*") || perms.Contains(permission) || perms.Contains(permission.Split('.')[0] + ".*"))
                         return true;
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     Log.Error(ex.Message);
                     Log.Error(ex.StackTrace);
@@ -309,7 +309,7 @@ namespace Mistaken.API.Extensions
         /// <param name="force">Force of throw.</param>
         /// <param name="upWardFactor">Up force of throw.</param>
         /// <returns>Thrown projectile.</returns>
-        public static ThrownProjectile Throw(this Exiled.API.Features.Items.Throwable throwable, Vector3 position, Vector3 direction, float force, float upWardFactor = 1f)
+        public static ThrownProjectile Throw(this Throwable throwable, Vector3 position, Vector3 direction, float force, float upWardFactor = 1f)
         {
             var nade = throwable.Base;
             nade._destroyTime = Time.timeSinceLevelLoad + nade._postThrownAnimationTime;
@@ -343,35 +343,7 @@ namespace Mistaken.API.Extensions
         /// <param name="position">Position to throw from.</param>
         /// <param name="direction">Direction of throw.</param>
         /// <returns>Thrown projectile.</returns>
-        public static ThrownProjectile Throw(this Exiled.API.Features.Items.Throwable throwable, Vector3 position, Vector3 direction)
+        public static ThrownProjectile Throw(this Throwable throwable, Vector3 position, Vector3 direction)
             => Throw(throwable, position, direction, throwable.Base.WeakThrowSettings.StartVelocity, throwable.Base.WeakThrowSettings.UpwardsFactor);
-
-        public static bool HasCustomRole(this Player player, MistakenCustomRoles roleType)
-        {
-            if (!CustomRole.TryGet(player, out var roles))
-                return false;
-
-            foreach (var role in roles)
-            {
-                if (!(role is IMistakenCustomRole mistakenRole))
-                    continue;
-                if (mistakenRole.CustomRole == roleType)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public static bool IsCustomItem(this Item item, MistakenCustomItems itemType)
-        {
-            if (!CustomItem.TryGet(item, out var customItem))
-                return false;
-            if (!(customItem is IMistakenCustomItem mistakenItem))
-                return false;
-            if (mistakenItem.CustomItem == itemType)
-                return true;
-
-            return false;
-        }
     }
 }

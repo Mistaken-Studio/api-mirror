@@ -108,7 +108,7 @@ namespace Mistaken.API.GUI
                         if (item.IsConnected && !ToIgnore.Contains(item))
                             this.UpdateGUI(item);
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         Log.Error(ex.Message);
                         Log.Error(ex.StackTrace);
@@ -130,7 +130,7 @@ namespace Mistaken.API.GUI
                         this.UpdateGUI(item);
                     ToUpdate.Remove(item);
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     Log.Error(ex.Message);
                     Log.Error(ex.StackTrace);

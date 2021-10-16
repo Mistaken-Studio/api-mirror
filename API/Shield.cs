@@ -75,7 +75,7 @@ namespace Mistaken.API.Shield
             if (!ev.IsAllowed)
                 return;
 
-            GameObject.Destroy(this);
+            Destroy(this);
         }
 
         private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
