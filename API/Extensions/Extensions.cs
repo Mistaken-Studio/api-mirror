@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using CommandSystem;
 using Exiled.API.Features;
+using Exiled.API.Features.Items;
+using Exiled.CustomItems.API.Features;
+using Exiled.CustomRoles.API.Features;
 using Footprinting;
 using InventorySystem.Items.Pickups;
 using InventorySystem.Items.ThrowableProjectiles;
@@ -342,5 +345,33 @@ namespace Mistaken.API.Extensions
         /// <returns>Thrown projectile.</returns>
         public static ThrownProjectile Throw(this Exiled.API.Features.Items.Throwable throwable, Vector3 position, Vector3 direction)
             => Throw(throwable, position, direction, throwable.Base.WeakThrowSettings.StartVelocity, throwable.Base.WeakThrowSettings.UpwardsFactor);
+
+        public static bool HasCustomRole(this Player player, MistakenCustomRoles roleType)
+        {
+            if (!CustomRole.TryGet(player, out var roles))
+                return false;
+
+            foreach (var role in roles)
+            {
+                if (!(role is IMistakenCustomRole mistakenRole))
+                    continue;
+                if (mistakenRole.CustomRole == roleType)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsCustomItem(this Item item, MistakenCustomItems itemType)
+        {
+            if (!CustomItem.TryGet(item, out var customItem))
+                return false;
+            if (!(customItem is IMistakenCustomItem mistakenItem))
+                return false;
+            if (mistakenItem.CustomItem == itemType)
+                return true;
+
+            return false;
+        }
     }
 }
