@@ -66,7 +66,7 @@ namespace Mistaken.API.CustomItems
 
         private void OnInternalChangingAttachments(Exiled.Events.EventArgs.ChangingAttachmentsEventArgs ev)
         {
-            if (this.TrackedSerials.Contains(ev.NewUniqueId))
+            if (this.TrackedSerials.Contains(ev.NewUniqueId) || this.TrackedSerials.Contains(ev.OldItem.Serial))
                 this.OnChangingAttachments(ev);
         }
     }
