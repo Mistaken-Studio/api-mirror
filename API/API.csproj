@@ -70,19 +70,13 @@
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="CustomItems\Extensions.cs" />
-    <Compile Include="CustomItems\MistakenCustomGrenade.cs" />
-    <Compile Include="CustomItems\MistakenCustomWeapon.cs" />
     <Compile Include="CustomRoles\Extensions.cs" />
     <Compile Include="CustomRoles\MistakenCustomRole.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
-    <Compile Include="CustomItems\IMistakenCustomItem.cs" />
     <Compile Include="CustomRoles\IMistakenCustomRole.cs" />
-    <Compile Include="CustomItems\MistakenCustomItem.cs" />
-    <Compile Include="CustomItems\MistakenCustomItems.cs" />
     <Compile Include="CustomRoles\MistakenCustomRoles.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
