@@ -61,20 +61,20 @@ namespace Mistaken.API.CustomItems
             return false;
         }
 
-        /// <inheritdoc cref="MistakenCustomItem.Get(MistakenCustomItems)"/>
+        /// <inheritdoc cref="CustomItem.Get(int)"/>
         public static CustomItem Get(this MistakenCustomItems customItem)
-            => MistakenCustomItem.Get(customItem);
+            => CustomItem.Get((int)customItem);
 
-        /// <inheritdoc cref="MistakenCustomItem.TryGet(MistakenCustomItems, out MistakenCustomItem)"/>
-        public static bool TryGet(MistakenCustomItems id, out MistakenCustomItem customItem)
-            => MistakenCustomItem.TryGet(id, out customItem);
+        /// <inheritdoc cref="CustomItem.TryGet(int, out CustomItem)"/>
+        public static bool TryGet(this MistakenCustomItems id, out CustomItem customItem)
+            => CustomItem.TryGet((int)id, out customItem);
 
-        /// <inheritdoc cref="MistakenCustomItem.TrySpawn(MistakenCustomItems, Vector3, out Pickup)"/>
-        public static bool TrySpawn(MistakenCustomItems id, Vector3 position, out Pickup spawned)
-            => MistakenCustomItem.TrySpawn(id, position, out spawned);
+        /// <inheritdoc cref="CustomItem.TrySpawn(int, Vector3, out Pickup)"/>
+        public static bool TrySpawn(this MistakenCustomItems id, Vector3 position, out Pickup spawned)
+            => CustomItem.TrySpawn((int)id, position, out spawned);
 
-        /// <inheritdoc cref="MistakenCustomItem.TryGive(Player, MistakenCustomItems, bool)"/>
-        public static bool TryGive(Player player, MistakenCustomItems id, bool displayMessage = true)
-            => MistakenCustomItem.TryGive(player, id, displayMessage);
+        /// <inheritdoc cref="CustomItem.TryGive(Player, int, bool)"/>
+        public static bool TryGive(this MistakenCustomItems id, Player player, bool displayMessage = true)
+            => CustomItem.TryGive(player, (int)id, displayMessage);
     }
 }

@@ -16,7 +16,7 @@ namespace Mistaken.API.CustomItems
     {
         /// <inheritdoc cref="CustomItem.Get(int)"/>
         public static CustomItem Get(MistakenCustomItems customItem)
-            => Get((int)customItem) as MistakenCustomItem;
+            => Get((int)customItem);
 
         /// <inheritdoc cref="CustomItem.TryGet(int, out Exiled.CustomItems.API.Features.CustomItem)"/>
         public static bool TryGet(MistakenCustomItems id, out MistakenCustomItem customItem)
