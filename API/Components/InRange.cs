@@ -121,6 +121,15 @@ namespace Mistaken.API.Components
                 return;
             foreach (var item in this.ColliderInArea.ToArray())
             {
+                try
+                {
+                    _ = item.transform.position;
+                }
+                catch
+                {
+                    this.ColliderInArea.Remove(item);
+                }
+
                 if (Vector3.Distance(item.transform.position, this.transform.position) > 100)
                 {
                     if (!this.safetyCheck.Contains(item))
