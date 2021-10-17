@@ -44,5 +44,30 @@ namespace Mistaken.API.CustomItems
             get => (uint)this.CustomItem;
             set => _ = value;
         }
+
+        /// <inheritdoc/>
+        protected override void SubscribeEvents()
+        {
+            base.SubscribeEvents();
+            Exiled.Events.Handlers.Item.ChangingAttachments += this.OnInternalChangingAttachments;
+        }
+
+        /// <inheritdoc/>
+        protected override void UnsubscribeEvents()
+        {
+            base.UnsubscribeEvents();
+            Exiled.Events.Handlers.Item.ChangingAttachments -= this.OnInternalChangingAttachments;
+        }
+
+        /// <inheritdoc cref="Exiled.Events.Handlers.Item.ChangingAttachments"/>
+        protected virtual void OnChangingAttachments(Exiled.Events.EventArgs.ChangingAttachmentsEventArgs ev)
+        {
+        }
+
+        private void OnInternalChangingAttachments(Exiled.Events.EventArgs.ChangingAttachmentsEventArgs ev)
+        {
+            if (this.TrackedSerials.Contains(ev.NewUniqueId))
+                this.OnChangingAttachments(ev);
+        }
     }
 }
