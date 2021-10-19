@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Exiled.API.Features;
 using LiteNetLib.Utils;
 using Mistaken.API.Diagnostics;
+using UnityEngine;
 
 namespace Mistaken.API.CustomSlots
 {
@@ -41,6 +42,8 @@ namespace Mistaken.API.CustomSlots
             Exiled.Events.Handlers.Server.RestartingRound += this.Handle(() => this.Server_RestartingRound(), "RoundRestart");
 
             PluginHandler.Instance.Harmony.Patch(typeof(ReservedSlot).GetMethod(nameof(ReservedSlot.HasReservedSlot)), new HarmonyLib.HarmonyMethod(typeof(ReservedSlotPatch).GetMethod(nameof(ReservedSlotPatch.Prefix))));
+
+            this.Server_RestartingRound();
         }
 
         /// <inheritdoc/>
@@ -60,11 +63,15 @@ namespace Mistaken.API.CustomSlots
 
         private static readonly HashSet<string> ConnectedDynamicSlots = new HashSet<string>();
         private static readonly HashSet<string> ConnectedReservedSlots = new HashSet<string>();
+        private static int reservedSlotsCount = 5;
 
         private void Server_RestartingRound()
         {
             ConnectedDynamicSlots.Clear();
             ConnectedReservedSlots.Clear();
+
+            reservedSlotsCount = Mathf.Max(GameCore.ConfigFile.ServerConfig.GetInt("reserved_slots", global::ReservedSlot.Users.Count), 0);
+            CustomNetworkManager.reservedSlots = 99;
         }
 
         private void Player_Left(Exiled.Events.EventArgs.LeftEventArgs ev)
@@ -107,9 +114,9 @@ namespace Mistaken.API.CustomSlots
             // Has Reserved Slot
             else if (ReservedSlot.Users.Contains(ev.UserId) || DynamicReservedSlots.Contains(ev.UserId))
             {
-                if (Mirror.LiteNetLib4Mirror.LiteNetLib4MirrorCore.Host.ConnectedPeersCount >= RealSlots + CustomNetworkManager.reservedSlots)
+                if (Mirror.LiteNetLib4Mirror.LiteNetLib4MirrorCore.Host.ConnectedPeersCount >= RealSlots + reservedSlotsCount)
                 {
-                    string reason = $"Server is full!   {Mirror.LiteNetLib4Mirror.LiteNetLib4MirrorCore.Host.ConnectedPeersCount}/{RealSlots + CustomNetworkManager.reservedSlots} (With reserved slots)";
+                    string reason = $"Server is full!   {Mirror.LiteNetLib4Mirror.LiteNetLib4MirrorCore.Host.ConnectedPeersCount}/{RealSlots + reservedSlotsCount} (With reserved slots)";
                     var writer = new NetDataWriter();
                     writer.Put((byte)10);
                     writer.Put(reason);
