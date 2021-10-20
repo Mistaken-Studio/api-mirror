@@ -44,6 +44,8 @@ namespace Mistaken.API
             new VanishHandler(this);
             new CustomSlots.CustomSlotsHandler(this);
 
+            new Utilities.UtilitiesHandler(this);
+
             Extensions.DoorUtils.Ini();
 
             Diagnostics.Module.OnEnable(this);
