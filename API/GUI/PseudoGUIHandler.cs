@@ -128,7 +128,7 @@ namespace Mistaken.API.GUI
                     {
                         try
                         {
-                            if (item.IsConnected && !ToIgnore.Contains(item))
+                            if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
                                 this.ConstructString(item);
                             ToUpdate.Remove(item);
                         }
@@ -164,7 +164,7 @@ namespace Mistaken.API.GUI
             {
                 try
                 {
-                    if (!item.IsConnected)
+                    if (!(item?.IsConnected ?? false))
                         this.constructedStrings.Remove(item);
                     else if (!ToIgnore.Contains(item))
                         this.UpdateGUI(item);
