@@ -34,6 +34,7 @@ namespace Mistaken.API
             Instance = this;
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
+            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
@@ -55,12 +56,23 @@ namespace Mistaken.API
         public override void OnDisabled()
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= this.Server_WaitingForPlayers;
+            Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
 
             this.Harmony.UnpatchAll();
 
             Diagnostics.Module.OnDisable(this);
 
             base.OnDisabled();
+        }
+
+        private void Server_RestartingRound()
+        {
+            if (ServerStatic.StopNextRound == ServerStatic.NextRoundAction.Restart)
+            {
+                Server.Host.ReferenceHub.playerStats.RpcRoundrestart((float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), true);
+                IdleMode.PauseIdleMode = true;
+                MEC.Timing.CallDelayed(1, () => Server.Restart());
+            }
         }
 
         internal static PluginHandler Instance { get; private set; }
