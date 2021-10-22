@@ -41,8 +41,6 @@ namespace Mistaken.API.CustomSlots
             Exiled.Events.Handlers.Player.Left += this.Handle<Exiled.Events.EventArgs.LeftEventArgs>((ev) => this.Player_Left(ev));
             Exiled.Events.Handlers.Server.RestartingRound += this.Handle(() => this.Server_RestartingRound(), "RoundRestart");
 
-            PluginHandler.Instance.Harmony.Patch(typeof(ReservedSlot).GetMethod(nameof(ReservedSlot.HasReservedSlot)), transpiler: new HarmonyLib.HarmonyMethod(typeof(ReservedSlotPatch).GetMethod(nameof(ReservedSlotPatch.Transpiler))));
-
             this.Server_RestartingRound();
         }
 
@@ -52,8 +50,6 @@ namespace Mistaken.API.CustomSlots
             Exiled.Events.Handlers.Player.PreAuthenticating -= this.Handle<Exiled.Events.EventArgs.PreAuthenticatingEventArgs>((ev) => this.Player_PreAuthenticating(ev));
             Exiled.Events.Handlers.Player.Left -= this.Handle<Exiled.Events.EventArgs.LeftEventArgs>((ev) => this.Player_Left(ev));
             Exiled.Events.Handlers.Server.RestartingRound -= this.Handle(() => this.Server_RestartingRound(), "RoundRestart");
-
-            PluginHandler.Instance.Harmony.Unpatch(typeof(ReservedSlot).GetMethod(nameof(ReservedSlot.HasReservedSlot)), typeof(ReservedSlotPatch).GetMethod(nameof(ReservedSlotPatch.Transpiler)));
         }
 
         internal CustomSlotsHandler(PluginHandler plugin)
@@ -87,7 +83,7 @@ namespace Mistaken.API.CustomSlots
             if (ev.ServerFull)
             {
                 this.Log.Warn("Server is full, can't grant reserved slots");
-                return;
+                //return;
             }
 
             if (ReservedSlot.Users.Contains(ev.UserId))
