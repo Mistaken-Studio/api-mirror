@@ -175,10 +175,17 @@ namespace Mistaken.API.Diagnostics
                     string path = $"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now:yyyy-MM-dd_HH}.log";
                     if (!File.Exists(path))
                         AnalizeContent($"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now.AddHours(-1):yyyy-MM-dd_HH}.log");
-                    File.AppendAllLines(path, Backlog);
-                    Backlog.Clear();
-                    File.AppendAllLines($"{Paths.Configs}/{Server.Port}/{day}/error.log", ErrorBacklog);
-                    ErrorBacklog.Clear();
+                    lock (Backlog)
+                    {
+                        File.AppendAllLines(path, Backlog);
+                        Backlog.Clear();
+                    }
+
+                    lock (ErrorBacklog)
+                    {
+                        File.AppendAllLines($"{Paths.Configs}/{Server.Port}/{day}/error.log", ErrorBacklog);
+                        ErrorBacklog.Clear();
+                    }
                 }
                 catch (System.Exception ex)
                 {
