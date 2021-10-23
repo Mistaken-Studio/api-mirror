@@ -41,6 +41,7 @@ namespace Mistaken.API
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
+            InventorySystem.InventoryItemLoader.ForceReload();
             Patches.Vars.EnableVarPatchs.Patch();
 
             new BetterWarheadHandler(this);
