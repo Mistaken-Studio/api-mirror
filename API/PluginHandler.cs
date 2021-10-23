@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Threading;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 
@@ -35,6 +36,8 @@ namespace Mistaken.API
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
             MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
+
+            Patches.TestFixPatch.MainThread = Thread.CurrentThread;
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
@@ -69,6 +72,8 @@ namespace Mistaken.API
 
         private void Server_RestartingRound()
         {
+            MapPlus.PostRoundCleanup();
+
             if (ServerStatic.StopNextRound == ServerStatic.NextRoundAction.Restart)
             {
                 Server.Host.ReferenceHub.playerStats.RpcRoundrestart((float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), true);

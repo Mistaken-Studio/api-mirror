@@ -80,6 +80,7 @@
     <Compile Include="CustomRoles\MistakenCustomRoles.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
+    <Compile Include="Patches\TestFixPatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixChainingPatch.cs" />

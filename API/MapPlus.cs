@@ -31,14 +31,29 @@ namespace Mistaken.API
         {
             get
             {
-                return UnityEngine.Object.FindObjectOfType<LureSubjectContainer>().NetworkallowContain;
+                return LureSubjectContainer.NetworkallowContain;
             }
 
             set
             {
-                UnityEngine.Object.FindObjectOfType<LureSubjectContainer>().SetState(value, value);
+                LureSubjectContainer.SetState(value, value);
             }
         }
+
+        public static LureSubjectContainer LureSubjectContainer
+        {
+            get
+            {
+                if (container == null)
+                {
+                    container = UnityEngine.Object.FindObjectOfType<LureSubjectContainer>();
+                }
+
+                return container;
+            }
+        }
+
+        private static LureSubjectContainer container;
 
         /// <summary>
         /// Gets or sets a value indicating whether if SCP 106 Containment was used.
@@ -160,6 +175,11 @@ namespace Mistaken.API
         {
             lczTime = DecontaminationEndTime - (float)LightContainmentZoneDecontamination.DecontaminationController.GetServerTime;
             return lczTime < minTimeLeft;
+        }
+
+        internal static void PostRoundCleanup()
+        {
+            container = null;
         }
     }
 }
