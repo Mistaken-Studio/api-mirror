@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
@@ -160,19 +161,22 @@ namespace Mistaken.API.GUI
         {
             if (this.constructedStrings.Count == 0)
                 return;
-            foreach (var item in this.constructedStrings.Keys.ToArray())
+            lock (this.constructedStrings)
             {
-                try
+                foreach (var item in this.constructedStrings.Keys.ToArray())
                 {
-                    if (!(item?.IsConnected ?? false))
-                        this.constructedStrings.Remove(item);
-                    else if (!ToIgnore.Contains(item))
-                        this.UpdateGUI(item);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    try
+                    {
+                        if (!(item?.IsConnected ?? false))
+                            this.constructedStrings.Remove(item);
+                        else if (!ToIgnore.Contains(item))
+                            this.UpdateGUI(item);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex.Message);
+                        Log.Error(ex.StackTrace);
+                    }
                 }
             }
         }
