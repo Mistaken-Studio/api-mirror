@@ -73,6 +73,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
+    <Compile Include="DoorPermissionsHandler.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
