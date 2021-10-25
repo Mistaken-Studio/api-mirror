@@ -51,5 +51,8 @@ namespace Mistaken.API
         /// </summary>
         /// <plugin>BetterSCP</plugin>
         HUMAN_VC_ACCESS,
+
+        /// <plugin>API.CustomItems</plugin>
+        BUILTIN_DOOR_ACCESS,
     }
 }
