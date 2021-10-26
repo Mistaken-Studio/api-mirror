@@ -65,7 +65,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="action">Handler.</param>
         /// <param name="name">Handler Name.</param>
         /// <returns>Event Handler.</returns>
-        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, call directly event")]
+        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, subscribe event directly")]
         public static Exiled.Events.Events.CustomEventHandler Handle(this Module module, Action action, string name)
         {
             if (!Handlers.ContainsKey(module))
@@ -86,7 +86,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="module">Modue.</param>
         /// <param name="action">Handler.</param>
         /// <returns>Event Handler.</returns>
-        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, call directly event")]
+        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, subscribe event directly")]
         public static Exiled.Events.Events.CustomEventHandler<T> Handle<T>(this Module module, Action<T> action)
             where T : EventArgs
             => Generic<T>.Handle(module, action);

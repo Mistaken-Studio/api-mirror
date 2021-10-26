@@ -17,7 +17,7 @@ namespace Mistaken.API.Diagnostics
             [System.Obsolete("Will removed because of change in Handlers")]
             public static readonly Dictionary<Module, Dictionary<string, Exiled.Events.Events.CustomEventHandler<T>>> TypedHandlers = new Dictionary<Module, Dictionary<string, Exiled.Events.Events.CustomEventHandler<T>>>();
 
-            [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, call directly event")]
+            [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, subscribe event directly")]
             public static Exiled.Events.Events.CustomEventHandler<T> Handle(Module module, Action<T> action)
             {
                 if (!TypedHandlers.ContainsKey(module))
