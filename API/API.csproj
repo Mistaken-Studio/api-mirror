@@ -69,7 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
-    <Compile Include="Components\OpenDoorWithItemComponent.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CustomRoles\Extensions.cs" />
     <Compile Include="CustomRoles\MistakenCustomRole.cs" />
@@ -86,8 +85,6 @@
     <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixChainingPatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixInRangePatch.cs" />
-    <Compile Include="Patches\KeycardProcessCollisionPatch.cs" />
-    <Compile Include="Patches\ForceReloadPatch.cs" />
     <Compile Include="Patches\Vars\BypassPatch.cs" />
     <Compile Include="Patches\Vars\EnableVarPatchs.cs" />
     <Compile Include="Patches\Vars\GodModePatch.cs" />
