@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
 
@@ -21,12 +23,19 @@ namespace Mistaken.API.Diagnostics
         /// <summary>
         /// Handlers bound to Module.
         /// </summary>
+        [System.Obsolete("Will removed because of change in Handlers")]
         public static readonly Dictionary<Module, Dictionary<string, Exiled.Events.Events.CustomEventHandler>> Handlers = new Dictionary<Module, Dictionary<string, Exiled.Events.Events.CustomEventHandler>>();
+
+        /// <inheritdoc cref="OnErrorCatched"/>
+        [System.Obsolete("Use OnErrorCatched", true)]
+#pragma warning disable CS0067
+        public static event Action<System.Exception, Module, string> OnError;
+#pragma warning restore CS0067
 
         /// <summary>
         /// Called when module throws error when handling event.
         /// </summary>
-        public static event Action<System.Exception, Module, string> OnError;
+        public static event Action<System.Exception, string> OnErrorCatched;
 
         /// <summary>
         /// Logs Error.
@@ -36,9 +45,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="name">Catching function name.</param>
         public static void LogError(System.Exception ex, Module module, string name)
         {
-            ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module?.Name ?? "Rouge"}: {name}] Caused Exception");
-            ErrorBacklog.Add(ex.Message);
-            ErrorBacklog.Add(ex.StackTrace);
+            LogError(ex, $"{module?.Name ?? "Rouge"}: {name}");
             if (!CI_TEST_SERVER_PORTS.Contains(Server.Port))
                 return;
             CurrentStatus.StatusCode = 1;
@@ -58,42 +65,18 @@ namespace Mistaken.API.Diagnostics
         /// <param name="action">Handler.</param>
         /// <param name="name">Handler Name.</param>
         /// <returns>Event Handler.</returns>
+        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, call directly event")]
         public static Exiled.Events.Events.CustomEventHandler Handle(this Module module, Action action, string name)
         {
             if (!Handlers.ContainsKey(module))
                 Handlers[module] = new Dictionary<string, Exiled.Events.Events.CustomEventHandler>();
             if (Handlers[module].ContainsKey(name))
                 return Handlers[module][name];
-            DateTime start;
-            DateTime end;
-            TimeSpan diff;
-            void Tor()
-            {
-                start = DateTime.Now;
-                try
-                {
-                    action();
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error($"[{DateTime.Now:HH:mm:ss.fff}] [{module.Name}: {name}] Caused Exception");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
-                    LogError(ex, module, name);
 
-                    // ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module.Name}: {name}] Caused Exception");
-                    // ErrorBacklog.Add(ex.Message);
-                    // ErrorBacklog.Add(ex.StackTrace);
-                    OnError?.Invoke(ex, module, name);
-                }
+            Exiled.Events.Events.CustomEventHandler tor = new Exiled.Events.Events.CustomEventHandler(action);
 
-                end = DateTime.Now;
-                diff = end - start;
-                Backlog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{module.Name}: {name}] {diff.TotalMilliseconds}");
-            }
-
-            Handlers[module][name] = Tor;
-            return Tor;
+            Handlers[module][name] = tor;
+            return tor;
         }
 
         /// <summary>
@@ -103,6 +86,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="module">Modue.</param>
         /// <param name="action">Handler.</param>
         /// <returns>Event Handler.</returns>
+        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, call directly event")]
         public static Exiled.Events.Events.CustomEventHandler<T> Handle<T>(this Module module, Action<T> action)
             where T : EventArgs
             => Generic<T>.Handle(module, action);
@@ -115,9 +99,20 @@ namespace Mistaken.API.Diagnostics
         /// <param name="start">Handling start time.</param>
         /// <param name="end">Handling end time.</param>
         public static void LogTime(string moduleName, string name, DateTime start, DateTime end) =>
-            Backlog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{moduleName}: {name}] {(end - start).TotalMilliseconds}");
+            LogTime(moduleName + ": " + name, (end - start).TotalMilliseconds);
 
         internal static Status CurrentStatus { get; set; } = new Status();
+
+        internal static void LogError(System.Exception ex, string method)
+        {
+            ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{method}] Caused Exception");
+            ErrorBacklog.Add(ex.ToString());
+
+            OnErrorCatched?.Invoke(ex, method);
+        }
+
+        internal static void LogTime(string name, double time) =>
+            Backlog.Add(new Entry(name, time));
 
         internal static void Ini()
         {
@@ -130,70 +125,81 @@ namespace Mistaken.API.Diagnostics
                 File.WriteAllText(Path.Combine(Paths.Exiled, "RunResult.txt"), Newtonsoft.Json.JsonConvert.SerializeObject(CurrentStatus));
             }
 
-            Timing.RunCoroutine(SaveLoop());
+            _ = SaveLoop();
             initiated = true;
         }
 
-        private static readonly List<string> Backlog = new List<string>();
+        private static readonly List<Entry> Backlog = new List<Entry>();
         private static readonly List<string> ErrorBacklog = new List<string>();
         private static readonly ushort[] CI_TEST_SERVER_PORTS = new ushort[] { 8050, 8008 };
         private static bool initiated = false;
 
-        private static IEnumerator<float> SaveLoop()
+        private static async Task SaveLoop()
         {
+            string path = Path.Combine(Paths.Configs, Server.Port.ToString());
+
             Log.Debug($"Starting Loop", PluginHandler.Instance.Config.VerbouseOutput);
-            if (!Directory.Exists($"{Paths.Configs}/{Server.Port}/"))
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory($"{Paths.Configs}/{Server.Port}/");
-                Log.Debug($"{Paths.Configs}/{Server.Port}/ Created", PluginHandler.Instance.Config.VerbouseOutput);
+                Directory.CreateDirectory(path);
+                Log.Debug($"{path} Created", PluginHandler.Instance.Config.VerbouseOutput);
             }
             else
             {
-                Log.Debug($"{Paths.Configs}/{Server.Port}/ Exists", PluginHandler.Instance.Config.VerbouseOutput);
+                Log.Debug($"{path} Exists", PluginHandler.Instance.Config.VerbouseOutput);
             }
 
-            string lastDay = DateTime.Now.ToString("yyyy-MM-dd");
+            DateTime now = DateTime.Now;
+
+            string lastDay = now.ToString("yyyy-MM-dd");
             string day;
             while (true)
             {
                 try
                 {
-                    day = DateTime.Now.ToString("yyyy-MM-dd");
+                    day = now.ToString("yyyy-MM-dd");
                     if (lastDay != day)
                     {
-                        Compress($"{Paths.Configs}/{Server.Port}/{lastDay}");
+                        Compress(Path.Combine(path, lastDay));
                         lastDay = day;
                     }
 
-                    if (!Directory.Exists($"{Paths.Configs}/{Server.Port}/{day}/"))
+                    path = Path.Combine(path, day);
+
+                    if (!Directory.Exists(path))
                     {
-                        Directory.CreateDirectory($"{Paths.Configs}/{Server.Port}/{day}/");
-                        Log.Debug($"Created {Paths.Configs}/{Server.Port}/{day}/", PluginHandler.Instance.Config.VerbouseOutput);
+                        Directory.CreateDirectory(path);
+                        Log.Debug($"Created {path}", PluginHandler.Instance.Config.VerbouseOutput);
                     }
 
                     // Log.Debug($"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now.ToString("yyyy-MM-dd_HH")}.log");
-                    string path = $"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now:yyyy-MM-dd_HH}.log";
-                    if (!File.Exists(path))
-                        AnalizeContent($"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now.AddHours(-1):yyyy-MM-dd_HH}.log");
+                    string filePath = Path.Combine(path, $"{now:yyyy-MM-dd_HH}.log");
+                    if (!File.Exists(filePath))
+                    {
+                        if (now.Hour == 0)
+                            Analizer.AnalizeContent(Path.Combine(path, $"{now.AddDays(-1):yyyy-MM-dd_23}.log"));
+                        else
+                            Analizer.AnalizeContent(Path.Combine(path, $"{now.AddHours(-1):yyyy-MM-dd_HH}.log"));
+                    }
+
                     lock (Backlog)
                     {
-                        File.AppendAllLines(path, Backlog);
+                        File.AppendAllLines(path, Backlog.Select(x => x.ToString()));
                         Backlog.Clear();
                     }
 
                     lock (ErrorBacklog)
                     {
-                        File.AppendAllLines($"{Paths.Configs}/{Server.Port}/{day}/error.log", ErrorBacklog);
+                        File.AppendAllLines(Path.Combine(path, "error.log"), ErrorBacklog);
                         ErrorBacklog.Clear();
                     }
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    Log.Error(ex);
                 }
 
-                yield return Timing.WaitForSeconds(1);
+                await Task.Delay(1000);
             }
         }
 
@@ -207,88 +213,8 @@ namespace Mistaken.API.Diagnostics
             catch (System.Exception ex)
             {
                 Log.Error("Failed to compress");
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
+                Log.Error(ex);
             }
-        }
-
-        private static void AnalizeContent(string file)
-        {
-            if (!File.Exists(file))
-                return;
-            var result = AnalizeContent(File.ReadAllLines(file), DateTime.Now.AddHours(-1));
-            File.WriteAllText(Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + ".analized.raw.log"), Newtonsoft.Json.JsonConvert.SerializeObject(result));
-            File.Delete(file);
-        }
-
-        private static Dictionary<string, Data> AnalizeContent(string[] lines, DateTime dateTime)
-        {
-            Dictionary<string, List<(float Took, DateTime Time)>> times = new Dictionary<string, List<(float Took, DateTime Time)>>();
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-                string[] data = line.Replace("[", string.Empty).Split(']');
-                string[] date = data[0].Split(':');
-                var time = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, int.Parse(date[0]), int.Parse(date[1]), int.Parse(date[2].Split('.')[0]), int.Parse(date[2].Split('.')[1]));
-                string executor = string.Join(".", data[1].Trim().Replace(" ", string.Empty).Split(new string[] { ":" }, StringSplitOptions.None));
-                data[2] = data[2].Replace(".", ",");
-                float timeTook = float.Parse(data[2]);
-                if (!times.ContainsKey(executor))
-                    times.Add(executor, new List<(float Took, DateTime Time)>());
-                times[executor].Add((timeTook, time));
-            }
-
-            Dictionary<string, Data> proccesedData = new Dictionary<string, Data>();
-            foreach (var time in times)
-            {
-                float min = float.MaxValue;
-                float max = 0;
-                float avg = 0;
-                Dictionary<string, int> calls = new Dictionary<string, int>();
-                foreach (var (took, time1) in time.Value)
-                {
-                    avg += took;
-                    if (max < took)
-                        max = took;
-                    if (min > took)
-                        min = took;
-                    string stringTime = time1.ToString("yyyy-MM-dd HH-mm");
-                    if (!calls.ContainsKey(stringTime))
-                        calls.Add(stringTime, 0);
-                    calls[stringTime]++;
-                }
-
-                float avgCalls = 0;
-                foreach (var item in calls)
-                    avgCalls += item.Value;
-                avgCalls /= calls.Values.Count;
-                avg /= time.Value.Count;
-                var info = (avg, time.Value.Count, min, max, avgCalls);
-                proccesedData.Add(time.Key, new Data(info));
-            }
-
-            return proccesedData;
-        }
-
-        private class Data
-        {
-            public Data((float Avg, int Calls, float Min, float Max, float AvgCallsPerMinute) info)
-            {
-                this.avg = info.Avg;
-                this.calls = info.Calls;
-                this.min = info.Min;
-                this.max = info.Max;
-                this.avgCallsPerMinute = info.AvgCallsPerMinute;
-            }
-
-#pragma warning disable IDE0052 // Usuń nieodczytywane składowe prywatne
-            private readonly float avg;
-            private readonly int calls;
-            private readonly float min;
-            private readonly float max;
-            private readonly float avgCallsPerMinute;
-#pragma warning restore IDE0052 // Usuń nieodczytywane składowe prywatne
         }
     }
 }

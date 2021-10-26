@@ -12,6 +12,7 @@ using Exiled.API.Features;
 using Exiled.API.Features.Items;
 using InventorySystem;
 using InventorySystem.Items;
+using InventorySystem.Items.Pickups;
 using Mirror;
 using NorthwoodLib.Pools;
 using RemoteAdmin;
@@ -29,46 +30,31 @@ namespace Mistaken.API
         /// </summary>
         public static bool Lured
         {
-            get
-            {
-                return LureSubjectContainer.NetworkallowContain;
-            }
-
-            set
-            {
-                LureSubjectContainer.SetState(value, value);
-            }
+            get => LureSubjectContainer.NetworkallowContain;
+            set => LureSubjectContainer.SetState(value, value);
         }
 
+        /// <summary>
+        /// Gets instance of <see cref="global::LureSubjectContainer"/>.
+        /// </summary>
         public static LureSubjectContainer LureSubjectContainer
         {
             get
             {
                 if (container == null)
-                {
                     container = UnityEngine.Object.FindObjectOfType<LureSubjectContainer>();
-                }
 
                 return container;
             }
         }
-
-        private static LureSubjectContainer container;
 
         /// <summary>
         /// Gets or sets a value indicating whether if SCP 106 Containment was used.
         /// </summary>
         public static bool FemurBreaked
         {
-            get
-            {
-                return OneOhSixContainer.used;
-            }
-
-            set
-            {
-                OneOhSixContainer.used = value;
-            }
+            get => OneOhSixContainer.used;
+            set => OneOhSixContainer.used = value;
         }
 
         /// <summary>
@@ -76,11 +62,9 @@ namespace Mistaken.API
         /// </summary>
         public static float DecontaminationEndTime
         {
-            get
-            {
-                var lastPhase = LightContainmentZoneDecontamination.DecontaminationController.Singleton.DecontaminationPhases.First(i => i.Function == LightContainmentZoneDecontamination.DecontaminationController.DecontaminationPhase.PhaseFunction.Final);
-                return (float)lastPhase.TimeTrigger;
-            }
+            get => LightContainmentZoneDecontamination.DecontaminationController.Singleton.DecontaminationPhases
+                .First(i => i.Function == LightContainmentZoneDecontamination.DecontaminationController.DecontaminationPhase.PhaseFunction.Final)
+                .TimeTrigger;
         }
 
         /// <summary>
@@ -110,20 +94,12 @@ namespace Mistaken.API
         /// <param name="rotation">Spawn rotation.</param>
         /// <param name="size">Pickup size.</param>
         /// <returns>Spawned object.</returns>
-        public static ItemBase Spawn(ItemType item, Vector3 position, Quaternion rotation, Vector3 size)
-        {
-            var inv = Server.Host.Inventory;
-            if (!InventoryItemLoader.AvailableItems.TryGetValue(item, out ItemBase value))
-                return null;
-
-            ItemBase itemBase = UnityEngine.Object.Instantiate(value, inv._itemWorkspace);
-            itemBase.transform.localPosition = Vector3.zero;
-            itemBase.transform.localRotation = Quaternion.identity;
-            var originalScale = itemBase.transform.localScale;
-            itemBase.transform.localScale = new Vector3(size.x * originalScale.x, size.y * originalScale.y, size.z * originalScale.z);
-            itemBase.Owner = Server.Host.ReferenceHub;
-            return itemBase;
-        }
+        [System.Obsolete("Use new Exiled.API.Features.Items.Item(item).Spawn(position, rotation)", true)]
+        public static ItemPickupBase Spawn(ItemType item, Vector3 position, Quaternion rotation, Vector3 size)
+            => new Item(item)
+            {
+                Scale = size,
+            }.Spawn(position, rotation).Base;
 
         /// <summary>
         /// Spawns dummy.
@@ -160,10 +136,7 @@ namespace Mistaken.API
         /// <param name="minTimeLeft">Offset.</param>
         /// <returns>If LCZ is Decontaminated.</returns>
         public static bool IsLCZDecontaminated(float minTimeLeft = 0)
-        {
-            var lczTime = DecontaminationEndTime - (float)LightContainmentZoneDecontamination.DecontaminationController.GetServerTime;
-            return lczTime < minTimeLeft;
-        }
+            => IsLCZDecontaminated(out _, minTimeLeft);
 
         /// <summary>
         /// If LCZ was decontaminated with out param.
@@ -181,5 +154,7 @@ namespace Mistaken.API
         {
             container = null;
         }
+
+        private static LureSubjectContainer container;
     }
 }

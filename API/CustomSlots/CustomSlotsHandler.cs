@@ -83,7 +83,8 @@ namespace Mistaken.API.CustomSlots
             if (ev.ServerFull)
             {
                 this.Log.Warn("Server is full, can't grant reserved slots");
-                //return;
+
+                // return;
             }
 
             if (ReservedSlot.Users.Contains(ev.UserId))

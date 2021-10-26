@@ -75,6 +75,11 @@
     <Compile Include="CustomRoles\MistakenCustomRole.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
+    <Compile Include="Diagnostics\Analizer.cs" />
+    <Compile Include="Diagnostics\MasterHandler.Entry.cs" />
+    <Compile Include="Diagnostics\Patches\GenericInvokeSafelyPatch.cs" />
+    <Compile Include="Diagnostics\Patches\InvokeSafelyPatch.cs" />
+    <Compile Include="Diagnostics\Patches\Utilities.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="CustomRoles\IMistakenCustomRole.cs" />
@@ -99,7 +104,7 @@
     <Compile Include="BetterWarheadHandler.cs" />
     <Compile Include="CustomInfoHandler.cs" />
     <Compile Include="Diagnostics\Exception.cs" />
-    <Compile Include="Diagnostics\Generic.cs" />
+    <Compile Include="Diagnostics\MasterHandler.Generic.cs" />
     <Compile Include="Diagnostics\MasterHandler.cs" />
     <Compile Include="Diagnostics\ModuleLogger.cs" />
     <Compile Include="Diagnostics\Status.cs" />
