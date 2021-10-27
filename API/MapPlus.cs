@@ -40,14 +40,15 @@ namespace Mistaken.API
             }
         }
 
+        /// <summary>
+        /// Gets <see cref="global::LureSubjectContainer"/> instance.
+        /// </summary>
         public static LureSubjectContainer LureSubjectContainer
         {
             get
             {
                 if (container == null)
-                {
                     container = UnityEngine.Object.FindObjectOfType<LureSubjectContainer>();
-                }
 
                 return container;
             }

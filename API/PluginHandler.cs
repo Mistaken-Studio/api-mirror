@@ -70,6 +70,16 @@ namespace Mistaken.API
             base.OnDisabled();
         }
 
+        internal static PluginHandler Instance { get; private set; }
+
+        internal HarmonyLib.Harmony Harmony { get; private set; }
+
+        private void Server_WaitingForPlayers()
+        {
+            GUI.PseudoGUIHandler.Ini();
+            RoundPlus.IncRoundId();
+        }
+
         private void Server_RestartingRound()
         {
             MapPlus.PostRoundCleanup();
@@ -80,16 +90,6 @@ namespace Mistaken.API
                 IdleMode.PauseIdleMode = true;
                 MEC.Timing.CallDelayed(1, () => Server.Restart());
             }
-        }
-
-        internal static PluginHandler Instance { get; private set; }
-
-        internal HarmonyLib.Harmony Harmony { get; private set; }
-
-        private void Server_WaitingForPlayers()
-        {
-            GUI.PseudoGUIHandler.Ini();
-            RoundPlus.IncRoundId();
         }
     }
 }
