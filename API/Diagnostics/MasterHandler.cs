@@ -46,7 +46,7 @@ namespace Mistaken.API.Diagnostics
         public static void LogError(System.Exception ex, Module module, string name)
         {
             LogError(ex, $"{module?.Name ?? "Rouge"}: {name}");
-            if (!CI_TEST_SERVER_PORTS.Contains(Server.Port))
+            if (!PluginHandler.Instance.Config.GenerateRunResultFile)
                 return;
             CurrentStatus.StatusCode = 1;
             CurrentStatus.Exceptions.Add(new Exception
@@ -119,7 +119,7 @@ namespace Mistaken.API.Diagnostics
             Log.Debug($"Called Ini", PluginHandler.Instance.Config.VerbouseOutput);
             if (initiated)
                 return;
-            if (CI_TEST_SERVER_PORTS.Contains(Server.Port))
+            if (PluginHandler.Instance.Config.GenerateRunResultFile)
             {
                 CurrentStatus = new Status();
                 File.WriteAllText(Path.Combine(Paths.Exiled, "RunResult.txt"), Newtonsoft.Json.JsonConvert.SerializeObject(CurrentStatus));
@@ -131,7 +131,6 @@ namespace Mistaken.API.Diagnostics
 
         private static readonly List<Entry> Backlog = new List<Entry>();
         private static readonly List<string> ErrorBacklog = new List<string>();
-        private static readonly ushort[] CI_TEST_SERVER_PORTS = new ushort[] { 8050, 8008 };
         private static bool initiated = false;
 
         private static async Task SaveLoop()
@@ -153,44 +152,46 @@ namespace Mistaken.API.Diagnostics
 
             string lastDay = now.ToString("yyyy-MM-dd");
             string day;
+            string internalPath;
             while (true)
             {
+                internalPath = path;
                 try
                 {
                     day = now.ToString("yyyy-MM-dd");
                     if (lastDay != day)
                     {
-                        Compress(Path.Combine(path, lastDay));
+                        Compress(Path.Combine(internalPath, lastDay));
                         lastDay = day;
                     }
 
-                    path = Path.Combine(path, day);
+                    internalPath = Path.Combine(internalPath, day);
 
-                    if (!Directory.Exists(path))
+                    if (!Directory.Exists(internalPath))
                     {
-                        Directory.CreateDirectory(path);
-                        Log.Debug($"Created {path}", PluginHandler.Instance.Config.VerbouseOutput);
+                        Directory.CreateDirectory(internalPath);
+                        Log.Debug($"Created {internalPath}", PluginHandler.Instance.Config.VerbouseOutput);
                     }
 
                     // Log.Debug($"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now.ToString("yyyy-MM-dd_HH")}.log");
-                    string filePath = Path.Combine(path, $"{now:yyyy-MM-dd_HH}.log");
+                    string filePath = Path.Combine(internalPath, $"{now:yyyy-MM-dd_HH}.log");
                     if (!File.Exists(filePath))
                     {
                         if (now.Hour == 0)
-                            Analizer.AnalizeContent(Path.Combine(path, $"{now.AddDays(-1):yyyy-MM-dd_23}.log"));
+                            Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddDays(-1):yyyy-MM-dd_23}.log"));
                         else
-                            Analizer.AnalizeContent(Path.Combine(path, $"{now.AddHours(-1):yyyy-MM-dd_HH}.log"));
+                            Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddHours(-1):yyyy-MM-dd_HH}.log"));
                     }
 
                     lock (Backlog)
                     {
-                        File.AppendAllLines(path, Backlog.Select(x => x.ToString()));
+                        File.AppendAllLines(internalPath, Backlog.Select(x => x.ToString()));
                         Backlog.Clear();
                     }
 
                     lock (ErrorBacklog)
                     {
-                        File.AppendAllLines(Path.Combine(path, "error.log"), ErrorBacklog);
+                        File.AppendAllLines(Path.Combine(internalPath, "error.log"), ErrorBacklog);
                         ErrorBacklog.Clear();
                     }
                 }
