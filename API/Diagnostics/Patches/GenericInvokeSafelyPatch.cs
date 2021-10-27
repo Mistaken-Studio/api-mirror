@@ -5,13 +5,21 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 
 namespace Mistaken.API.Diagnostics.Patches
 {
-    [HarmonyPatch(typeof(Exiled.Events.Extensions.Event), nameof(Exiled.Events.Extensions.Event.InvokeSafely), typeof(Exiled.Events.Events.CustomEventHandler<>))]
+    // [HarmonyPatch(typeof(Exiled.Events.Extensions.Event), nameof(Exiled.Events.Extensions.Event.InvokeSafely), typeof(Exiled.Events.Events.CustomEventHandler<>))]
+    [HarmonyPatch]
     internal static class GenericInvokeSafelyPatch
     {
+        private static MethodBase TargetMethod()
+        {
+            return typeof(Exiled.Events.Extensions.Event).GetMethods().First(x => x.Name == nameof(Exiled.Events.Extensions.Event.InvokeSafely) && x.IsGenericMethod);
+        }
+
         private static bool Prefix<T>(Exiled.Events.Events.CustomEventHandler<T> ev, T arg)
             where T : EventArgs
         {
