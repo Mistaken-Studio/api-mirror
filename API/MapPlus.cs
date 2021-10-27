@@ -68,6 +68,30 @@ namespace Mistaken.API
         }
 
         /// <summary>
+        /// Gets a value indicating whether SCP079's recontainment is in proggres.
+        /// </summary>
+        public static bool IsSCP079ReadyForRecontainment => SCP079Recontainer._prevEngaged == 3;
+
+        /// <summary>
+        /// Gets a value indicating whether SCP079 recontainment has finished.
+        /// </summary>
+        public static bool IsSCP079Recontained => SCP079Recontainer._alreadyRecontained;
+
+        /// <summary>
+        /// Gets <see cref="Recontainer079"/> instance.
+        /// </summary>
+        public static Recontainer079 SCP079Recontainer
+        {
+            get
+            {
+                if (recontainer == null)
+                    recontainer = GameObject.FindObjectOfType<Recontainer079>();
+
+                return recontainer;
+            }
+        }
+
+        /// <summary>
         /// Send Broadcast.
         /// </summary>
         /// <param name="tag">Tag.</param>
@@ -153,8 +177,10 @@ namespace Mistaken.API
         internal static void PostRoundCleanup()
         {
             container = null;
+            recontainer = null;
         }
 
+        private static Recontainer079 recontainer;
         private static LureSubjectContainer container;
     }
 }
