@@ -135,9 +135,20 @@ namespace Mistaken.API.Diagnostics
 
         private static async Task SaveLoop()
         {
-            string path = Path.Combine(Paths.Configs, Server.Port.ToString());
+            string path = Path.Combine(Paths.Plugins, "Diagnostics");
 
-            Log.Debug($"Starting Loop", PluginHandler.Instance.Config.VerbouseOutput);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+                Log.Debug($"{path} Created", PluginHandler.Instance.Config.VerbouseOutput);
+            }
+            else
+            {
+                Log.Debug($"{path} Exists", PluginHandler.Instance.Config.VerbouseOutput);
+            }
+
+            path = Path.Combine(path, Server.Port.ToString());
+
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -153,6 +164,8 @@ namespace Mistaken.API.Diagnostics
             string lastDay = now.ToString("yyyy-MM-dd");
             string day;
             string internalPath;
+
+            Log.Debug($"Starting Loop", PluginHandler.Instance.Config.VerbouseOutput);
             while (true)
             {
                 internalPath = path;
