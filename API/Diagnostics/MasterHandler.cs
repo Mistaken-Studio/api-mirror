@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="MasterHandler.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
@@ -191,7 +191,7 @@ namespace Mistaken.API.Diagnostics
                     if (!File.Exists(filePath))
                     {
                         if (now.Hour == 0)
-                            Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddDays(-1):yyyy-MM-dd_23}.log"));
+                            Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddDays(-1):yyyy-MM-dd}_23.log"));
                         else
                             Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddHours(-1):yyyy-MM-dd_HH}.log"));
                     }
