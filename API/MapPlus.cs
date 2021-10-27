@@ -53,8 +53,6 @@ namespace Mistaken.API
             }
         }
 
-        private static LureSubjectContainer container;
-
         /// <summary>
         /// Gets or sets a value indicating whether if SCP 106 Containment was used.
         /// </summary>
@@ -80,6 +78,30 @@ namespace Mistaken.API
             {
                 var lastPhase = LightContainmentZoneDecontamination.DecontaminationController.Singleton.DecontaminationPhases.First(i => i.Function == LightContainmentZoneDecontamination.DecontaminationController.DecontaminationPhase.PhaseFunction.Final);
                 return (float)lastPhase.TimeTrigger;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether SCP079's recontainment is in proggres.
+        /// </summary>
+        public static bool IsSCP079ReadyForRecontainment => SCP079Recontainer._prevEngaged == 3;
+
+        /// <summary>
+        /// Gets a value indicating whether SCP079 recontainment has finished.
+        /// </summary>
+        public static bool IsSCP079Recontained => SCP079Recontainer._alreadyRecontained;
+
+        /// <summary>
+        /// Gets <see cref="Recontainer079"/> instance.
+        /// </summary>
+        public static Recontainer079 SCP079Recontainer
+        {
+            get
+            {
+                if (recontainer == null)
+                    recontainer = GameObject.FindObjectOfType<Recontainer079>();
+
+                return recontainer;
             }
         }
 
@@ -180,6 +202,10 @@ namespace Mistaken.API
         internal static void PostRoundCleanup()
         {
             container = null;
+            recontainer = null;
         }
+
+        private static Recontainer079 recontainer;
+        private static LureSubjectContainer container;
     }
 }
