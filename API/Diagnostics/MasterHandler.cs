@@ -198,7 +198,7 @@ namespace Mistaken.API.Diagnostics
 
                     lock (Backlog)
                     {
-                        File.AppendAllLines(internalPath, Backlog.Select(x => x.ToString()));
+                        File.AppendAllLines(filePath, Backlog.Select(x => x.ToString()));
                         Backlog.Clear();
                     }
 
