@@ -70,8 +70,6 @@
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="CustomRoles\Extensions.cs" />
-    <Compile Include="CustomRoles\MistakenCustomRole.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
     <Compile Include="Diagnostics\Analizer.cs" />
@@ -82,8 +80,6 @@
     <Compile Include="Diagnostics\Patches\Utilities.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
-    <Compile Include="CustomRoles\IMistakenCustomRole.cs" />
-    <Compile Include="CustomRoles\MistakenCustomRoles.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\TestFixPatch.cs" />

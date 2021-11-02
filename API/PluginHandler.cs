@@ -47,6 +47,7 @@ namespace Mistaken.API
             new BetterWarheadHandler(this);
             new CustomInfoHandler(this);
             new VanishHandler(this);
+            new DoorPermissionsHandler(this);
             new CustomSlots.CustomSlotsHandler(this);
 
             new Utilities.UtilitiesHandler(this);

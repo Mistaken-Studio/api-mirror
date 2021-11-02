@@ -169,7 +169,8 @@ namespace Mistaken.API.GUI
                     {
                         if (item == null)
                             continue;
-                        else if (!(item?.IsConnected ?? false))
+
+                        if (!(item?.IsConnected ?? false))
                             this.constructedStrings.Remove(item);
                         else if (!ToIgnore.Contains(item))
                             this.UpdateGUI(item);
