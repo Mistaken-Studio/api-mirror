@@ -22,12 +22,12 @@ namespace Mistaken.API
 
         public override void OnEnable()
         {
-            Exiled.Events.Handlers.Player.InteractingDoor += this.Handle<Exiled.Events.EventArgs.InteractingDoorEventArgs>((ev) => this.Player_InteractingDoor(ev));
+            Exiled.Events.Handlers.Player.InteractingDoor += this.Player_InteractingDoor;
         }
 
         public override void OnDisable()
         {
-            Exiled.Events.Handlers.Player.InteractingDoor -= this.Handle<Exiled.Events.EventArgs.InteractingDoorEventArgs>((ev) => this.Player_InteractingDoor(ev));
+            Exiled.Events.Handlers.Player.InteractingDoor -= this.Player_InteractingDoor;
         }
 
         private void Player_InteractingDoor(Exiled.Events.EventArgs.InteractingDoorEventArgs ev)
