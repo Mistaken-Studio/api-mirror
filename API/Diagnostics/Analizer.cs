@@ -31,7 +31,7 @@ namespace Mistaken.API.Diagnostics
                 string[] data = line.Split('|');
                 var time = new DateTime(long.Parse(data[0]));
                 string executor = string.Join(".", data[1].Trim().Replace(" ", "_").Split(new string[] { ":" }, StringSplitOptions.None));
-                float timeTook = float.Parse(data[2].Replace(".", ","));
+                float timeTook = float.Parse(data[2]);
                 if (!times.ContainsKey(executor))
                     times.Add(executor, new List<(float Took, DateTime Time)>());
                 times[executor].Add((timeTook, time));

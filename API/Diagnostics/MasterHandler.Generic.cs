@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using Exiled.API.Features;
 
 namespace Mistaken.API.Diagnostics
 {
@@ -29,6 +30,8 @@ namespace Mistaken.API.Diagnostics
                 Exiled.Events.Events.CustomEventHandler<T> tor = new Exiled.Events.Events.CustomEventHandler<T>(action);
 
                 TypedHandlers[module][name] = tor;
+                if (PluginHandler.Instance.Config.VerbouseOutput)
+                    Log.Warn(module.Name + " called obsolete function Handle<" + name + ">");
                 return tor;
             }
         }

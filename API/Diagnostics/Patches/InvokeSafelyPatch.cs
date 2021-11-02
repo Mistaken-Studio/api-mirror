@@ -17,9 +17,11 @@ namespace Mistaken.API.Diagnostics.Patches
             if (ev == null)
                 return false;
 
+            DateTime fullStartTime = DateTime.UtcNow;
             DateTime startTime;
             double time;
             string fullName = ev.GetType().FullName;
+            string lastName = "ERROR";
             foreach (Exiled.Events.Events.CustomEventHandler customEventHandler in ev.GetInvocationList())
             {
                 try
@@ -29,12 +31,17 @@ namespace Mistaken.API.Diagnostics.Patches
                     time = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
                     Extensions.Utilities.LogTime(customEventHandler.Method, time);
+                    if (customEventHandler.Method.Name != "Invoke")
+                        lastName = customEventHandler.Method.Name;
                 }
                 catch (Exception ex)
                 {
                     Extensions.Utilities.LogException(ex, customEventHandler.Method, fullName);
                 }
             }
+
+            time = (DateTime.UtcNow - fullStartTime).TotalMilliseconds;
+            MasterHandler.LogTime("Summary." + lastName, time);
 
             return false;
         }

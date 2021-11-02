@@ -42,6 +42,7 @@ namespace Mistaken.API
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
             Patches.Vars.EnableVarPatchs.Patch();
+            Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony);
 
             new BetterWarheadHandler(this);
             new CustomInfoHandler(this);
@@ -64,6 +65,7 @@ namespace Mistaken.API
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
 
             this.Harmony.UnpatchAll();
+            Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony);
 
             Diagnostics.Module.OnDisable(this);
 

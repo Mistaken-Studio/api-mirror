@@ -21,18 +21,18 @@ namespace Mistaken.API.Utilities
 
         public override void OnEnable()
         {
-            Exiled.Events.Handlers.Server.RespawningTeam += this.Handle<Exiled.Events.EventArgs.RespawningTeamEventArgs>((ev) => this.Server_RespawningTeam(ev));
-            Exiled.Events.Handlers.Scp079.InteractingTesla += this.Handle<Exiled.Events.EventArgs.InteractingTeslaEventArgs>((ev) => this.Scp079_InteractingTesla(ev));
-            Exiled.Events.Handlers.Player.TriggeringTesla += this.Handle<Exiled.Events.EventArgs.TriggeringTeslaEventArgs>((ev) => this.Player_TriggeringTesla(ev));
-            Exiled.Events.Handlers.Server.RestartingRound += this.Handle(() => this.Server_RestartingRound(), "RoundRestart");
+            Exiled.Events.Handlers.Server.RespawningTeam += this.Server_RespawningTeam;
+            Exiled.Events.Handlers.Scp079.InteractingTesla += this.Scp079_InteractingTesla;
+            Exiled.Events.Handlers.Player.TriggeringTesla += this.Player_TriggeringTesla;
+            Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
         }
 
         public override void OnDisable()
         {
-            Exiled.Events.Handlers.Server.RespawningTeam -= this.Handle<Exiled.Events.EventArgs.RespawningTeamEventArgs>((ev) => this.Server_RespawningTeam(ev));
-            Exiled.Events.Handlers.Scp079.InteractingTesla -= this.Handle<Exiled.Events.EventArgs.InteractingTeslaEventArgs>((ev) => this.Scp079_InteractingTesla(ev));
-            Exiled.Events.Handlers.Player.TriggeringTesla -= this.Handle<Exiled.Events.EventArgs.TriggeringTeslaEventArgs>((ev) => this.Player_TriggeringTesla(ev));
-            Exiled.Events.Handlers.Server.RestartingRound -= this.Handle(() => this.Server_RestartingRound(), "RoundRestart");
+            Exiled.Events.Handlers.Server.RespawningTeam -= this.Server_RespawningTeam;
+            Exiled.Events.Handlers.Scp079.InteractingTesla -= this.Scp079_InteractingTesla;
+            Exiled.Events.Handlers.Player.TriggeringTesla -= this.Player_TriggeringTesla;
+            Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
         }
 
         private void Server_RestartingRound()

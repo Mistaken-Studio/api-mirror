@@ -20,7 +20,7 @@ namespace Mistaken.API.Diagnostics
             {
                 this.Time = DateTime.Now;
                 this.Name = name;
-                this.TimeTook = timeTook;
+                this.TimeTook = Math.Round(timeTook, 3);
             }
 
             public override string ToString()

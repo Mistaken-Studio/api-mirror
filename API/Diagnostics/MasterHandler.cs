@@ -76,6 +76,8 @@ namespace Mistaken.API.Diagnostics
             Exiled.Events.Events.CustomEventHandler tor = new Exiled.Events.Events.CustomEventHandler(action);
 
             Handlers[module][name] = tor;
+            if (PluginHandler.Instance.Config.VerbouseOutput)
+                Log.Warn(module.Name + " called obsolete function Handle");
             return tor;
         }
 
@@ -124,6 +126,8 @@ namespace Mistaken.API.Diagnostics
                 CurrentStatus = new Status();
                 File.WriteAllText(Path.Combine(Paths.Exiled, "RunResult.txt"), Newtonsoft.Json.JsonConvert.SerializeObject(CurrentStatus));
             }
+
+            CustomNetworkManager.singleton.gameObject.AddComponent<DeltaTimeChecker>();
 
             _ = SaveLoop();
             initiated = true;

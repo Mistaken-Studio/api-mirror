@@ -75,6 +75,7 @@
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
     <Compile Include="Diagnostics\Analizer.cs" />
+    <Compile Include="Diagnostics\DeltaTimeChecker.cs" />
     <Compile Include="Diagnostics\MasterHandler.Entry.cs" />
     <Compile Include="Diagnostics\Patches\GenericInvokeSafelyPatch.cs" />
     <Compile Include="Diagnostics\Patches\InvokeSafelyPatch.cs" />
