@@ -43,7 +43,6 @@ namespace Mistaken.API.Diagnostics
                 float min = float.MaxValue;
                 float max = 0;
                 float avg = 0;
-                Dictionary<string, int> calls = new Dictionary<string, int>();
                 foreach (var (took, time1) in time.Value)
                 {
                     avg += took;
@@ -51,16 +50,9 @@ namespace Mistaken.API.Diagnostics
                         max = took;
                     if (min > took)
                         min = took;
-                    string stringTime = time1.ToString("yyyy-MM-dd HH-mm");
-                    if (!calls.ContainsKey(stringTime))
-                        calls.Add(stringTime, 0);
-                    calls[stringTime]++;
                 }
 
-                float avgCalls = 0;
-                foreach (var item in calls)
-                    avgCalls += item.Value;
-                avgCalls /= calls.Values.Count;
+                float avgCalls = time.Value.Count / 60;
                 avg /= time.Value.Count;
                 var info = (avg, time.Value.Count, min, max, avgCalls);
                 proccesedData.Add(time.Key, new Data(info));
