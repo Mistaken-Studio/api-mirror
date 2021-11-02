@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -83,6 +83,7 @@
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
+    <Compile Include="Patches\RoundInProgressPatch.cs" />
     <Compile Include="Patches\TestFixPatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />
