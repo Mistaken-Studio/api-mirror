@@ -37,9 +37,9 @@ namespace Mistaken.API.CustomSlots
         /// <inheritdoc/>
         public override void OnEnable()
         {
-            Exiled.Events.Handlers.Player.PreAuthenticating += this.Handle<Exiled.Events.EventArgs.PreAuthenticatingEventArgs>((ev) => this.Player_PreAuthenticating(ev));
-            Exiled.Events.Handlers.Player.Left += this.Handle<Exiled.Events.EventArgs.LeftEventArgs>((ev) => this.Player_Left(ev));
-            Exiled.Events.Handlers.Server.RestartingRound += this.Handle(() => this.Server_RestartingRound(), "RoundRestart");
+            Exiled.Events.Handlers.Player.PreAuthenticating += this.Player_PreAuthenticating;
+            Exiled.Events.Handlers.Player.Left += this.Player_Left;
+            Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
 
             this.Server_RestartingRound();
         }
@@ -47,9 +47,9 @@ namespace Mistaken.API.CustomSlots
         /// <inheritdoc/>
         public override void OnDisable()
         {
-            Exiled.Events.Handlers.Player.PreAuthenticating -= this.Handle<Exiled.Events.EventArgs.PreAuthenticatingEventArgs>((ev) => this.Player_PreAuthenticating(ev));
-            Exiled.Events.Handlers.Player.Left -= this.Handle<Exiled.Events.EventArgs.LeftEventArgs>((ev) => this.Player_Left(ev));
-            Exiled.Events.Handlers.Server.RestartingRound -= this.Handle(() => this.Server_RestartingRound(), "RoundRestart");
+            Exiled.Events.Handlers.Player.PreAuthenticating -= this.Player_PreAuthenticating;
+            Exiled.Events.Handlers.Player.Left -= this.Player_Left;
+            Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
         }
 
         internal CustomSlotsHandler(PluginHandler plugin)

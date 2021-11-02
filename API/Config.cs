@@ -27,6 +27,12 @@ namespace Mistaken.API
         [Description("If true then custom slots module will be enabled")]
         public bool CustomSlotsEnabled { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether run result file will be generated.
+        /// </summary>
+        [Description("If true then diagnostics will generate run result file (If you don't know what this is, just leave it disabled)")]
+        public bool GenerateRunResultFile { get; set; } = false;
+
         /// <inheritdoc/>
         [Description("Auto Update Settings")]
         public System.Collections.Generic.Dictionary<string, string> AutoUpdateConfig { get; set; } = new System.Collections.Generic.Dictionary<string, string>

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="TestFixPatch.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
@@ -21,6 +21,7 @@ namespace Mistaken.API.Patches
             if (MainThread != Thread.CurrentThread)
             {
                 Log.Error("Called FindObjectOfType not from main thread, denied");
+
                 return false;
             }
 

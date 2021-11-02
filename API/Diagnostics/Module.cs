@@ -37,8 +37,7 @@ namespace Mistaken.API.Diagnostics
                 catch (Exception ex)
                 {
                     MasterHandler.LogError(ex, null, name);
-                    Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex.Message}");
-                    Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex.StackTrace}");
+                    Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex}");
                 }
             });
         }
@@ -54,8 +53,7 @@ namespace Mistaken.API.Diagnostics
             courotine.RerouteExceptions((ex) =>
             {
                 MasterHandler.LogError(ex, null, name);
-                Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex.Message}");
-                Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex.StackTrace}");
+                Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex}");
             });
             return MEC.Timing.RunCoroutine(courotine);
         }
@@ -67,6 +65,7 @@ namespace Mistaken.API.Diagnostics
         public static void OnEnable(IPlugin<IConfig> plugin)
         {
             MasterHandler.Ini();
+
             foreach (var item in Modules[plugin].Where(i => i.Enabled))
             {
                 Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
@@ -76,7 +75,7 @@ namespace Mistaken.API.Diagnostics
                 }
                 catch (Exception ex)
                 {
-                    MasterHandler.LogError(ex, item, "ENABLING");
+                    MasterHandler.LogError(ex, item, "OnEnable");
                 }
 
                 Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
@@ -89,9 +88,10 @@ namespace Mistaken.API.Diagnostics
         /// <param name="plugin">Plugin.</param>
         public static void OnDisable(IPlugin<IConfig> plugin)
         {
+            MasterHandler.Ini();
+
             foreach (var item in Modules[plugin].Where(i => i.Enabled))
             {
-                MasterHandler.Ini();
                 Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                 try
                 {
@@ -99,7 +99,7 @@ namespace Mistaken.API.Diagnostics
                 }
                 catch (Exception ex)
                 {
-                    MasterHandler.LogError(ex, item, "DISABLING");
+                    MasterHandler.LogError(ex, item, "OnDisable");
                 }
 
                 Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
@@ -112,11 +112,12 @@ namespace Mistaken.API.Diagnostics
         /// <param name="plugin">Plugin.</param>
         public static void EnableAllExcept(IPlugin<IConfig> plugin)
         {
+            MasterHandler.Ini();
+
             foreach (var module in Modules.Where(p => p.Key != plugin))
             {
                 foreach (var item in module.Value.Where(i => i.Enabled && !i.IsBasic))
                 {
-                    MasterHandler.Ini();
                     Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                     try
                     {
@@ -124,7 +125,7 @@ namespace Mistaken.API.Diagnostics
                     }
                     catch (Exception ex)
                     {
-                        MasterHandler.LogError(ex, item, "ENABLING");
+                        MasterHandler.LogError(ex, item, "OnEnable");
                     }
 
                     Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
@@ -138,11 +139,12 @@ namespace Mistaken.API.Diagnostics
         /// <param name="plugin">Plugin.</param>
         public static void DisableAllExcept(IPlugin<IConfig> plugin)
         {
+            MasterHandler.Ini();
+
             foreach (var module in Modules.Where(p => p.Key != plugin))
             {
                 foreach (var item in module.Value.Where(i => i.Enabled && !i.IsBasic))
                 {
-                    MasterHandler.Ini();
                     Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                     try
                     {
@@ -150,7 +152,7 @@ namespace Mistaken.API.Diagnostics
                     }
                     catch (Exception ex)
                     {
-                        MasterHandler.LogError(ex, item, "DISABLING");
+                        MasterHandler.LogError(ex, item, "OnDisable");
                     }
 
                     Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
@@ -165,8 +167,8 @@ namespace Mistaken.API.Diagnostics
         /// <param name="plugin">Plugin creating module.</param>
         public Module(IPlugin<IConfig> plugin)
         {
-            this.Log = new ModuleLogger(this.Name);
             this.Plugin = plugin;
+            this.Log = new ModuleLogger(this);
             if (!Modules.ContainsKey(plugin))
             {
                 MasterHandler.CurrentStatus.LoadedPlugins++;
@@ -221,8 +223,7 @@ namespace Mistaken.API.Diagnostics
                 catch (Exception ex)
                 {
                     MasterHandler.LogError(ex, this, name);
-                    this.Log.Error($"[{this.Name}: {name}] {ex.Message}");
-                    this.Log.Error($"[{this.Name}: {name}] {ex.StackTrace}");
+                    this.Log.Error($"[{this.Name}: {name}] {ex}");
                 }
             });
         }
@@ -238,8 +239,7 @@ namespace Mistaken.API.Diagnostics
             courotine.RerouteExceptions((ex) =>
             {
                 MasterHandler.LogError(ex, this, name);
-                this.Log.Error($"[{this.Name}: {name}] {ex.Message}");
-                this.Log.Error($"[{this.Name}: {name}] {ex.StackTrace}");
+                this.Log.Error($"[{this.Name}: {name}] {ex}");
             });
             return MEC.Timing.RunCoroutine(courotine);
         }
@@ -250,11 +250,12 @@ namespace Mistaken.API.Diagnostics
         /// Gets plugin that this module belong to.
         /// </summary>
         [JsonIgnore]
-        protected IPlugin<IConfig> Plugin { get; }
+        protected internal IPlugin<IConfig> Plugin { get; }
 
         /// <summary>
         /// Gets used to use special logging method.
         /// </summary>
+        [JsonIgnore]
         protected ModuleLogger Log { get; }
     }
 }
