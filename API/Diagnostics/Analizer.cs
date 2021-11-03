@@ -52,7 +52,7 @@ namespace Mistaken.API.Diagnostics
                         min = took;
                 }
 
-                float avgCalls = time.Value.Count / 60;
+                float avgCalls = time.Value.Count / 60f;
                 avg /= time.Value.Count;
                 var info = (avg, time.Value.Count, min, max, avgCalls);
                 proccesedData.Add(time.Key, new Data(info));
