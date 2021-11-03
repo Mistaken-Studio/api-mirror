@@ -176,11 +176,6 @@ namespace Mistaken.API.Diagnostics
                 try
                 {
                     day = now.ToString("yyyy-MM-dd");
-                    if (lastDay != day)
-                    {
-                        Compress(Path.Combine(internalPath, lastDay));
-                        lastDay = day;
-                    }
 
                     internalPath = Path.Combine(internalPath, day);
 
@@ -195,9 +190,15 @@ namespace Mistaken.API.Diagnostics
                     if (!File.Exists(filePath))
                     {
                         if (now.Hour == 0)
-                            Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddDays(-1):yyyy-MM-dd}_23.log"));
+                            Analizer.AnalizeContent(Path.Combine(path, lastDay, $"{now.AddDays(-1):yyyy-MM-dd}_23.log"));
                         else
                             Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddHours(-1):yyyy-MM-dd_HH}.log"));
+                    }
+
+                    if (lastDay != day)
+                    {
+                        Compress(Path.Combine(path, lastDay));
+                        lastDay = day;
                     }
 
                     lock (Backlog)
