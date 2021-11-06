@@ -123,6 +123,9 @@ namespace Mistaken.API.Components
             {
                 try
                 {
+                    if (item.gameObject.Equals(null))
+                        this.ColliderInArea.Remove(item);
+
                     _ = item.transform.position;
                 }
                 catch

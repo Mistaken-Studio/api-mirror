@@ -97,47 +97,53 @@ namespace Mistaken.API.GUI
             {
                 while (this.active)
                 {
-                    await Task.Delay(100);
-
-                    this.frames += 1;
-
-                    // 10s
-                    if (this.frames > 99)
+                    try
                     {
-                        foreach (var item in RealPlayers.List)
+                        await Task.Delay(100);
+
+                        this.frames += 1;
+
+                        // 10s
+                        if (this.frames > 99)
+                        {
+                            foreach (var item in RealPlayers.List)
+                            {
+                                try
+                                {
+                                    if (!ToIgnore.Contains(item))
+                                        this.ConstructString(item);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex.Message);
+                                    Log.Error(ex.StackTrace);
+                                }
+                            }
+
+                            ToUpdate.Clear();
+                            this.frames = 0;
+                            continue;
+                        }
+
+                        if (ToUpdate.Count == 0)
+                            continue;
+                        foreach (var item in ToUpdate.ToArray())
                         {
                             try
                             {
-                                if (!ToIgnore.Contains(item))
+                                if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
                                     this.ConstructString(item);
+                                ToUpdate.Remove(item);
                             }
                             catch (Exception ex)
                             {
-                                Log.Error(ex.Message);
-                                Log.Error(ex.StackTrace);
+                                Log.Error(ex);
                             }
                         }
-
-                        ToUpdate.Clear();
-                        this.frames = 0;
-                        continue;
                     }
-
-                    if (ToUpdate.Count == 0)
-                        continue;
-                    foreach (var item in ToUpdate.ToArray())
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
-                                this.ConstructString(item);
-                            ToUpdate.Remove(item);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
-                        }
+                        Log.Error(ex);
                     }
                 }
             });
