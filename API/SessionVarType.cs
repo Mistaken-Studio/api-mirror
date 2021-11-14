@@ -54,5 +54,8 @@ namespace Mistaken.API
 
         /// <plugin>CustomRolesExtensions</plugin>
         BUILTIN_DOOR_ACCESS,
+
+        /// <plugin>API</plugin>
+        IGNORE_SCP207_DAMAGE,
     }
 }
