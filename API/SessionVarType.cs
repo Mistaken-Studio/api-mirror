@@ -28,7 +28,7 @@ namespace Mistaken.API
         /// <plugin>RAMod</plugin>
         HIDDEN,
 
-        /// <plugin>PrivateSystems?</plugin>
+        /// <plugin>PrivateSystems</plugin>
         LONG_OVERWATCH,
 
         /// <plugin>PrivateSystems</plugin>
@@ -54,5 +54,8 @@ namespace Mistaken.API
 
         /// <plugin>CustomRolesExtensions</plugin>
         BUILTIN_DOOR_ACCESS,
+
+        /// <plugin>PrivateSystems</plugin>
+        OVERWATCH_START_TIME,
     }
 }
