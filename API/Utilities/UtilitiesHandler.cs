@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 using Mistaken.API.Diagnostics;
+using Mistaken.API.Extensions;
 
 namespace Mistaken.API.Utilities
 {
@@ -25,6 +26,7 @@ namespace Mistaken.API.Utilities
             Exiled.Events.Handlers.Scp079.InteractingTesla += this.Scp079_InteractingTesla;
             Exiled.Events.Handlers.Player.TriggeringTesla += this.Player_TriggeringTesla;
             Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
+            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
         }
 
         public override void OnDisable()
@@ -33,6 +35,16 @@ namespace Mistaken.API.Utilities
             Exiled.Events.Handlers.Scp079.InteractingTesla -= this.Scp079_InteractingTesla;
             Exiled.Events.Handlers.Player.TriggeringTesla -= this.Player_TriggeringTesla;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
+            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
+        }
+
+        private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
+        {
+            if (ev.DamageType == DamageTypes.Scp207)
+            {
+                if (ev.Target.GetSessionVar<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
+                    ev.IsAllowed = false;
+            }
         }
 
         private void Server_RestartingRound()
