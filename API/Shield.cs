@@ -24,10 +24,8 @@ namespace Mistaken.API.Shield
         public static T Ini<T>(Player player)
             where T : Shield, new()
         {
-            var instance = new T
-            {
-                Player = player,
-            };
+            T instance = player.GameObject.AddComponent<T>();
+            instance.Player = player;
 
             return instance;
         }
