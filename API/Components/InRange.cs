@@ -214,7 +214,7 @@ namespace Mistaken.API.Components
             var player = Player.Get(other.gameObject);
             if (player?.IsDead ?? true)
                 return;
-            if (player.GetSessionVar<bool>("IsNPC") && !this.AllowNPCs)
+            if (player.GetSessionVariable<bool>("IsNPC") && !this.AllowNPCs)
                 return;
             this.ColliderInArea.Add(other.gameObject);
             this.onEnter?.Invoke(player);

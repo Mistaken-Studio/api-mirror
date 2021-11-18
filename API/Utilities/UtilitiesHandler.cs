@@ -42,7 +42,7 @@ namespace Mistaken.API.Utilities
         {
             if (ev.DamageType == DamageTypes.Scp207)
             {
-                if (ev.Target.GetSessionVar<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
+                if (ev.Target.GetSessionVariable<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
                     ev.IsAllowed = false;
             }
         }

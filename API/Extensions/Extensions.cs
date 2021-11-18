@@ -143,6 +143,11 @@ namespace Mistaken.API.Extensions
             return me.DoNotTrack;
         }
 
+        /// <inheritdoc cref="GetSessionVariable{T}(Player, SessionVarType, T)"/>
+        [System.Obsolete("Use GetSessionVariable", true)]
+        public static T GetSessionVar<T>(this Player me, SessionVarType type, T defaultValue = default)
+            => me.GetSessionVariable(type, defaultValue);
+
         /// <summary>
         /// Returns SessionVarValue or <paramref name="defaultValue"/> if was not found.
         /// </summary>
@@ -151,7 +156,13 @@ namespace Mistaken.API.Extensions
         /// <param name="type">Session Var.</param>
         /// <param name="defaultValue">Default Value.</param>
         /// <returns>Value.</returns>
-        public static T GetSessionVar<T>(this Player me, SessionVarType type, T defaultValue = default) => me.GetSessionVar(type.ToString(), defaultValue);
+        public static T GetSessionVariable<T>(this Player me, SessionVarType type, T defaultValue = default)
+            => me.GetSessionVariable(type.ToString(), defaultValue);
+
+        /// <inheritdoc cref="GetSessionVariable{T}(Player, string, T)"/>
+        [System.Obsolete("Use GetSessionVariable", true)]
+        public static T GetSessionVar<T>(this Player me, string name, T defaultValue = default)
+            => me.GetSessionVariable(name, defaultValue);
 
         /// <summary>
         /// Returns SessionVarValue or <paramref name="defaultValue"/> if was not found.
@@ -161,7 +172,7 @@ namespace Mistaken.API.Extensions
         /// <param name="name">Session Var.</param>
         /// <param name="defaultValue">Default Value.</param>
         /// <returns>Value.</returns>
-        public static T GetSessionVar<T>(this Player me, string name, T defaultValue = default)
+        public static T GetSessionVariable<T>(this Player me, string name, T defaultValue = default)
         {
             if (me.TryGetSessionVariable(name, out T value))
                 return value;
@@ -169,12 +180,29 @@ namespace Mistaken.API.Extensions
         }
 
         /// <summary>
+        /// If SessionVar was found.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="me">Player.</param>
+        /// <param name="type">Session Var.</param>
+        /// <param name="value">Value.</param>
+        /// <returns>If session var was found.</returns>
+        public static bool TryGetSessionVariable<T>(this Player me, SessionVarType type, out T value)
+            => me.TryGetSessionVariable(type.ToString(), out value);
+
+        /// <inheritdoc cref="SetSessionVariable(Player, SessionVarType, object)"/>
+        [System.Obsolete("Use SetSessionVariable", true)]
+        public static void SetSessionVar(this Player me, SessionVarType type, object value)
+            => me.SetSessionVar(type.ToString(), value);
+
+        /// <summary>
         /// Sets SessionVarValue.
         /// </summary>
         /// <param name="me">Player.</param>
         /// <param name="type">Session Var.</param>
         /// <param name="value">Value.</param>
-        public static void SetSessionVar(this Player me, SessionVarType type, object value) => me.SetSessionVar(type.ToString(), value);
+        public static void SetSessionVariable(this Player me, SessionVarType type, object value)
+            => me.SetSessionVariable(type.ToString(), value);
 
         /// <summary>
         /// Sets SessionVarValue.
@@ -182,21 +210,29 @@ namespace Mistaken.API.Extensions
         /// <param name="me">Player.</param>
         /// <param name="name">Session Var.</param>
         /// <param name="value">Value.</param>
-        public static void SetSessionVar(this Player me, string name, object value) => me.SessionVariables[name] = value;
+        public static void SetSessionVariable(this Player me, string name, object value)
+            => me.SessionVariables[name] = value;
+
+        /// <inheritdoc cref="SetSessionVariable(Player, string, object)"/>
+        [System.Obsolete("Use SetSessionVariable", true)]
+        public static void SetSessionVar(this Player me, string name, object value)
+            => me.SessionVariables[name] = value;
 
         /// <summary>
         /// Removes SessionVar.
         /// </summary>
         /// <param name="me">Player.</param>
         /// <param name="type">Session Var.</param>
-        public static void RemoveSessionVar(this Player me, SessionVarType type) => me.RemoveSessionVar(type.ToString());
+        public static void RemoveSessionVariable(this Player me, SessionVarType type)
+            => me.RemoveSessionVariable(type.ToString());
 
         /// <summary>
         /// Removes SessionVar.
         /// </summary>
         /// <param name="me">Player.</param>
         /// <param name="name">Session Var.</param>
-        public static void RemoveSessionVar(this Player me, string name) => me.SessionVariables.Remove(name);
+        public static void RemoveSessionVariable(this Player me, string name)
+            => me.SessionVariables.Remove(name);
 
         /// <summary>
         /// Returns if player has permission.
@@ -296,7 +332,8 @@ namespace Mistaken.API.Extensions
         /// </summary>
         /// <param name="me">Playet to check.</param>
         /// <returns>If player is ready, real player.</returns>
-        public static bool IsReadyPlayer(this Player me) => me.IsConnected && me.IsVerified && !me.GetSessionVar<bool>("IsNPC") && me.UserId != null;
+        public static bool IsReadyPlayer(this Player me)
+            => me.IsConnected && me.IsVerified && !me.GetSessionVariable<bool>("IsNPC") && me.UserId != null;
 
         /// <summary>
         /// Spawns BoxCollider.

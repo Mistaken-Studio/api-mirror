@@ -40,7 +40,7 @@ namespace Mistaken.API
                 if (Vanished.ContainsKey(player.Id))
                     SetGhost(player, false, level, true);
                 Vanished.Add(player.Id, level);
-                player.SetSessionVar(SessionVarType.VANISH, level);
+                player.SetSessionVariable(SessionVarType.VANISH, level);
                 if (!silent)
                     AnnonymousEvents.Call("VANISH", (player, level));
             }
@@ -53,7 +53,7 @@ namespace Mistaken.API
                 }
 
                 Vanished.Remove(player.Id);
-                player.SetSessionVar(SessionVarType.VANISH, (byte)0);
+                player.SetSessionVariable(SessionVarType.VANISH, (byte)0);
             }
         }
 

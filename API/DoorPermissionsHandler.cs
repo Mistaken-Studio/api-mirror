@@ -34,7 +34,7 @@ namespace Mistaken.API
         {
             if (ev.IsAllowed) return;
             if (ev.Door.IsLocked) return;
-            var value = ev.Player.GetSessionVar<KeycardPermissions>(SessionVarType.BUILTIN_DOOR_ACCESS);
+            var value = ev.Player.GetSessionVariable<KeycardPermissions>(SessionVarType.BUILTIN_DOOR_ACCESS);
             if ((value & (KeycardPermissions)ev.Door.RequiredPermissions.RequiredPermissions) != 0)
                 ev.IsAllowed = true;
         }
