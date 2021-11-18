@@ -185,6 +185,20 @@ namespace Mistaken.API.Extensions
         public static void SetSessionVar(this Player me, string name, object value) => me.SessionVariables[name] = value;
 
         /// <summary>
+        /// Removes SessionVar.
+        /// </summary>
+        /// <param name="me">Player.</param>
+        /// <param name="type">Session Var.</param>
+        public static void RemoveSessionVar(this Player me, SessionVarType type) => me.RemoveSessionVar(type.ToString());
+
+        /// <summary>
+        /// Removes SessionVar.
+        /// </summary>
+        /// <param name="me">Player.</param>
+        /// <param name="name">Session Var.</param>
+        public static void RemoveSessionVar(this Player me, string name) => me.SessionVariables.Remove(name);
+
+        /// <summary>
         /// Returns if player has permission.
         /// </summary>
         /// <param name="cs">Player.</param>
