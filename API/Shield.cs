@@ -53,17 +53,98 @@ namespace Mistaken.API.Shield
         /// <summary>
         /// Gets shield effectivnes.
         /// </summary>
-        protected abstract float ShielEffectivnes { get; }
+        protected abstract float ShieldEffectivnes { get; }
 
         /// <summary>
         /// Gets time that has to pass since last damage to start regerenrating shield.
         /// </summary>
         protected abstract float TimeUntilShieldRecharge { get; }
 
+        /// <summary>
+        /// Gets speed at which shield will drop when it overflows over <see cref="MaxShield"/> (set to 0 to disable).
+        /// </summary>
+        protected virtual float ShieldDropRateOnOverflow { get; } = 5f;
+
+        /// <summary>
+        /// Gets or sets time left untill shield recharge is possible.
+        /// </summary>
+        protected float InternalTimeUntilShieldRecharge { get; set; }
+
+        /// <summary>
+        /// Unity's Start.
+        /// </summary>
+        protected virtual void Start()
+        {
+            Log.Debug("Created " + this.GetType().Name);
+
+            this.prevArtificialHpDelay = this.Player.ArtificialHealthDecay;
+            this.prevArtificialHpRatio = this.Player.ReferenceHub.playerStats.ArtificialNormalRatio;
+            this.prevMaxArtificialHp = this.Player.MaxArtificialHealth;
+
+            this.InternalTimeUntilShieldRecharge = 5f;
+
+            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
+            Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
+
+            this.Player.MaxArtificialHealth = 5000;
+            this.Player.ArtificialHealthDecay = 0;
+            this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.ShieldEffectivnes;
+        }
+
+        /// <summary>
+        /// Unity's OnDestroy.
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            this.Player.ArtificialHealthDecay = this.prevArtificialHpDelay;
+            this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.prevArtificialHpRatio;
+            this.Player.MaxArtificialHealth = this.prevMaxArtificialHp;
+
+            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
+            Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
+
+            Log.Debug("Destoryed " + this.GetType().Name);
+        }
+
+        /// <summary>
+        /// Unity's FixedUpdate.
+        /// </summary>
+        protected virtual void FixedUpdate()
+        {
+            this.InternalTimeUntilShieldRecharge -= Time.fixedDeltaTime;
+
+            this.CanRegen = this.InternalTimeUntilShieldRecharge <= 0f;
+
+            if (this.Player.ArtificialHealth > this.MaxShield)
+            {
+                if (this.ShieldDropRateOnOverflow != 0)
+                {
+                    if (this.Player.ArtificialHealth - 1 < this.MaxShield)
+                    {
+                        this.Player.ArtificialHealthDecay = 0;
+                        this.Player.ArtificialHealth = this.MaxShield;
+                        return;
+                    }
+                }
+
+                this.Player.ArtificialHealthDecay = this.ShieldDropRateOnOverflow;
+                return;
+            }
+            else if (this.Player.ArtificialHealth == this.MaxShield)
+            {
+                this.Player.ArtificialHealthDecay = 0;
+                return;
+            }
+
+            if (this.CanRegen)
+                this.Player.ArtificialHealthDecay = -this.ShieldRechargeRate;
+            else
+                this.Player.ArtificialHealthDecay = 0f;
+        }
+
         private float prevArtificialHpDelay;
         private float prevArtificialHpRatio;
         private int prevMaxArtificialHp;
-        private float timeUntilShieldRecharge;
 
         private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
         {
@@ -84,72 +165,7 @@ namespace Mistaken.API.Shield
             if (!ev.IsAllowed)
                 return;
 
-            this.timeUntilShieldRecharge = this.TimeUntilShieldRecharge;
-        }
-
-        private void OnStart()
-        {
-            this.prevArtificialHpDelay = this.Player.ArtificialHealthDecay;
-            this.prevArtificialHpRatio = this.Player.ReferenceHub.playerStats.ArtificialNormalRatio;
-            this.prevMaxArtificialHp = this.Player.MaxArtificialHealth;
-
-            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
-            Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
-
-            this.Player.MaxArtificialHealth += this.MaxShield;
-            this.Player.ArtificialHealthDecay = 0;
-            this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.ShielEffectivnes;
-        }
-
-        private void OnDestroy()
-        {
-            this.Player.ArtificialHealthDecay = this.prevArtificialHpDelay;
-            this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.prevArtificialHpRatio;
-            this.Player.MaxArtificialHealth = this.prevMaxArtificialHp;
-
-            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
-            Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
-        }
-
-        private void FixedUpdate()
-        {
-            this.timeUntilShieldRecharge -= Time.fixedDeltaTime;
-
-            this.CanRegen = this.timeUntilShieldRecharge <= 0f;
-            if (this.CanRegen)
-                this.Player.ArtificialHealthDecay = -(this.ShieldRechargeRate * Time.fixedDeltaTime);
-            else
-                this.Player.ArtificialHealthDecay = 0f;
-        }
-    }
-
-#pragma warning disable
-
-    [System.Obsolete("Use Shield script", true)]
-    public class Shielded
-    {
-        public ushort MaxShield
-        {
-            get => throw new System.Exception("Use Shield MonoBehaviour script");
-            set => throw new System.Exception("Use Shield MonoBehaviour script");
-        }
-
-        public ushort Regeneration { get; set; }
-
-        public float SafeTime { get; }
-
-        public float ShieldEffectivnes { get; }
-
-        public float ShieldDecay { get; set; }
-
-        public bool IsSafe
-        {
-            get => throw new System.Exception("Use Shield MonoBehaviour script");
-        }
-
-        public Shielded(Player p, ushort maxShield, ushort regeneration, float safeTime = -1, float shieldDecay = -1, float shieldEffectivnes = -1)
-        {
-            throw new System.Exception("Use Shield MonoBehaviour script");
+            this.InternalTimeUntilShieldRecharge = this.TimeUntilShieldRecharge;
         }
     }
 }

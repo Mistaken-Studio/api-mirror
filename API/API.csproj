@@ -121,7 +121,6 @@
     <Compile Include="Extensions\SyncVar.cs" />
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield.cs" />
-    <Compile Include="ShieldedManager.cs" />
     <Compile Include="Utilities\Map.cs" />
     <Compile Include="Utilities\OverheatLevel.cs" />
     <Compile Include="Utilities\TeslaMode.cs" />
