@@ -70,6 +70,8 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected float InternalTimeUntilShieldRecharge { get; set; }
 
+        public float CurrentShieldRechargeRate { get; private set; }
+
         /// <summary>
         /// Unity's Start.
         /// </summary>
@@ -88,6 +90,7 @@ namespace Mistaken.API.Shield
 
             this.Player.MaxArtificialHealth = 5000;
             this.Player.ArtificialHealthDecay = 0;
+            this.CurrentShieldRechargeRate = 0;
             this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.ShieldEffectivnes;
         }
 
@@ -111,9 +114,13 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void FixedUpdate()
         {
-            this.InternalTimeUntilShieldRecharge -= Time.fixedDeltaTime;
-
-            this.CanRegen = this.InternalTimeUntilShieldRecharge <= 0f;
+            if (this.TimeUntilShieldRecharge != 0f)
+            {
+                this.InternalTimeUntilShieldRecharge -= Time.fixedDeltaTime;
+                this.CanRegen = this.InternalTimeUntilShieldRecharge <= 0f;
+            }
+            else
+                this.CanRegen = true;
 
             if (this.Player.ArtificialHealth > this.MaxShield)
             {
@@ -122,24 +129,33 @@ namespace Mistaken.API.Shield
                     if (this.Player.ArtificialHealth - 1 < this.MaxShield)
                     {
                         this.Player.ArtificialHealthDecay = 0;
+                        this.CurrentShieldRechargeRate = 0;
                         this.Player.ArtificialHealth = this.MaxShield;
                         return;
                     }
                 }
 
                 this.Player.ArtificialHealthDecay = this.ShieldDropRateOnOverflow;
+                this.CurrentShieldRechargeRate = -this.ShieldDropRateOnOverflow;
                 return;
             }
             else if (this.Player.ArtificialHealth == this.MaxShield)
             {
                 this.Player.ArtificialHealthDecay = 0;
+                this.CurrentShieldRechargeRate = 0;
                 return;
             }
 
             if (this.CanRegen)
+            {
                 this.Player.ArtificialHealthDecay = -this.ShieldRechargeRate;
+                this.CurrentShieldRechargeRate = this.ShieldRechargeRate;
+            }
             else
+            {
                 this.Player.ArtificialHealthDecay = 0f;
+                this.CurrentShieldRechargeRate = 0;
+            }
         }
 
         private float prevArtificialHpDelay;
