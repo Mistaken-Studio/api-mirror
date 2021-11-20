@@ -128,8 +128,9 @@ namespace Mistaken.API.GUI
                         if (ToUpdate.Count == 0)
                             continue;
                         Player[] toUpdateArr;
-                        lock (ToUpdate)
-                            toUpdateArr = ToUpdate.ToArray();
+
+                        // lock (ToUpdate)
+                        toUpdateArr = ToUpdate.ToArray();
                         foreach (var item in toUpdateArr)
                         {
                             try
