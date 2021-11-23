@@ -125,19 +125,14 @@ namespace Mistaken.API.GUI
                             continue;
                         }
 
-                        if (ToUpdate.Count == 0)
-                            continue;
-                        Player[] toUpdateArr;
-
-                        // lock (ToUpdate)
-                        toUpdateArr = ToUpdate.ToArray();
-                        foreach (var item in toUpdateArr)
+                        while (ToUpdate.Count != 0)
                         {
                             try
                             {
+                                var item = ToUpdate[0];
                                 if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
                                     this.ConstructString(item);
-                                ToUpdate.Remove(item);
+                                ToUpdate.RemoveAt(0);
                             }
                             catch (Exception ex)
                             {

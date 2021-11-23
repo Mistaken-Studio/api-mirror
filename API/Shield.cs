@@ -70,14 +70,17 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected float InternalTimeUntilShieldRecharge { get; set; }
 
-        public float CurrentShieldRechargeRate { get; private set; }
+        /// <summary>
+        /// Gets current shield recharge rate.
+        /// </summary>
+        protected float CurrentShieldRechargeRate { get; private set; }
 
         /// <summary>
         /// Unity's Start.
         /// </summary>
         protected virtual void Start()
         {
-            Log.Debug("Created " + this.GetType().Name);
+            Log.Debug("Created " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
 
             this.prevArtificialHpDelay = this.Player.ArtificialHealthDecay;
             this.prevArtificialHpRatio = this.Player.ReferenceHub.playerStats.ArtificialNormalRatio;
@@ -106,7 +109,7 @@ namespace Mistaken.API.Shield
             Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
             Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
 
-            Log.Debug("Destoryed " + this.GetType().Name);
+            Log.Debug("Destoryed " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
         }
 
         /// <summary>
