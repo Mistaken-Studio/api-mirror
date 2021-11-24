@@ -125,7 +125,15 @@ namespace Mistaken.API.GUI
                             continue;
                         }
 
-                        while (ToUpdate.Count != 0)
+                        foreach (var item in ToUpdate.ToArray())
+                        {
+                            if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
+                                this.ConstructString(item);
+                        }
+
+                        ToUpdate.Clear();
+
+                        /*while (ToUpdate.Count != 0)
                         {
                             try
                             {
@@ -154,7 +162,7 @@ namespace Mistaken.API.GUI
                             {
                                 Log.Error(ex);
                             }
-                        }
+                        }*/
                     }
                     catch (Exception ex)
                     {
