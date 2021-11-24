@@ -132,7 +132,23 @@ namespace Mistaken.API.GUI
                                 var item = ToUpdate[0];
                                 if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
                                     this.ConstructString(item);
-                                ToUpdate.RemoveAt(0);
+                                try
+                                {
+                                    ToUpdate.RemoveAt(0);
+                                }
+                                catch (ArgumentOutOfRangeException)
+                                {
+                                    Log.Warn($"[PSUEDOGUI] {nameof(ArgumentOutOfRangeException)} thrown, breaking");
+                                    try
+                                    {
+                                        ToUpdate.Clear();
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    break;
+                                }
                             }
                             catch (Exception ex)
                             {
