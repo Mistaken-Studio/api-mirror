@@ -60,5 +60,8 @@ namespace Mistaken.API
 
         /// <plugin>PrivateSystems</plugin>
         OVERWATCH_START_TIME,
+
+        /// <plugin>API</plugin>
+        INFINITE_AMMO,
     }
 }

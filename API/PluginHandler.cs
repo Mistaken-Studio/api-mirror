@@ -48,6 +48,7 @@ namespace Mistaken.API
             new CustomInfoHandler(this);
             new VanishHandler(this);
             new DoorPermissionsHandler(this);
+            new InfiniteAmmoHandler(this);
             new CustomSlots.CustomSlotsHandler(this);
 
             new Utilities.UtilitiesHandler(this);
