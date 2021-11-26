@@ -6,10 +6,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
-using Exiled.API.Features;
 using Exiled.API.Interfaces;
+using MEC;
 using Newtonsoft.Json;
 
 namespace Mistaken.API.Diagnostics
@@ -28,7 +27,7 @@ namespace Mistaken.API.Diagnostics
         /// <returns>Courotine handle returned by called function.</returns>
         public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name)
         {
-            return MEC.Timing.CallDelayed(delay, () =>
+            var tor = MEC.Timing.CallDelayed(delay, () =>
             {
                 try
                 {
@@ -40,6 +39,8 @@ namespace Mistaken.API.Diagnostics
                     Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex}");
                 }
             });
+
+            return tor;
         }
 
         /// <summary>
@@ -55,7 +56,21 @@ namespace Mistaken.API.Diagnostics
                 MasterHandler.LogError(ex, null, name);
                 Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex}");
             });
-            return MEC.Timing.RunCoroutine(courotine);
+            var tor = MEC.Timing.RunCoroutine(courotine);
+            return tor;
+        }
+
+        /// <summary>
+        /// Creates courotine that calls <paramref name="innerLoop"/> through all of round.
+        /// </summary>
+        /// <param name="innerLoop">Courotine executed in round. Has to contain own delay!.</param>
+        /// <param name="name">Courotine name.</param>
+        /// <returns>Courotine handle returned by called function.</returns>
+        public static MEC.CoroutineHandle CreateSafeRoundLoop(IEnumerator<float> innerLoop, string name)
+        {
+            var tor = RunSafeCoroutine(RoundLoop(innerLoop), name);
+            ToTerminateAfterRoundRestart.Add(tor);
+            return tor;
         }
 
         /// <summary>
@@ -214,7 +229,7 @@ namespace Mistaken.API.Diagnostics
         /// <returns>Courotine handle returned by called function.</returns>
         public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed")
         {
-            return MEC.Timing.CallDelayed(delay, () =>
+            var tor = MEC.Timing.CallDelayed(delay, () =>
             {
                 try
                 {
@@ -226,6 +241,8 @@ namespace Mistaken.API.Diagnostics
                     this.Log.Error($"[{this.Name}: {name}] {ex}");
                 }
             });
+
+            return tor;
         }
 
         /// <summary>
@@ -241,10 +258,30 @@ namespace Mistaken.API.Diagnostics
                 MasterHandler.LogError(ex, this, name);
                 this.Log.Error($"[{this.Name}: {name}] {ex}");
             });
-            return MEC.Timing.RunCoroutine(courotine);
+            var tor = MEC.Timing.RunCoroutine(courotine);
+            return tor;
+        }
+
+        /// <summary>
+        /// Creates courotine that calls <paramref name="innerLoop"/> through all of round.
+        /// </summary>
+        /// <param name="innerLoop">Courotine executed in round. Has to contain own delay!.</param>
+        /// <param name="name">Courotine name.</param>
+        /// <returns>Courotine handle returned by called function.</returns>
+        public MEC.CoroutineHandle CreateRoundLoop(IEnumerator<float> innerLoop, string name = "RoundLoop")
+        {
+            var tor = this.RunCoroutine(RoundLoop(innerLoop), name);
+            ToTerminateAfterRoundRestart.Add(tor);
+            return tor;
         }
 
         internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new Dictionary<IPlugin<IConfig>, List<Module>>();
+
+        internal static void Server_WaitingForPlayer()
+        {
+            MEC.Timing.KillCoroutines(ToTerminateAfterRoundRestart.ToArray());
+            ToTerminateAfterRoundRestart.Clear();
+        }
 
         /// <summary>
         /// Gets plugin that this module belong to.
@@ -257,5 +294,13 @@ namespace Mistaken.API.Diagnostics
         /// </summary>
         [JsonIgnore]
         protected ModuleLogger Log { get; }
+
+        private static readonly List<MEC.CoroutineHandle> ToTerminateAfterRoundRestart = new List<MEC.CoroutineHandle>();
+
+        private static IEnumerator<float> RoundLoop(IEnumerator<float> innerLoop)
+        {
+            while (Exiled.API.Features.Round.IsStarted)
+                yield return innerLoop.WaitUntilDone();
+        }
     }
 }
