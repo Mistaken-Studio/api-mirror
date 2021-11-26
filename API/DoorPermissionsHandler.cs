@@ -24,15 +24,15 @@ namespace Mistaken.API
         public override void OnEnable()
         {
             Exiled.Events.Handlers.Player.InteractingDoor += this.Player_InteractingDoor;
-            Exiled.Events.Handlers.Player.InteractingLocker += Player_InteractingLocker;
-            Exiled.Events.Handlers.Player.UnlockingGenerator += Player_UnlockingGenerator;
+            Exiled.Events.Handlers.Player.InteractingLocker += this.Player_InteractingLocker;
+            Exiled.Events.Handlers.Player.UnlockingGenerator += this.Player_UnlockingGenerator;
         }
 
         public override void OnDisable()
         {
             Exiled.Events.Handlers.Player.InteractingDoor -= this.Player_InteractingDoor;
-            Exiled.Events.Handlers.Player.InteractingLocker -= Player_InteractingLocker;
-            Exiled.Events.Handlers.Player.UnlockingGenerator -= Player_UnlockingGenerator;
+            Exiled.Events.Handlers.Player.InteractingLocker -= this.Player_InteractingLocker;
+            Exiled.Events.Handlers.Player.UnlockingGenerator -= this.Player_UnlockingGenerator;
         }
 
         private void Player_UnlockingGenerator(Exiled.Events.EventArgs.UnlockingGeneratorEventArgs ev)
@@ -77,7 +77,7 @@ namespace Mistaken.API
 
         private void Player_InteractingDoor(Exiled.Events.EventArgs.InteractingDoorEventArgs ev)
         {
-            if (ev.IsAllowed) 
+            if (ev.IsAllowed)
                 return;
 
             if (ev.Player.IsCuffed)
