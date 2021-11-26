@@ -47,6 +47,11 @@ namespace Mistaken.API.Diagnostics
             return tor;
         }
 
+        /// <inheritdoc cref="CallSafeDelayed(float, Action, string, bool)"/>
+        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
+        private static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name)
+            => CallSafeDelayed(delay, action, name, false);
+
         /// <summary>
         /// Calls <see cref="MEC.Timing.RunCoroutine(IEnumerator{float})"/> and reroutes exceptions.
         /// </summary>
@@ -66,6 +71,11 @@ namespace Mistaken.API.Diagnostics
                 ToTerminateAfterRoundRestart.Add(tor);
             return tor;
         }
+
+        /// <inheritdoc cref="RunSafeCoroutine(IEnumerator{float}, string, bool)"/>
+        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
+        private static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name)
+            => RunSafeCoroutine(courotine, name, false);
 
         /// <summary>
         /// Creates courotine that calls <paramref name="innerLoop"/> through all of round.
@@ -254,6 +264,11 @@ namespace Mistaken.API.Diagnostics
             return tor;
         }
 
+        /// <inheritdoc cref="CallDelayed(float, Action, string, bool)"/>
+        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
+        private MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed")
+            => this.CallDelayed(delay, action, name, false);
+
         /// <summary>
         /// Calls <see cref="MEC.Timing.RunCoroutine(IEnumerator{float})"/> and reroutes exceptions.
         /// </summary>
@@ -273,6 +288,11 @@ namespace Mistaken.API.Diagnostics
                 ToTerminateAfterRoundRestart.Add(tor);
             return tor;
         }
+
+        /// <inheritdoc cref="RunCoroutine(IEnumerator{float}, string, bool)"/>
+        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
+        private MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine")
+            => this.RunCoroutine(courotine, name, false);
 
         /// <summary>
         /// Creates courotine that calls <paramref name="innerLoop"/> through all of round.
