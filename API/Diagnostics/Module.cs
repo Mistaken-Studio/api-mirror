@@ -24,8 +24,9 @@ namespace Mistaken.API.Diagnostics
         /// <param name="delay">Delay passed to called function.</param>
         /// <param name="action">Action passed to called function.</param>
         /// <param name="name">Function name.</param>
+        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name)
+        public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart = false)
         {
             var tor = MEC.Timing.CallDelayed(delay, () =>
             {
@@ -40,6 +41,9 @@ namespace Mistaken.API.Diagnostics
                 }
             });
 
+            if (terminateAfterRoundRestart)
+                ToTerminateAfterRoundRestart.Add(tor);
+
             return tor;
         }
 
@@ -48,8 +52,9 @@ namespace Mistaken.API.Diagnostics
         /// </summary>
         /// <param name="courotine">Delay passed to called function.</param>
         /// <param name="name">Courotine name.</param>
+        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name)
+        public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart = false)
         {
             courotine.RerouteExceptions((ex) =>
             {
@@ -57,6 +62,8 @@ namespace Mistaken.API.Diagnostics
                 Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex}");
             });
             var tor = MEC.Timing.RunCoroutine(courotine);
+            if (terminateAfterRoundRestart)
+                ToTerminateAfterRoundRestart.Add(tor);
             return tor;
         }
 
@@ -68,9 +75,7 @@ namespace Mistaken.API.Diagnostics
         /// <returns>Courotine handle returned by called function.</returns>
         public static MEC.CoroutineHandle CreateSafeRoundLoop(IEnumerator<float> innerLoop, string name)
         {
-            var tor = RunSafeCoroutine(RoundLoop(innerLoop), name);
-            ToTerminateAfterRoundRestart.Add(tor);
-            return tor;
+            return RunSafeCoroutine(RoundLoop(innerLoop), name, true);
         }
 
         /// <summary>
@@ -226,8 +231,9 @@ namespace Mistaken.API.Diagnostics
         /// <param name="delay">Delay passed to called function.</param>
         /// <param name="action">Action passed to called function.</param>
         /// <param name="name">Function name.</param>
+        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed")
+        public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed", bool terminateAfterRoundRestart = false)
         {
             var tor = MEC.Timing.CallDelayed(delay, () =>
             {
@@ -242,6 +248,9 @@ namespace Mistaken.API.Diagnostics
                 }
             });
 
+            if (terminateAfterRoundRestart)
+                ToTerminateAfterRoundRestart.Add(tor);
+
             return tor;
         }
 
@@ -250,8 +259,9 @@ namespace Mistaken.API.Diagnostics
         /// </summary>
         /// <param name="courotine">Delay passed to called function.</param>
         /// <param name="name">Courotine name.</param>
+        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine")
+        public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine", bool terminateAfterRoundRestart = false)
         {
             courotine.RerouteExceptions((ex) =>
             {
@@ -259,6 +269,8 @@ namespace Mistaken.API.Diagnostics
                 this.Log.Error($"[{this.Name}: {name}] {ex}");
             });
             var tor = MEC.Timing.RunCoroutine(courotine);
+            if (terminateAfterRoundRestart)
+                ToTerminateAfterRoundRestart.Add(tor);
             return tor;
         }
 
@@ -270,9 +282,7 @@ namespace Mistaken.API.Diagnostics
         /// <returns>Courotine handle returned by called function.</returns>
         public MEC.CoroutineHandle CreateRoundLoop(IEnumerator<float> innerLoop, string name = "RoundLoop")
         {
-            var tor = this.RunCoroutine(RoundLoop(innerLoop), name);
-            ToTerminateAfterRoundRestart.Add(tor);
-            return tor;
+            return this.RunCoroutine(RoundLoop(innerLoop), name, true);
         }
 
         internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new Dictionary<IPlugin<IConfig>, List<Module>>();
