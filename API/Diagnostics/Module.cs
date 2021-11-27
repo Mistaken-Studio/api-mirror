@@ -26,7 +26,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="name">Function name.</param>
         /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart = false)
+        public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart)
         {
             var tor = MEC.Timing.CallDelayed(delay, () =>
             {
@@ -48,8 +48,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <inheritdoc cref="CallSafeDelayed(float, Action, string, bool)"/>
-        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
-        private static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name)
+        public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name)
             => CallSafeDelayed(delay, action, name, false);
 
         /// <summary>
@@ -59,7 +58,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="name">Courotine name.</param>
         /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart = false)
+        public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
         {
             courotine.RerouteExceptions((ex) =>
             {
@@ -73,8 +72,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <inheritdoc cref="RunSafeCoroutine(IEnumerator{float}, string, bool)"/>
-        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
-        private static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name)
+        public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name)
             => RunSafeCoroutine(courotine, name, false);
 
         /// <summary>
@@ -243,7 +241,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="name">Function name.</param>
         /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed", bool terminateAfterRoundRestart = false)
+        public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart)
         {
             var tor = MEC.Timing.CallDelayed(delay, () =>
             {
@@ -265,8 +263,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <inheritdoc cref="CallDelayed(float, Action, string, bool)"/>
-        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
-        private MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed")
+        public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed")
             => this.CallDelayed(delay, action, name, false);
 
         /// <summary>
@@ -276,7 +273,7 @@ namespace Mistaken.API.Diagnostics
         /// <param name="name">Courotine name.</param>
         /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine", bool terminateAfterRoundRestart = false)
+        public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
         {
             courotine.RerouteExceptions((ex) =>
             {
@@ -290,8 +287,7 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <inheritdoc cref="RunCoroutine(IEnumerator{float}, string, bool)"/>
-        [System.Obsolete("Use overload with terminateAfterRoundRestart", false)]
-        private MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine")
+        public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine")
             => this.RunCoroutine(courotine, name, false);
 
         /// <summary>
