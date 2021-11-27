@@ -60,7 +60,7 @@ namespace Mistaken.API.Diagnostics
         /// <returns>Courotine handle returned by called function.</returns>
         public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
         {
-            courotine.RerouteExceptions((ex) =>
+            courotine = courotine.RerouteExceptions((ex) =>
             {
                 MasterHandler.LogError(ex, null, name);
                 Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex}");
@@ -275,7 +275,7 @@ namespace Mistaken.API.Diagnostics
         /// <returns>Courotine handle returned by called function.</returns>
         public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
         {
-            courotine.RerouteExceptions((ex) =>
+            courotine = courotine.RerouteExceptions((ex) =>
             {
                 MasterHandler.LogError(ex, this, name);
                 this.Log.Error($"[{this.Name}: {name}] {ex}");
