@@ -286,34 +286,6 @@ namespace Mistaken.API.Extensions
         /// <returns>Name.</returns>
         public static string GetDisplayName(this Player player) => player == null ? "NULL" : player.DisplayNickname ?? player.Nickname;
 
-        /*/// <summary>
-        /// Drops greneade under player.
-        /// </summary>
-        /// <param name="me">Player.</param>
-        /// <param name="grenadeType">Grenade type.</param>
-        /// <param name="amount">Amount.</param>
-        public static void DropGrenadeUnder(this Player me, int grenadeType, int amount = 1)
-        {
-            var grenadeManager = me.GameObject.GetComponent<Grenades.GrenadeManager>();
-            Grenades.GrenadeSettings settings = grenadeManager.availableGrenades[grenadeType];
-            for (int i = 0; i < amount; i++)
-            {
-                Grenades.Grenade component = UnityEngine.Object.Instantiate(settings.grenadeInstance).GetComponent<Grenades.Grenade>();
-                component.InitData(grenadeManager, Vector3.zero, Vector3.down);
-                NetworkServer.Spawn(component.gameObject);
-            }
-        }*/
-
-        /// <summary>
-        /// Kills player with message.
-        /// </summary>
-        /// <param name="me">Player.</param>
-        /// <param name="reason">Kill reason.</param>
-        public static void Kill(this Player me, string reason)
-        {
-            me.ReferenceHub.playerStats.HurtPlayer(new PlayerStats.HitInfo(float.MaxValue, $"*{reason}", DamageTypes.None, -1, true), me.GameObject);
-        }
-
         /// <summary>
         /// Converts player to string.
         /// </summary>

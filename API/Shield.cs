@@ -43,7 +43,7 @@ namespace Mistaken.API.Shield
         /// <summary>
         /// Gets max value of shield.
         /// </summary>
-        protected abstract int MaxShield { get; }
+        protected abstract float MaxShield { get; }
 
         /// <summary>
         /// Gets shield's recharage rate per second.
@@ -76,25 +76,20 @@ namespace Mistaken.API.Shield
         protected float CurrentShieldRechargeRate { get; private set; }
 
         /// <summary>
+        /// Gets ... YES.
+        /// </summary>
+        protected PlayerStatsSystem.AhpStat.AhpProcess Process { get; private set; }
+
+        /// <summary>
         /// Unity's Start.
         /// </summary>
         protected virtual void Start()
         {
             Log.Debug("Created " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
+            this.Process = ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerAddProcess(0f, this.MaxShield, this.ShieldRechargeRate, this.ShieldEffectivnes, this.MaxShield, true);
 
-            this.prevArtificialHpDelay = this.Player.ArtificialHealthDecay;
-            this.prevArtificialHpRatio = this.Player.ReferenceHub.playerStats.ArtificialNormalRatio;
-            this.prevMaxArtificialHp = this.Player.MaxArtificialHealth;
-
-            this.InternalTimeUntilShieldRecharge = 5f;
-
-            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
-            Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
-
-            this.Player.MaxArtificialHealth = 5000;
-            this.Player.ArtificialHealthDecay = 0;
-            this.CurrentShieldRechargeRate = 0;
-            this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.ShieldEffectivnes;
+            // Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
+            // Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
         }
 
         /// <summary>
@@ -102,17 +97,14 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void OnDestroy()
         {
-            this.Player.ArtificialHealthDecay = this.prevArtificialHpDelay;
-            this.Player.ReferenceHub.playerStats.ArtificialNormalRatio = this.prevArtificialHpRatio;
-            this.Player.MaxArtificialHealth = this.prevMaxArtificialHp;
+            ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerKillProcess(this.Process.KillCode);
 
-            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
-            Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
-
+            // Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
+            // Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
             Log.Debug("Destoryed " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Unity's FixedUpdate.
         /// </summary>
         protected virtual void FixedUpdate()
@@ -163,7 +155,7 @@ namespace Mistaken.API.Shield
 
         private float prevArtificialHpDelay;
         private float prevArtificialHpRatio;
-        private int prevMaxArtificialHp;
+        private float prevMaxArtificialHp;
 
         private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
         {
@@ -185,6 +177,6 @@ namespace Mistaken.API.Shield
                 return;
 
             this.InternalTimeUntilShieldRecharge = this.TimeUntilShieldRecharge;
-        }
+        }*/
     }
 }

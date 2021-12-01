@@ -8,6 +8,8 @@ using System;
 using System.Threading;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Mirror;
+using RoundRestarting;
 
 namespace Mistaken.API
 {
@@ -27,7 +29,7 @@ namespace Mistaken.API
         public override PluginPriority Priority => PluginPriority.Higher;
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion => new Version(3, 0, 3);
+        public override System.Version RequiredExiledVersion => new System.Version(4, 0, 0);
 
         /// <inheritdoc/>
         public override void OnEnabled()
@@ -90,7 +92,7 @@ namespace Mistaken.API
 
             if (ServerStatic.StopNextRound == ServerStatic.NextRoundAction.Restart)
             {
-                Server.Host.ReferenceHub.playerStats.RpcRoundrestart((float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), true);
+                NetworkServer.SendToAll<RoundRestartMessage>(new RoundRestartMessage(RoundRestartType.FullRestart, (float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true));
                 IdleMode.PauseIdleMode = true;
                 MEC.Timing.CallDelayed(1, () => Server.Restart());
             }

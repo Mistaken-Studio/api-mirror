@@ -40,7 +40,7 @@ namespace Mistaken.API.Utilities
 
         private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
         {
-            if (ev.DamageType == DamageTypes.Scp207)
+            if ((ev.DamageHandler as PlayerStatsSystem.UniversalDamageHandler).TranslationId == PlayerStatsSystem.DeathTranslations.Scp207.Id)
             {
                 if (ev.Target.GetSessionVariable<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
                     ev.IsAllowed = false;
