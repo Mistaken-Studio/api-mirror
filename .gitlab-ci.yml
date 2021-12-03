@@ -2,6 +2,6 @@
 
 
 include:
-    - project: 'Gamer/testyci'
-      ref: master
-      file: '/Default/.gitlab-ci.yml'
+  - project: 'Gamer/testyci'
+    ref: master
+    file: '/Default/.gitlab-ci.yml'
