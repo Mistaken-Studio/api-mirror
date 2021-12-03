@@ -1,6 +1,5 @@
 #To jest testowo tylko
 
-
 include:
   - project: 'Gamer/testyci'
     ref: master
