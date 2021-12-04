@@ -1,6 +1,4 @@
-#To jest testowo tylko
-
 include:
-  - project: 'Gamer/testyci'
+  - project: 'scp-sl/ci'
     ref: master
-    file: '/Default/.gitlab-ci.yml'
+    file: 'entry.gitlab-ci.yml'
