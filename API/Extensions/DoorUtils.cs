@@ -75,12 +75,8 @@ namespace Mistaken.API.Extensions
             if (doorVariant.TryGetComponent<Scp079Interactable>(out var scp079Interactable))
                 UnityEngine.Object.Destroy(scp079Interactable);
             doorVariant.transform.localScale = size;
-            if (doorVariant is BasicDoor door)
-                door._portalCode = 1;
             if (!string.IsNullOrEmpty(name))
                 doorVariant.gameObject.AddComponent<DoorNametagExtension>().UpdateName(name);
-            if (position.y < 900)
-                doorVariant.NetworkActiveLocks |= (ushort)DoorLockReason.AdminCommand;
             if (shouldSpawn)
                 NetworkServer.Spawn(doorVariant.gameObject);
             return doorVariant;
