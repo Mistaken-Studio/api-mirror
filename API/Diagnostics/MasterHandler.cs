@@ -172,6 +172,7 @@ namespace Mistaken.API.Diagnostics
             Log.Debug($"Starting Loop", PluginHandler.Instance.Config.VerbouseOutput);
             while (true)
             {
+                now = DateTime.Now;
                 internalPath = path;
                 try
                 {
