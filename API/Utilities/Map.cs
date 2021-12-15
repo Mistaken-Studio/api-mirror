@@ -452,7 +452,7 @@ namespace Mistaken.API.Utilities
                             RespawnLock = false;
                             foreach (var player in RealPlayers.List)
                             {
-                                player.ReferenceHub.playerStats.TargetReceiveDeathReason(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
+                                player.ReferenceHub.playerStats.TargetReceiveSpecificDeathReason(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
                                 player.Role = RoleType.Spectator;
                             }
 

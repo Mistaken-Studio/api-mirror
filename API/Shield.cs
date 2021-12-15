@@ -86,10 +86,10 @@ namespace Mistaken.API.Shield
         protected virtual void Start()
         {
             Log.Debug("Created " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
-            this.Process = ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerAddProcess(0f, this.MaxShield, this.ShieldRechargeRate, this.ShieldEffectivnes, this.MaxShield, true);
+            this.Process = ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerAddProcess(0f, this.MaxShield, -this.ShieldRechargeRate, this.ShieldEffectivnes, 0, true);
 
-            // Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
-            // Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
+            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
+            Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
         }
 
         /// <summary>
@@ -99,12 +99,12 @@ namespace Mistaken.API.Shield
         {
             ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerKillProcess(this.Process.KillCode);
 
-            // Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
-            // Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
+            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
+            Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
             Log.Debug("Destoryed " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
         }
 
-        /*/// <summary>
+        /// <summary>
         /// Unity's FixedUpdate.
         /// </summary>
         protected virtual void FixedUpdate()
@@ -123,39 +123,35 @@ namespace Mistaken.API.Shield
                 {
                     if (this.Player.ArtificialHealth - 1 < this.MaxShield)
                     {
-                        this.Player.ArtificialHealthDecay = 0;
+                        this.Process.DecayRate = 0;
                         this.CurrentShieldRechargeRate = 0;
                         this.Player.ArtificialHealth = this.MaxShield;
                         return;
                     }
                 }
 
-                this.Player.ArtificialHealthDecay = this.ShieldDropRateOnOverflow;
+                this.Process.DecayRate = this.ShieldDropRateOnOverflow;
                 this.CurrentShieldRechargeRate = -this.ShieldDropRateOnOverflow;
                 return;
             }
             else if (this.Player.ArtificialHealth == this.MaxShield)
             {
-                this.Player.ArtificialHealthDecay = 0;
+                this.Process.DecayRate = 0;
                 this.CurrentShieldRechargeRate = 0;
                 return;
             }
 
             if (this.CanRegen)
             {
-                this.Player.ArtificialHealthDecay = -this.ShieldRechargeRate;
+                this.Process.DecayRate = -this.ShieldRechargeRate;
                 this.CurrentShieldRechargeRate = this.ShieldRechargeRate;
             }
             else
             {
-                this.Player.ArtificialHealthDecay = 0f;
+                this.Process.DecayRate = 0f;
                 this.CurrentShieldRechargeRate = 0;
             }
         }
-
-        private float prevArtificialHpDelay;
-        private float prevArtificialHpRatio;
-        private float prevMaxArtificialHp;
 
         private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
         {
@@ -177,6 +173,6 @@ namespace Mistaken.API.Shield
                 return;
 
             this.InternalTimeUntilShieldRecharge = this.TimeUntilShieldRecharge;
-        }*/
+        }
     }
 }
