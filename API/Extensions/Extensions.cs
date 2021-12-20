@@ -352,7 +352,7 @@ namespace Mistaken.API.Extensions
             pickupSyncInfo = default(PickupSyncInfo);
             thrownProjectile.InfoReceived(pickupSyncInfo, newInfo);
             if (thrownProjectile.TryGetComponent(out Rigidbody component))
-                nade.PropelBody(component, direction, force, upWardFactor);
+                nade.PropelBody(component, direction, Vector3.zero, force, upWardFactor);
 
             thrownProjectile.ServerActivate();
 
