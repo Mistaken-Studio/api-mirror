@@ -109,6 +109,11 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void FixedUpdate()
         {
+            if (this.Process.Limit != this.MaxShield)
+                this.Process.Limit = this.MaxShield;
+            if (this.Process.Efficacy != this.ShieldEffectivnes)
+                this.Process.Efficacy = this.ShieldEffectivnes;
+
             if (this.TimeUntilShieldRecharge != 0f)
             {
                 this.InternalTimeUntilShieldRecharge -= Time.fixedDeltaTime;
