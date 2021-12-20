@@ -204,14 +204,28 @@ namespace Mistaken.API.Diagnostics
 
                     lock (Backlog)
                     {
-                        File.AppendAllLines(filePath, Backlog.Select(x => x.ToString()));
-                        Backlog.Clear();
+                        try
+                        {
+                            File.AppendAllLines(filePath, Backlog.Select(x => x.ToString()).ToArray());
+                            Backlog.Clear();
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.Error(ex);
+                        }
                     }
 
                     lock (ErrorBacklog)
                     {
-                        File.AppendAllLines(Path.Combine(internalPath, "error.log"), ErrorBacklog);
-                        ErrorBacklog.Clear();
+                        try
+                        {
+                            File.AppendAllLines(Path.Combine(internalPath, "error.log"), ErrorBacklog);
+                            ErrorBacklog.Clear();
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.Error(ex);
+                        }
                     }
                 }
                 catch (System.Exception ex)
