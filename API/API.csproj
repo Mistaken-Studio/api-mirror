@@ -86,6 +86,7 @@
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\ReceivingStatusEffectFix.cs" />
     <Compile Include="Patches\RoundInProgressPatch.cs" />
+    <Compile Include="Patches\FixExiledRoomType.cs" />
     <Compile Include="Patches\TestFixPatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Grenades\GrenadeFixOnLeavePatch.cs" />
