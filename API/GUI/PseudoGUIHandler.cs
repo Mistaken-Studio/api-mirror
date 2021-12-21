@@ -64,6 +64,7 @@ namespace Mistaken.API.GUI
             if (player == null)
             {
                 Log.Warn("Tried to set GUI for null player");
+                Log.Warn(Environment.StackTrace);
                 return;
             }
 
