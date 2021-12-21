@@ -61,6 +61,12 @@ namespace Mistaken.API.GUI
 
         internal static void Set(Player player, string key, PseudoGUIPosition type, string content)
         {
+            if (player == null)
+            {
+                Log.Warn("Tried to set GUI for null player");
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(content))
             {
                 if (!CustomInfo.TryGetValue(player, out Dictionary<string, (string, PseudoGUIPosition)> value) || !value.ContainsKey(key))
