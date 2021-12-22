@@ -132,10 +132,13 @@ namespace Mistaken.API.GUI
                             continue;
                         }
 
-                        foreach (var item in ToUpdate.ToArray())
+                        lock (ToUpdate)
                         {
-                            if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
-                                this.ConstructString(item);
+                            foreach (var item in ToUpdate.ToArray())
+                            {
+                                if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
+                                    this.ConstructString(item);
+                            }
                         }
 
                         ToUpdate.Clear();
