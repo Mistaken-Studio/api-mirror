@@ -16,6 +16,7 @@ using Footprinting;
 using InventorySystem.Items.Pickups;
 using InventorySystem.Items.ThrowableProjectiles;
 using Mirror;
+using PlayerStatsSystem;
 using UnityEngine;
 
 namespace Mistaken.API.Extensions
@@ -368,5 +369,24 @@ namespace Mistaken.API.Extensions
         /// <returns>Thrown projectile.</returns>
         public static ThrownProjectile Throw(this Throwable throwable, Vector3 position, Vector3 direction)
             => Throw(throwable, position, direction, throwable.Base.WeakThrowSettings.StartVelocity, throwable.Base.WeakThrowSettings.UpwardsFactor);
+
+        /// <summary>
+        /// Returns if player will die because of damage caused by <paramref name="handler"/>.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="handler">Damage Cause.</param>
+        /// <returns>If player will die because of this damage.</returns>
+        public static bool WillDie(this Player player, DamageHandlerBase handler)
+        {
+            var tmp = player.ActiveArtificialHealthProcesses.Select(x => new { Process = x, x.CurrentAmount });
+            var hp = player.Health;
+            var death = handler.ApplyDamage(player.ReferenceHub) == DamageHandlerBase.HandlerOutput.Death;
+
+            player.Health = hp;
+            foreach (var item in tmp)
+                item.Process.CurrentAmount = item.CurrentAmount;
+
+            return death;
+        }
     }
 }
