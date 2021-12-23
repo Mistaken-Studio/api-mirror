@@ -4,6 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using InventorySystem.Items.Keycards;
+using InventorySystem.Items.Pickups;
+
 namespace Mistaken.API
 {
     /// <summary>
@@ -63,5 +66,9 @@ namespace Mistaken.API
 
         /// <plugin>API</plugin>
         INFINITE_AMMO,
+
+        /// <plugin>BetterDoors</plugin>
+        /// <returns><see cref="ItemPickupBase"/>, <see cref="KeycardPickup"/></returns>
+        THROWN_ITEM,
     }
 }
