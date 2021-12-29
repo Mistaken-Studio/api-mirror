@@ -100,13 +100,13 @@ namespace Mistaken.API.CustomSlots
                 return;
             }
 
-            // Server Not full
-            if (Mirror.LiteNetLib4Mirror.LiteNetLib4MirrorCore.Host.ConnectedPeersCount < RealSlots)
-                return;
-
             // Has Dynamic Reserved Slot
-            else if (DynamicReservedSlots.Contains(ev.UserId))
+            if (DynamicReservedSlots.Contains(ev.UserId))
                 ConnectedDynamicSlots.Add(ev.UserId);
+
+            // Server Not full
+            else if (Mirror.LiteNetLib4Mirror.LiteNetLib4MirrorCore.Host.ConnectedPeersCount < RealSlots)
+                return;
 
             // Has Reserved Slot
             else if (ReservedSlot.Users.Contains(ev.UserId) || DynamicReservedSlots.Contains(ev.UserId))
