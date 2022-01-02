@@ -328,7 +328,10 @@ namespace Mistaken.API.Diagnostics
             yield return Timing.WaitUntilTrue(() => Exiled.API.Features.Round.IsStarted);
 
             while (Exiled.API.Features.Round.IsStarted)
+            {
+                innerLoop.Reset();
                 yield return innerLoop.WaitUntilDone();
+            }
         }
     }
 }
