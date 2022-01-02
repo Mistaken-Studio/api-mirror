@@ -81,9 +81,16 @@ namespace Mistaken.API.Diagnostics
         /// <param name="innerLoop">Courotine executed in round. Has to contain own delay!.</param>
         /// <param name="name">Courotine name.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle CreateSafeRoundLoop(IEnumerator<float> innerLoop, string name)
+        public static MEC.CoroutineHandle CreateSafeRoundLoop(Func<IEnumerator<float>> innerLoop, string name)
         {
             return RunSafeCoroutine(RoundLoop(innerLoop), name, true);
+        }
+
+        [System.Obsolete("Use Func overload", true)]
+        public static MEC.CoroutineHandle CreateSafeRoundLoop(IEnumerator<float> innerLoop, string name)
+        {
+            throw new Exception("Does not work :/");
+
         }
 
         /// <summary>
@@ -296,9 +303,15 @@ namespace Mistaken.API.Diagnostics
         /// <param name="innerLoop">Courotine executed in round. Has to contain own delay!.</param>
         /// <param name="name">Courotine name.</param>
         /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle CreateRoundLoop(IEnumerator<float> innerLoop, string name = "RoundLoop")
+        public MEC.CoroutineHandle CreateRoundLoop(Func<IEnumerator<float>> innerLoop, string name = "RoundLoop")
         {
             return this.RunCoroutine(RoundLoop(innerLoop), name, true);
+        }
+
+        [System.Obsolete("Use Func overload", true)]
+        public MEC.CoroutineHandle CreateRoundLoop(IEnumerator<float> innerLoop, string name = "RoundLoop")
+        {
+            throw new Exception("Does not work :/");
         }
 
         internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new Dictionary<IPlugin<IConfig>, List<Module>>();
@@ -323,10 +336,12 @@ namespace Mistaken.API.Diagnostics
 
         private static readonly List<MEC.CoroutineHandle> ToTerminateAfterRoundRestart = new List<MEC.CoroutineHandle>();
 
-        private static IEnumerator<float> RoundLoop(IEnumerator<float> innerLoop)
+        private static IEnumerator<float> RoundLoop(Func<IEnumerator<float>> innerLoop)
         {
+            yield return Timing.WaitUntilTrue(() => Exiled.API.Features.Round.IsStarted);
+
             while (Exiled.API.Features.Round.IsStarted)
-                yield return innerLoop.WaitUntilDone();
+                yield return innerLoop().WaitUntilDone();
         }
     }
 }
