@@ -141,7 +141,8 @@ namespace Mistaken.API.Diagnostics
         {
             if (type != LogType.Exception)
             {
-                Log.Debug($"[DIAGNOSTICS] Skipped {type}, {condition}");
+                if (type == LogType.Exception || type == LogType.Assert)
+                    Log.Debug($"[DIAGNOSTICS] Skipped {type}, {condition}");
                 return;
             }
 
