@@ -90,7 +90,6 @@ namespace Mistaken.API.Diagnostics
         public static MEC.CoroutineHandle CreateSafeRoundLoop(IEnumerator<float> innerLoop, string name)
         {
             throw new Exception("Does not work :/");
-
         }
 
         /// <summary>
