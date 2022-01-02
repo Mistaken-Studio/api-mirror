@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
+using UnityEngine;
 
 namespace Mistaken.API.Diagnostics
 {
@@ -130,9 +131,24 @@ namespace Mistaken.API.Diagnostics
             CustomNetworkManager.singleton.gameObject.AddComponent<DeltaTimeChecker>();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Application.logMessageReceived += Application_logMessageReceived;
 
             _ = SaveLoop();
             initiated = true;
+        }
+
+        private static void Application_logMessageReceived(string condition, string stackTrace, LogType type)
+        {
+            if (type != LogType.Exception)
+            {
+                Log.Debug($"[DIAGNOSTICS] Skipped {type}, {condition}");
+                return;
+            }
+
+            ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [Application_logMessageReceived] Caused Exception");
+            ErrorBacklog.Add(condition + "\n" + stackTrace);
+            Log.Error($"Detected Unity LogMessage of typ Exception");
+            Log.Error(condition + "\n" + stackTrace);
         }
 
         private static readonly List<Entry> Backlog = new List<Entry>();
