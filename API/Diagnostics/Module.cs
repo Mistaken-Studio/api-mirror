@@ -325,6 +325,8 @@ namespace Mistaken.API.Diagnostics
 
         private static IEnumerator<float> RoundLoop(IEnumerator<float> innerLoop)
         {
+            yield return Timing.WaitUntilTrue(() => Exiled.API.Features.Round.IsStarted);
+
             while (Exiled.API.Features.Round.IsStarted)
                 yield return innerLoop.WaitUntilDone();
         }
