@@ -129,6 +129,8 @@ namespace Mistaken.API.Diagnostics
 
             CustomNetworkManager.singleton.gameObject.AddComponent<DeltaTimeChecker>();
 
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             _ = SaveLoop();
             initiated = true;
         }
@@ -136,6 +138,13 @@ namespace Mistaken.API.Diagnostics
         private static readonly List<Entry> Backlog = new List<Entry>();
         private static readonly List<string> ErrorBacklog = new List<string>();
         private static bool initiated = false;
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            LogError(e.ExceptionObject as System.Exception, "UnhandledException");
+            Log.Error($"Detected UnhandledException, Is Terminating: {e.IsTerminating}");
+            Log.Error(e.ExceptionObject);
+        }
 
         private static async Task SaveLoop()
         {
