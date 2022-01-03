@@ -130,6 +130,7 @@ namespace Mistaken.API.Diagnostics
                 try
                 {
                     item.OnDisable();
+                    MEC.Timing.KillCoroutines(item.coroutines.ToArray());
                 }
                 catch (Exception ex)
                 {
@@ -183,6 +184,7 @@ namespace Mistaken.API.Diagnostics
                     try
                     {
                         item.OnDisable();
+                        MEC.Timing.KillCoroutines(item.coroutines.ToArray());
                     }
                     catch (Exception ex)
                     {
@@ -262,6 +264,7 @@ namespace Mistaken.API.Diagnostics
                 }
             });
 
+            this.coroutines.Add(tor);
             if (terminateAfterRoundRestart)
                 ToTerminateAfterRoundRestart.Add(tor);
 
@@ -287,6 +290,7 @@ namespace Mistaken.API.Diagnostics
                 this.Log.Error($"[{this.Name}: {name}] {ex}");
             });
             var tor = MEC.Timing.RunCoroutine(courotine);
+            this.coroutines.Add(tor);
             if (terminateAfterRoundRestart)
                 ToTerminateAfterRoundRestart.Add(tor);
             return tor;
@@ -304,7 +308,9 @@ namespace Mistaken.API.Diagnostics
         /// <returns>Courotine handle returned by called function.</returns>
         public MEC.CoroutineHandle CreateRoundLoop(Func<IEnumerator<float>> innerLoop, string name = "RoundLoop")
         {
-            return this.RunCoroutine(RoundLoop(innerLoop), name, true);
+            var tor = this.RunCoroutine(RoundLoop(innerLoop), name, true);
+            this.coroutines.Add(tor);
+            return tor;
         }
 
         [System.Obsolete("Use Func overload", true)]
@@ -342,5 +348,7 @@ namespace Mistaken.API.Diagnostics
             while (Exiled.API.Features.Round.IsStarted)
                 yield return innerLoop().WaitUntilDone();
         }
+
+        private readonly List<MEC.CoroutineHandle> coroutines = new List<CoroutineHandle>();
     }
 }
