@@ -57,7 +57,10 @@ namespace Mistaken.API.Utilities
         /// <summary>
         /// Gets neighbor rooms.
         /// </summary>
-        public Room[] Neighbors { get; private set; }
+        public Room[] Neighbors
+        {
+            get => this.neighbors ?? this.UpdateNeighbors();
+        }
 
         /// <summary>
         /// Gets far Neighbor rooms (Neighbors + Neighbors' Neighbors forward from this room the same way as neighbor.
@@ -76,9 +79,9 @@ namespace Mistaken.API.Utilities
 
                 List<int> zAxis = new List<int>();
                 List<int> xAxis = new List<int>();
-                try
+                foreach (var item in lczRooms)
                 {
-                    foreach (var item in lczRooms)
+                    try
                     {
                         int z = (int)Math.Floor(item.Position.z);
                         int x = (int)Math.Floor(item.Position.x);
@@ -87,42 +90,29 @@ namespace Mistaken.API.Utilities
                         if (!xAxis.Contains(x))
                             xAxis.Add(x);
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error("CatchId: 3");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    catch (System.Exception ex)
+                    {
+                        Log.Error(ex);
+                    }
                 }
 
                 xAxis.Sort();
                 zAxis.Sort();
-                try
+                for (int i = 0; i < xAxis.Count; i++)
                 {
-                    for (int i = 0; i < xAxis.Count; i++)
+                    try
                     {
-                        try
+                        var x = xAxis[i];
+                        if (!lczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
                         {
-                            var x = xAxis[i];
-                            if (!lczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
-                            {
-                                xAxis.RemoveAt(i);
-                                i--;
-                            }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 6.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            xAxis.RemoveAt(i);
+                            i--;
                         }
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error("CatchId: 6");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    catch (System.Exception ex)
+                    {
+                        Log.Error(ex);
+                    }
                 }
 
                 zAxis.Reverse();
@@ -131,41 +121,28 @@ namespace Mistaken.API.Utilities
                     LCZ = new Room[zAxis.Count, xAxis.Count];
                     for (int i = 0; i < zAxis.Count; i++)
                     {
-                        try
+                        var z = zAxis[i];
+                        for (int j = 0; j < xAxis.Count; j++)
                         {
-                            var z = zAxis[i];
-                            for (int j = 0; j < xAxis.Count; j++)
+                            try
                             {
-                                try
-                                {
-                                    var x = xAxis[j];
-                                    var room = lczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
-                                    if (room is null)
-                                        LCZ[i, j] = null;
-                                    else
-                                        LCZ[i, j] = new Room(room);
-                                }
-                                catch (System.Exception ex)
-                                {
-                                    Log.Error("CatchId: 4.2");
-                                    Log.Error(ex.Message);
-                                    Log.Error(ex.StackTrace);
-                                }
+                                var x = xAxis[j];
+                                var room = lczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                if (room is null)
+                                    LCZ[i, j] = null;
+                                else
+                                    LCZ[i, j] = Room.Get(room);
                             }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 4.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            catch (System.Exception ex)
+                            {
+                                Log.Error(ex);
+                            }
                         }
                     }
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error("CatchId: 4");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    Log.Error(ex);
                 }
 
                 var hczRooms = Exiled.API.Features.Map.Rooms.Where(r => r.Zone == ZoneType.HeavyContainment && r.Type != RoomType.Pocket);
@@ -186,39 +163,27 @@ namespace Mistaken.API.Utilities
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error("CatchId: 3");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    Log.Error(ex);
                 }
 
                 xAxis.Sort();
                 zAxis.Sort();
-                try
+
+                for (int i = 0; i < xAxis.Count; i++)
                 {
-                    for (int i = 0; i < xAxis.Count; i++)
+                    try
                     {
-                        try
+                        var x = xAxis[i];
+                        if (!hczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
                         {
-                            var x = xAxis[i];
-                            if (!hczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
-                            {
-                                xAxis.RemoveAt(i);
-                                i--;
-                            }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 6.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            xAxis.RemoveAt(i);
+                            i--;
                         }
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error("CatchId: 6");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    catch (System.Exception ex)
+                    {
+                        Log.Error(ex);
+                    }
                 }
 
                 zAxis.Reverse();
@@ -227,41 +192,28 @@ namespace Mistaken.API.Utilities
                     HCZ = new Room[zAxis.Count, xAxis.Count];
                     for (int i = 0; i < zAxis.Count; i++)
                     {
-                        try
+                        var z = zAxis[i];
+                        for (int j = 0; j < xAxis.Count; j++)
                         {
-                            var z = zAxis[i];
-                            for (int j = 0; j < xAxis.Count; j++)
+                            try
                             {
-                                try
-                                {
-                                    var x = xAxis[j];
-                                    var room = hczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
-                                    if (room is null)
-                                        HCZ[i, j] = null;
-                                    else
-                                        HCZ[i, j] = new Room(room);
-                                }
-                                catch (System.Exception ex)
-                                {
-                                    Log.Error("CatchId: 4.2");
-                                    Log.Error(ex.Message);
-                                    Log.Error(ex.StackTrace);
-                                }
+                                var x = xAxis[j];
+                                var room = hczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                if (room is null)
+                                    HCZ[i, j] = null;
+                                else
+                                    HCZ[i, j] = Room.Get(room);
                             }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 4.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            catch (System.Exception ex)
+                            {
+                                Log.Error(ex);
+                            }
                         }
                     }
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error("CatchId: 4");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    Log.Error(ex);
                 }
 
                 var ezRooms = Exiled.API.Features.Map.Rooms.Where(r => r.Zone == ZoneType.Entrance);
@@ -282,39 +234,27 @@ namespace Mistaken.API.Utilities
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error("CatchId: 3");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    Log.Error(ex);
                 }
 
                 xAxis.Sort();
                 zAxis.Sort();
-                try
+
+                for (int i = 0; i < xAxis.Count; i++)
                 {
-                    for (int i = 0; i < xAxis.Count; i++)
+                    try
                     {
-                        try
+                        var x = xAxis[i];
+                        if (!ezRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
                         {
-                            var x = xAxis[i];
-                            if (!ezRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
-                            {
-                                xAxis.RemoveAt(i);
-                                i--;
-                            }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 6.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            xAxis.RemoveAt(i);
+                            i--;
                         }
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error("CatchId: 6");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    catch (System.Exception ex)
+                    {
+                        Log.Error(ex);
+                    }
                 }
 
                 zAxis.Reverse();
@@ -323,103 +263,68 @@ namespace Mistaken.API.Utilities
                     EZ = new Room[zAxis.Count, xAxis.Count];
                     for (int i = 0; i < zAxis.Count; i++)
                     {
-                        try
+                        var z = zAxis[i];
+                        for (int j = 0; j < xAxis.Count; j++)
                         {
-                            var z = zAxis[i];
-                            for (int j = 0; j < xAxis.Count; j++)
+                            try
                             {
-                                try
-                                {
-                                    var x = xAxis[j];
-                                    var room = ezRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
-                                    if (room is null)
-                                        EZ[i, j] = null;
-                                    else
-                                        EZ[i, j] = new Room(room);
-                                }
-                                catch (System.Exception ex)
-                                {
-                                    Log.Error("CatchId: 4.2");
-                                    Log.Error(ex.Message);
-                                    Log.Error(ex.StackTrace);
-                                }
+                                var x = xAxis[j];
+                                var room = ezRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                if (room is null)
+                                    EZ[i, j] = null;
+                                else
+                                    EZ[i, j] = Room.Get(room);
                             }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 4.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            catch (System.Exception ex)
+                            {
+                                Log.Error(ex);
+                            }
                         }
                     }
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error("CatchId: 4");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    Log.Error(ex);
                 }
 
                 var ezHczRooms = Exiled.API.Features.Map.Rooms.Where(r => (r.Zone == ZoneType.HeavyContainment || r.Zone == ZoneType.Entrance) && r.Type != RoomType.Pocket);
 
                 zAxis.Clear();
                 xAxis.Clear();
-                try
+                foreach (var item in ezHczRooms)
                 {
-                    foreach (var item in ezHczRooms)
+                    try
                     {
-                        try
-                        {
-                            int z = (int)Math.Floor(item.Position.z);
-                            int x = (int)Math.Floor(item.Position.x);
-                            if (!zAxis.Contains(z))
-                                zAxis.Add(z);
-                            if (!xAxis.Contains(x))
-                                xAxis.Add(x);
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 5.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
-                        }
+                        int z = (int)Math.Floor(item.Position.z);
+                        int x = (int)Math.Floor(item.Position.x);
+                        if (!zAxis.Contains(z))
+                            zAxis.Add(z);
+                        if (!xAxis.Contains(x))
+                            xAxis.Add(x);
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error("CatchId: 5");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    catch (System.Exception ex)
+                    {
+                        Log.Error(ex);
+                    }
                 }
 
                 xAxis.Sort();
                 zAxis.Sort();
-                try
+                for (int i = 0; i < xAxis.Count; i++)
                 {
-                    for (int i = 0; i < xAxis.Count; i++)
+                    try
                     {
-                        try
+                        var x = xAxis[i];
+                        if (!ezHczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
                         {
-                            var x = xAxis[i];
-                            if (!ezHczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
-                            {
-                                xAxis.RemoveAt(i);
-                                i--;
-                            }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 6.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            xAxis.RemoveAt(i);
+                            i--;
                         }
                     }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error("CatchId: 6");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    catch (System.Exception ex)
+                    {
+                        Log.Error(ex);
+                    }
                 }
 
                 zAxis.Reverse();
@@ -428,55 +333,40 @@ namespace Mistaken.API.Utilities
                 {
                     for (int i = 0; i < zAxis.Count; i++)
                     {
-                        try
+                        var z = zAxis[i];
+                        for (int j = 0; j < xAxis.Count; j++)
                         {
-                            var z = zAxis[i];
-                            for (int j = 0; j < xAxis.Count; j++)
+                            try
                             {
-                                try
-                                {
-                                    var x = xAxis[j];
-                                    var room = ezHczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
-                                    if (room is null)
-                                        EZ_HCZ[i, j] = null;
-                                    else
-                                        EZ_HCZ[i, j] = new Room(room);
-                                }
-                                catch (System.Exception ex)
-                                {
-                                    Log.Error("CatchId: 7.2");
-                                    Log.Error(ex.Message);
-                                    Log.Error(ex.StackTrace);
-                                }
+                                var x = xAxis[j];
+                                var room = ezHczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                if (room is null)
+                                    EZ_HCZ[i, j] = null;
+                                else
+                                    EZ_HCZ[i, j] = Room.Get(room);
                             }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("CatchId: 7.1");
-                            Log.Error(ex.Message);
-                            Log.Error(ex.StackTrace);
+                            catch (System.Exception ex)
+                            {
+                                Log.Error(ex);
+                            }
                         }
                     }
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error("CatchId: 7");
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    Log.Error(ex);
                 }
+
+                foreach (var item in LCZ)
+                    item?.Initialize();
+
+                foreach (var item in EZ_HCZ)
+                    item?.Initialize();
             }
             catch (System.Exception ex)
             {
-                Log.Error("CatchId: 0");
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
+                Log.Error(ex);
             }
-
-            foreach (var item in LCZ)
-                item?.Initialize();
-
-            foreach (var item in EZ_HCZ)
-                item?.Initialize();
         }
 
         internal Room(Exiled.API.Features.Room exiledRoom)
@@ -494,11 +384,11 @@ namespace Mistaken.API.Utilities
 
         internal void Initialize()
         {
-            this.UpdateMyXAndMyY();
             this.UpdateNeighbors();
         }
 
         private Room[] farNeighbors = null;
+        private Room[] neighbors = null;
 
         private void UpdateMyXAndMyY()
         {
@@ -538,62 +428,104 @@ namespace Mistaken.API.Utilities
                     throw new Exception($"Can't find myX and myY for {this.ExiledRoom.Type} in Light ({this.ExiledRoom.Zone})");
 
                 default:
+                    this.MyX = -1;
+                    this.MyY = -1;
                     break;
             }
         }
 
-        private void UpdateNeighbors()
+        private Room[] UpdateNeighbors()
         {
+            this.UpdateMyXAndMyY();
             HashSet<Room> list = new HashSet<Room>();
             switch (this.ExiledRoom.Zone)
             {
                 case ZoneType.Entrance:
                 case ZoneType.HeavyContainment:
-                    for (int x = Math.Max(0, this.MyX - 1); x < Math.Min(EZ_HCZ.GetLength(0), this.MyX + 1); x++)
-                    {
-                        for (int y = Math.Max(0, this.MyY - 1); y < Math.Min(EZ_HCZ.GetLength(1), this.MyY + 1); y++)
-                        {
-                            list.Add(EZ_HCZ[x, y]);
-                        }
-                    }
+
+                    if (this.MyX - 1 >= 0)
+                        list.Add(EZ_HCZ[this.MyX - 1, this.MyY]);
+                    if (this.MyX + 1 < EZ_HCZ.GetLength(0))
+                        list.Add(EZ_HCZ[this.MyX + 1, this.MyY]);
+
+                    if (this.MyY - 1 >= 0)
+                        list.Add(EZ_HCZ[this.MyX, this.MyY - 1]);
+                    if (this.MyY + 1 < EZ_HCZ.GetLength(1))
+                        list.Add(EZ_HCZ[this.MyX, this.MyY + 1]);
 
                     break;
 
                 case ZoneType.LightContainment:
-                    for (int x = Math.Max(0, this.MyX - 1); x < Math.Min(LCZ.GetLength(0), this.MyX + 1); x++)
-                    {
-                        for (int y = Math.Max(0, this.MyY - 1); y < Math.Min(LCZ.GetLength(1), this.MyY + 1); y++)
-                        {
-                            list.Add(LCZ[x, y]);
-                        }
-                    }
+
+                    if (this.MyX - 1 >= 0)
+                        list.Add(LCZ[this.MyX - 1, this.MyY]);
+                    if (this.MyX + 1 < LCZ.GetLength(0))
+                        list.Add(LCZ[this.MyX + 1, this.MyY]);
+
+                    if (this.MyY - 1 >= 0)
+                        list.Add(LCZ[this.MyX, this.MyY - 1]);
+                    if (this.MyY + 1 < LCZ.GetLength(1))
+                        list.Add(LCZ[this.MyX, this.MyY + 1]);
 
                     break;
 
                 default:
-                    break;
+                    this.neighbors = new Room[0];
+                    return this.neighbors;
             }
 
             list.Remove(this);
-            this.Neighbors = list.ToArray();
+            list.Remove(null);
+            this.neighbors = list.ToArray();
+            return this.neighbors;
         }
 
         private Room[] UpdateFarNeighbors()
         {
             HashSet<Room> list = new HashSet<Room>();
+            if (this.Neighbors is null)
+            {
+                Log.Warn("Neighbor list is null");
+                return null;
+            }
+
             foreach (var neighbor in this.Neighbors)
             {
+                if (neighbor is null)
+                {
+                    Log.Warn("Neighbor is null");
+                    continue;
+                }
+
                 list.Add(neighbor);
+                if (neighbor.Neighbors is null)
+                {
+                    Log.Warn("Neighbor's Neighbor list is null");
+                    continue;
+                }
+
                 foreach (var farNeighbor in neighbor.Neighbors)
                 {
-                    if (this.MyX > neighbor.MyX && neighbor.MyX > farNeighbor.MyX)
-                        list.Add(farNeighbor);
-                    else if (this.MyX < neighbor.MyX && neighbor.MyX < farNeighbor.MyX)
-                        list.Add(farNeighbor);
-                    else if (this.MyY > neighbor.MyY && neighbor.MyY > farNeighbor.MyY)
-                        list.Add(farNeighbor);
-                    else if (this.MyY < neighbor.MyY && neighbor.MyY < farNeighbor.MyY)
-                        list.Add(farNeighbor);
+                    if (farNeighbor is null)
+                    {
+                        Log.Warn("FarNeighbor is null");
+                        continue;
+                    }
+
+                    if (this.MyY == farNeighbor.MyY)
+                    {
+                        if (this.MyX > neighbor.MyX && neighbor.MyX > farNeighbor.MyX)
+                            list.Add(farNeighbor);
+                        else if (this.MyX < neighbor.MyX && neighbor.MyX < farNeighbor.MyX)
+                            list.Add(farNeighbor);
+                    }
+                    else if (this.MyX == farNeighbor.MyX)
+                    {
+                        if (this.MyY > neighbor.MyY && neighbor.MyY > farNeighbor.MyY)
+                            list.Add(farNeighbor);
+                        else if (this.MyY < neighbor.MyY && neighbor.MyY < farNeighbor.MyY)
+                            list.Add(farNeighbor);
+                    }
                 }
             }
 
