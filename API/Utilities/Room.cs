@@ -459,10 +459,10 @@ namespace Mistaken.API.Utilities
             }
 
             foreach (var item in LCZ)
-                item.Initialize();
+                item?.Initialize();
 
             foreach (var item in EZ_HCZ)
-                item.Initialize();
+                item?.Initialize();
         }
 
         internal Room(Exiled.API.Features.Room exiledRoom)
