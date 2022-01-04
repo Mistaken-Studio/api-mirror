@@ -84,6 +84,7 @@ namespace Mistaken.API
         {
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
+            Utilities.Room.Reload();
         }
 
         private void Server_RestartingRound()
