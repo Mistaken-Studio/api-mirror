@@ -451,6 +451,9 @@ namespace Mistaken.API.Utilities
 
         internal Room(Exiled.API.Features.Room exiledRoom)
         {
+            if (exiledRoom is null)
+                throw new ArgumentNullException(nameof(exiledRoom));
+
             this.ExiledRoom = exiledRoom;
         }
 
@@ -524,6 +527,7 @@ namespace Mistaken.API.Utilities
                     }
 
                     break;
+
                 case ZoneType.LightContainment:
                     for (int x = Math.Max(0, this.MyX - 1); x < Math.Min(LCZ.GetLength(0), this.MyX + 1); x++)
                     {
@@ -534,6 +538,7 @@ namespace Mistaken.API.Utilities
                     }
 
                     break;
+
                 default:
                     break;
             }
