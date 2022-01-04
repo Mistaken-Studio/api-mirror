@@ -19,24 +19,37 @@ namespace Mistaken.API.Utilities
     public class Room
     {
         /// <summary>
-        /// Gets lCZ Rooms.
+        /// Rooms.
+        /// </summary>
+        public static readonly Dictionary<Exiled.API.Features.Room, Room> Rooms = new Dictionary<Exiled.API.Features.Room, Room>();
+
+        /// <summary>
+        /// Gets LCZ Rooms.
         /// </summary>
         public static Room[,] LCZ { get; private set; } = new Room[0, 0];
 
         /// <summary>
-        /// Gets hCZ Rooms.
+        /// Gets HCZ Rooms.
         /// </summary>
         public static Room[,] HCZ { get; private set; } = new Room[0, 0];
 
         /// <summary>
-        /// Gets eZ Rooms.
+        /// Gets EZ Rooms.
         /// </summary>
         public static Room[,] EZ { get; private set; } = new Room[0, 0];
 
         /// <summary>
-        /// Gets eZ and HCZ Rooms.
+        /// Gets EZ and HCZ Rooms.
         /// </summary>
         public static Room[,] EZ_HCZ { get; private set; } = new Room[0, 0];
+
+        /// <summary>
+        /// Gets room.
+        /// </summary>
+        /// <param name="room">Exiled's Room.</param>
+        /// <returns>Room.</returns>
+        public static Room Get(Exiled.API.Features.Room room)
+            => room is null ? null : (Rooms.ContainsKey(room) ? Rooms[room] : new Room(room));
 
         /// <inheritdoc cref="Exiled.API.Features.Room"/>
         public Exiled.API.Features.Room ExiledRoom { get; }
@@ -56,6 +69,7 @@ namespace Mistaken.API.Utilities
 
         internal static void Reload()
         {
+            Rooms.Clear();
             try
             {
                 var lczRooms = Exiled.API.Features.Map.Rooms.Where(r => r.Zone == ZoneType.LightContainment);
@@ -471,6 +485,7 @@ namespace Mistaken.API.Utilities
                 throw new ArgumentNullException(nameof(exiledRoom));
 
             this.ExiledRoom = exiledRoom;
+            Rooms.Add(exiledRoom, this);
         }
 
         internal int MyX { get; private set; }
