@@ -137,6 +137,17 @@ namespace Mistaken.API.Diagnostics
             initiated = true;
         }
 
+        private static readonly List<Entry> Backlog = new List<Entry>();
+        private static readonly List<string> ErrorBacklog = new List<string>();
+        private static bool initiated = false;
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            LogError(e.ExceptionObject as System.Exception, "UnhandledException");
+            Log.Error($"Detected UnhandledException, Is Terminating: {e.IsTerminating}");
+            Log.Error(e.ExceptionObject);
+        }
+
         private static void Application_logMessageReceived(string condition, string stackTrace, LogType type)
         {
             if (type != LogType.Exception)
@@ -150,17 +161,6 @@ namespace Mistaken.API.Diagnostics
             ErrorBacklog.Add(condition + "\n" + stackTrace);
             Log.Error($"Detected Unity LogMessage of typ Exception");
             Log.Error(condition + "\n" + stackTrace);
-        }
-
-        private static readonly List<Entry> Backlog = new List<Entry>();
-        private static readonly List<string> ErrorBacklog = new List<string>();
-        private static bool initiated = false;
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            LogError(e.ExceptionObject as System.Exception, "UnhandledException");
-            Log.Error($"Detected UnhandledException, Is Terminating: {e.IsTerminating}");
-            Log.Error(e.ExceptionObject);
         }
 
         private static async Task SaveLoop()
