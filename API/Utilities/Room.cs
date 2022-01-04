@@ -83,6 +83,34 @@ namespace Mistaken.API.Utilities
 
                 xAxis.Sort();
                 zAxis.Sort();
+                try
+                {
+                    for (int i = 0; i < xAxis.Count; i++)
+                    {
+                        try
+                        {
+                            var x = xAxis[i];
+                            if (!lczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
+                            {
+                                xAxis.RemoveAt(i);
+                                i--;
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.Error("CatchId: 6.1");
+                            Log.Error(ex.Message);
+                            Log.Error(ex.StackTrace);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error("CatchId: 6");
+                    Log.Error(ex.Message);
+                    Log.Error(ex.StackTrace);
+                }
+
                 zAxis.Reverse();
                 try
                 {
@@ -92,7 +120,6 @@ namespace Mistaken.API.Utilities
                         try
                         {
                             var z = zAxis[i];
-                            List<Room> roomsList = new List<Room>();
                             for (int j = 0; j < xAxis.Count; j++)
                             {
                                 try
@@ -148,6 +175,34 @@ namespace Mistaken.API.Utilities
 
                 xAxis.Sort();
                 zAxis.Sort();
+                try
+                {
+                    for (int i = 0; i < xAxis.Count; i++)
+                    {
+                        try
+                        {
+                            var x = xAxis[i];
+                            if (!hczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
+                            {
+                                xAxis.RemoveAt(i);
+                                i--;
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.Error("CatchId: 6.1");
+                            Log.Error(ex.Message);
+                            Log.Error(ex.StackTrace);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error("CatchId: 6");
+                    Log.Error(ex.Message);
+                    Log.Error(ex.StackTrace);
+                }
+
                 zAxis.Reverse();
                 try
                 {
@@ -157,7 +212,6 @@ namespace Mistaken.API.Utilities
                         try
                         {
                             var z = zAxis[i];
-                            List<Room> roomsList = new List<Room>();
                             for (int j = 0; j < xAxis.Count; j++)
                             {
                                 try
@@ -213,6 +267,34 @@ namespace Mistaken.API.Utilities
 
                 xAxis.Sort();
                 zAxis.Sort();
+                try
+                {
+                    for (int i = 0; i < xAxis.Count; i++)
+                    {
+                        try
+                        {
+                            var x = xAxis[i];
+                            if (!ezRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
+                            {
+                                xAxis.RemoveAt(i);
+                                i--;
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.Error("CatchId: 6.1");
+                            Log.Error(ex.Message);
+                            Log.Error(ex.StackTrace);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error("CatchId: 6");
+                    Log.Error(ex.Message);
+                    Log.Error(ex.StackTrace);
+                }
+
                 zAxis.Reverse();
                 try
                 {
@@ -222,7 +304,6 @@ namespace Mistaken.API.Utilities
                         try
                         {
                             var z = zAxis[i];
-                            List<Room> roomsList = new List<Room>();
                             for (int j = 0; j < xAxis.Count; j++)
                             {
                                 try
@@ -324,7 +405,6 @@ namespace Mistaken.API.Utilities
                         try
                         {
                             var z = zAxis[i];
-                            List<Room> roomsList = new List<Room>();
                             for (int j = 0; j < xAxis.Count; j++)
                             {
                                 try
