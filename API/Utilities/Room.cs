@@ -441,18 +441,28 @@ namespace Mistaken.API.Utilities
                 Log.Error(ex.Message);
                 Log.Error(ex.StackTrace);
             }
+
+            foreach (var item in LCZ)
+                item.Initialize();
+
+            foreach (var item in EZ_HCZ)
+                item.Initialize();
         }
 
         internal Room(Exiled.API.Features.Room exiledRoom)
         {
             this.ExiledRoom = exiledRoom;
-            this.UpdateMyXAndMyY();
-            this.UpdateNeighbors();
         }
 
         internal int MyX { get; private set; }
 
         internal int MyY { get; private set; }
+
+        internal void Initialize()
+        {
+            this.UpdateMyXAndMyY();
+            this.UpdateNeighbors();
+        }
 
         private Room[] farNeighbors = null;
 
