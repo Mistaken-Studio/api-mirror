@@ -125,7 +125,11 @@ namespace Mistaken.API.Utilities
                                 try
                                 {
                                     var x = xAxis[j];
-                                    LCZ[i, j] = new Room(lczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x));
+                                    var room = lczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                    if (room is null)
+                                        LCZ[i, j] = null;
+                                    else
+                                        LCZ[i, j] = new Room(room);
                                 }
                                 catch (System.Exception ex)
                                 {
@@ -217,7 +221,11 @@ namespace Mistaken.API.Utilities
                                 try
                                 {
                                     var x = xAxis[j];
-                                    HCZ[i, j] = new Room(hczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x));
+                                    var room = hczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                    if (room is null)
+                                        HCZ[i, j] = null;
+                                    else
+                                        HCZ[i, j] = new Room(room);
                                 }
                                 catch (System.Exception ex)
                                 {
@@ -309,7 +317,11 @@ namespace Mistaken.API.Utilities
                                 try
                                 {
                                     var x = xAxis[j];
-                                    EZ[i, j] = new Room(ezRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x));
+                                    var room = ezRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                    if (room is null)
+                                        EZ[i, j] = null;
+                                    else
+                                        EZ[i, j] = new Room(room);
                                 }
                                 catch (System.Exception ex)
                                 {
@@ -410,7 +422,11 @@ namespace Mistaken.API.Utilities
                                 try
                                 {
                                     var x = xAxis[j];
-                                    EZ_HCZ[i, j] = new Room(ezHczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x));
+                                    var room = ezHczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                    if (room is null)
+                                        EZ_HCZ[i, j] = null;
+                                    else
+                                        EZ_HCZ[i, j] = new Room(room);
                                 }
                                 catch (System.Exception ex)
                                 {
