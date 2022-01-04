@@ -86,12 +86,6 @@ namespace Mistaken.API.Diagnostics
             return RunSafeCoroutine(RoundLoop(innerLoop), name, true);
         }
 
-        [System.Obsolete("Use Func overload", true)]
-        public static MEC.CoroutineHandle CreateSafeRoundLoop(IEnumerator<float> innerLoop, string name)
-        {
-            throw new Exception("Does not work :/");
-        }
-
         /// <summary>
         /// Enables all modules that has <see cref="Enabled"/> set to <see langword="true"/> from specific plugin.
         /// </summary>
@@ -311,12 +305,6 @@ namespace Mistaken.API.Diagnostics
             var tor = this.RunCoroutine(RoundLoop(innerLoop), name, true);
             this.coroutines.Add(tor);
             return tor;
-        }
-
-        [System.Obsolete("Use Func overload", true)]
-        public MEC.CoroutineHandle CreateRoundLoop(IEnumerator<float> innerLoop, string name = "RoundLoop")
-        {
-            throw new Exception("Does not work :/");
         }
 
         internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new Dictionary<IPlugin<IConfig>, List<Module>>();
