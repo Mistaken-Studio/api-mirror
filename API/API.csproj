@@ -103,7 +103,6 @@
     <Compile Include="BetterWarheadHandler.cs" />
     <Compile Include="CustomInfoHandler.cs" />
     <Compile Include="Diagnostics\Exception.cs" />
-    <Compile Include="Diagnostics\MasterHandler.Generic.cs" />
     <Compile Include="Diagnostics\MasterHandler.cs" />
     <Compile Include="Diagnostics\ModuleLogger.cs" />
     <Compile Include="Diagnostics\Status.cs" />

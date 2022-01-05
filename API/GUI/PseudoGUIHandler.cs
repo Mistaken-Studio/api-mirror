@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -39,8 +40,8 @@ namespace Mistaken.API.GUI
         /// <param name="p">player to ignore.</param>
         public static void Ignore(Player p)
         {
-            ToIgnore.Add(p);
-            ToUpdate.Remove(p);
+            ToIgnore.TryAdd(p, null);
+            ToUpdate.TryRemove(p, out _);
         }
 
         /// <summary>
@@ -49,8 +50,8 @@ namespace Mistaken.API.GUI
         /// <param name="p">player to stop ignoring.</param>
         public static void StopIgnore(Player p)
         {
-            ToIgnore.Remove(p);
-            ToUpdate.Add(p);
+            ToIgnore.TryRemove(p, out _);
+            ToUpdate.TryAdd(p, null);
         }
 
         internal static void Set(Player player, string key, PseudoGUIPosition type, string content, float duration)
@@ -83,13 +84,13 @@ namespace Mistaken.API.GUI
                 CustomInfo[player][key] = (content, type);
             }
 
-            ToUpdate.Add(player);
+            ToUpdate.TryAdd(player, null);
         }
 
         private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>>();
-        private static readonly List<Player> ToUpdate = new List<Player>();
-        private static readonly HashSet<Player> ToIgnore = new HashSet<Player>();
-        private readonly Dictionary<Player, string> constructedStrings = new Dictionary<Player, string>();
+        private static readonly ConcurrentDictionary<Player, object> ToUpdate = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
+        private static readonly ConcurrentDictionary<Player, object> ToIgnore = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
+        private readonly ConcurrentDictionary<Player, string> constructedStrings = new ConcurrentDictionary<Player, string>();
         private int frames = 0;
         private Task guiCalculationThread;
         private bool active = true;
@@ -117,7 +118,7 @@ namespace Mistaken.API.GUI
                             {
                                 try
                                 {
-                                    if (!ToIgnore.Contains(item))
+                                    if (!ToIgnore.ContainsKey(item))
                                         this.ConstructString(item);
                                 }
                                 catch (Exception ex)
@@ -132,13 +133,10 @@ namespace Mistaken.API.GUI
                             continue;
                         }
 
-                        lock (ToUpdate)
+                        foreach (var item in ToUpdate.Keys.ToArray())
                         {
-                            foreach (var item in ToUpdate.ToArray())
-                            {
-                                if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
-                                    this.ConstructString(item);
-                            }
+                            if ((item?.IsConnected ?? false) && !ToIgnore.ContainsKey(item))
+                                this.ConstructString(item);
                         }
 
                         ToUpdate.Clear();
@@ -200,25 +198,23 @@ namespace Mistaken.API.GUI
         {
             if (this.constructedStrings.Count == 0)
                 return;
-            lock (this.constructedStrings)
-            {
-                foreach (var item in this.constructedStrings.Keys.ToArray())
-                {
-                    try
-                    {
-                        if (item == null)
-                            continue;
 
-                        if (!(item?.IsConnected ?? false))
-                            this.constructedStrings.Remove(item);
-                        else if (!ToIgnore.Contains(item))
-                            this.UpdateGUI(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex.Message);
-                        Log.Error(ex.StackTrace);
-                    }
+            foreach (var item in this.constructedStrings.Keys.ToArray())
+            {
+                try
+                {
+                    if (item == null)
+                        continue;
+
+                    if (!(item?.IsConnected ?? false))
+                        this.constructedStrings.TryRemove(item, out _);
+                    else if (!ToIgnore.ContainsKey(item))
+                        this.UpdateGUI(item);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.Message);
+                    Log.Error(ex.StackTrace);
                 }
             }
         }
@@ -294,7 +290,7 @@ namespace Mistaken.API.GUI
             if (!this.constructedStrings.TryGetValue(player, out string text))
                 return;
             player.ShowHint(text, 7200);
-            this.constructedStrings.Remove(player);
+            this.constructedStrings.TryRemove(player, out _);
         }
     }
 }
