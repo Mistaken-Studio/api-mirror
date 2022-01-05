@@ -111,21 +111,6 @@ namespace Mistaken.API
         }
 
         /// <summary>
-        /// Spawns items with args.
-        /// </summary>
-        /// <param name="item">Item info.</param>
-        /// <param name="position">Spawn position.</param>
-        /// <param name="rotation">Spawn rotation.</param>
-        /// <param name="size">Pickup size.</param>
-        /// <returns>Spawned object.</returns>
-        [System.Obsolete("Use new Exiled.API.Features.Items.Item(item).Spawn(position, rotation)", true)]
-        public static ItemPickupBase Spawn(ItemType item, Vector3 position, Quaternion rotation, Vector3 size)
-            => new Item(item)
-            {
-                Scale = size,
-            }.Spawn(position, rotation).Base;
-
-        /// <summary>
         /// Spawns dummy.
         /// </summary>
         /// <param name="role">Role.</param>

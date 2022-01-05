@@ -140,11 +140,6 @@ namespace Mistaken.API.Extensions
             return me.DoNotTrack;
         }
 
-        /// <inheritdoc cref="GetSessionVariable{T}(Player, SessionVarType, T)"/>
-        [System.Obsolete("Use GetSessionVariable", true)]
-        public static T GetSessionVar<T>(this Player me, SessionVarType type, T defaultValue = default)
-            => me.GetSessionVariable(type, defaultValue);
-
         /// <summary>
         /// Returns SessionVarValue or <paramref name="defaultValue"/> if was not found.
         /// </summary>
@@ -155,11 +150,6 @@ namespace Mistaken.API.Extensions
         /// <returns>Value.</returns>
         public static T GetSessionVariable<T>(this Player me, SessionVarType type, T defaultValue = default)
             => me.GetSessionVariable(type.ToString(), defaultValue);
-
-        /// <inheritdoc cref="GetSessionVariable{T}(Player, string, T)"/>
-        [System.Obsolete("Use GetSessionVariable", true)]
-        public static T GetSessionVar<T>(this Player me, string name, T defaultValue = default)
-            => me.GetSessionVariable(name, defaultValue);
 
         /// <summary>
         /// Returns SessionVarValue or <paramref name="defaultValue"/> if was not found.
@@ -187,11 +177,6 @@ namespace Mistaken.API.Extensions
         public static bool TryGetSessionVariable<T>(this Player me, SessionVarType type, out T value)
             => me.TryGetSessionVariable(type.ToString(), out value);
 
-        /// <inheritdoc cref="SetSessionVariable(Player, SessionVarType, object)"/>
-        [System.Obsolete("Use SetSessionVariable", true)]
-        public static void SetSessionVar(this Player me, SessionVarType type, object value)
-            => me.SetSessionVar(type.ToString(), value);
-
         /// <summary>
         /// Sets SessionVarValue.
         /// </summary>
@@ -208,11 +193,6 @@ namespace Mistaken.API.Extensions
         /// <param name="name">Session Var.</param>
         /// <param name="value">Value.</param>
         public static void SetSessionVariable(this Player me, string name, object value)
-            => me.SessionVariables[name] = value;
-
-        /// <inheritdoc cref="SetSessionVariable(Player, string, object)"/>
-        [System.Obsolete("Use SetSessionVariable", true)]
-        public static void SetSessionVar(this Player me, string name, object value)
             => me.SessionVariables[name] = value;
 
         /// <summary>

@@ -14,14 +14,6 @@ namespace Mistaken.API
     /// </summary>
     public enum SessionVarType
     {
-        /// <plugin>.</plugin>
-        [System.Obsolete("Not used, will be removed", true)]
-        RUN_SPEED,
-
-        /// <plugin>.</plugin>
-        [System.Obsolete("Not used, will be removed", true)]
-        WALK_SPEED,
-
         /// <plugin>CommandsExtender-Admin</plugin>
         TALK,
 

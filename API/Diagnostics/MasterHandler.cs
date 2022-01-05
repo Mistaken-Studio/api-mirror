@@ -22,18 +22,6 @@ namespace Mistaken.API.Diagnostics
     public static partial class MasterHandler
     {
         /// <summary>
-        /// Handlers bound to Module.
-        /// </summary>
-        [System.Obsolete("Will removed because of change in Handlers")]
-        public static readonly Dictionary<Module, Dictionary<string, Exiled.Events.Events.CustomEventHandler>> Handlers = new Dictionary<Module, Dictionary<string, Exiled.Events.Events.CustomEventHandler>>();
-
-        /// <inheritdoc cref="OnErrorCatched"/>
-        [System.Obsolete("Use OnErrorCatched", true)]
-#pragma warning disable CS0067
-        public static event Action<System.Exception, Module, string> OnError;
-#pragma warning restore CS0067
-
-        /// <summary>
         /// Called when module throws error when handling event.
         /// </summary>
         public static event Action<System.Exception, string> OnErrorCatched;
@@ -58,41 +46,6 @@ namespace Mistaken.API.Diagnostics
             });
             File.WriteAllText(Path.Combine(Paths.Exiled, "RunResult.txt"), Newtonsoft.Json.JsonConvert.SerializeObject(CurrentStatus));
         }
-
-        /// <summary>
-        /// Handles event and mesures time that took to handle.
-        /// </summary>
-        /// <param name="module">Modue.</param>
-        /// <param name="action">Handler.</param>
-        /// <param name="name">Handler Name.</param>
-        /// <returns>Event Handler.</returns>
-        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, subscribe event directly")]
-        public static Exiled.Events.Events.CustomEventHandler Handle(this Module module, Action action, string name)
-        {
-            if (!Handlers.ContainsKey(module))
-                Handlers[module] = new Dictionary<string, Exiled.Events.Events.CustomEventHandler>();
-            if (Handlers[module].ContainsKey(name))
-                return Handlers[module][name];
-
-            Exiled.Events.Events.CustomEventHandler tor = new Exiled.Events.Events.CustomEventHandler(action);
-
-            Handlers[module][name] = tor;
-            if (PluginHandler.Instance.Config.VerbouseOutput)
-                Log.Warn(module.Name + " called obsolete function Handle");
-            return tor;
-        }
-
-        /// <summary>
-        /// Handles event and mesures time that took to handle.
-        /// </summary>
-        /// <typeparam name="T">Event Args Type.</typeparam>
-        /// <param name="module">Modue.</param>
-        /// <param name="action">Handler.</param>
-        /// <returns>Event Handler.</returns>
-        [System.Obsolete("Functionality of diagnostics system was moved to exiled.events system, subscribe event directly")]
-        public static Exiled.Events.Events.CustomEventHandler<T> Handle<T>(this Module module, Action<T> action)
-            where T : EventArgs
-            => Generic<T>.Handle(module, action);
 
         /// <summary>
         /// Logs Time.
