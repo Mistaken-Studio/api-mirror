@@ -13,7 +13,7 @@ using UnityEngine;
 
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
-namespace Mistaken.API.CustomSlots
+namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(PlayerMovementSync), nameof(PlayerMovementSync.ForcePosition), typeof(Vector3), typeof(string), typeof(bool), typeof(bool))]
     internal static class PlayerMovementSyncForcePosition

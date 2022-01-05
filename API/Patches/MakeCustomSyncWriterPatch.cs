@@ -13,7 +13,7 @@ using UnityEngine;
 
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
-namespace Mistaken.API.CustomSlots
+namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(Exiled.API.Extensions.MirrorExtensions), "MakeCustomSyncWriter")]
     internal static class MakeCustomSyncWriterPatch
