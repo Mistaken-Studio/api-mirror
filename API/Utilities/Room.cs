@@ -451,28 +451,28 @@ namespace Mistaken.API.Utilities
                 case ZoneType.Entrance:
                 case ZoneType.HeavyContainment:
 
-                    if (this.MyX - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.x < this.ExiledRoom.Position.x))
+                    if (this.MyX - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.x > this.ExiledRoom.Position.x))
                         list.Add(EZ_HCZ[this.MyX - 1, this.MyY]);
-                    if (this.MyX + 1 < EZ_HCZ.GetLength(0) && this.ExiledRoom.Doors.Any(x => x.Position.x > this.ExiledRoom.Position.x))
+                    if (this.MyX + 1 < EZ_HCZ.GetLength(0) && this.ExiledRoom.Doors.Any(x => x.Position.x < this.ExiledRoom.Position.x))
                         list.Add(EZ_HCZ[this.MyX + 1, this.MyY]);
 
-                    if (this.MyY - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.z < this.ExiledRoom.Position.z))
+                    if (this.MyY - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.z > this.ExiledRoom.Position.z))
                         list.Add(EZ_HCZ[this.MyX, this.MyY - 1]);
-                    if (this.MyY + 1 < EZ_HCZ.GetLength(1) && this.ExiledRoom.Doors.Any(x => x.Position.z > this.ExiledRoom.Position.z))
+                    if (this.MyY + 1 < EZ_HCZ.GetLength(1) && this.ExiledRoom.Doors.Any(x => x.Position.z < this.ExiledRoom.Position.z))
                         list.Add(EZ_HCZ[this.MyX, this.MyY + 1]);
 
                     break;
 
                 case ZoneType.LightContainment:
 
-                    if (this.MyX - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.x < this.ExiledRoom.Position.x))
+                    if (this.MyX - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.z < this.ExiledRoom.Position.z))
                         list.Add(LCZ[this.MyX - 1, this.MyY]);
-                    if (this.MyX + 1 < LCZ.GetLength(0) && this.ExiledRoom.Doors.Any(x => x.Position.x > this.ExiledRoom.Position.x))
+                    if (this.MyX + 1 < LCZ.GetLength(0) && this.ExiledRoom.Doors.Any(x => x.Position.z > this.ExiledRoom.Position.z))
                         list.Add(LCZ[this.MyX + 1, this.MyY]);
 
-                    if (this.MyY - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.z < this.ExiledRoom.Position.z))
+                    if (this.MyY - 1 >= 0 && this.ExiledRoom.Doors.Any(x => x.Position.x < this.ExiledRoom.Position.x))
                         list.Add(LCZ[this.MyX, this.MyY - 1]);
-                    if (this.MyY + 1 < LCZ.GetLength(1) && this.ExiledRoom.Doors.Any(x => x.Position.z > this.ExiledRoom.Position.z))
+                    if (this.MyY + 1 < LCZ.GetLength(1) && this.ExiledRoom.Doors.Any(x => x.Position.x > this.ExiledRoom.Position.x))
                         list.Add(LCZ[this.MyX, this.MyY + 1]);
 
                     break;
