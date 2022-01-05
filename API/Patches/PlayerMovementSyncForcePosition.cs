@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="MakeCustomSyncWriterPatch.cs" company="Mistaken">
+// <copyright file="PlayerMovementSyncForcePosition.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
