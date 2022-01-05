@@ -108,14 +108,20 @@ namespace Mistaken.API.Diagnostics
 
         internal static void LogError(System.Exception ex, string method)
         {
-            ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{method}] Caused Exception");
-            ErrorBacklog.Add(ex.ToString());
+            lock (ErrorBacklogLockObj)
+            {
+                ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [{method}] Caused Exception");
+                ErrorBacklog.Add(ex.ToString());
+            }
 
             OnErrorCatched?.Invoke(ex, method);
         }
 
-        internal static void LogTime(string name, double time) =>
-            Backlog.Add(new Entry(name, time));
+        internal static void LogTime(string name, double time)
+        {
+            lock (BacklogLockObj)
+                Backlog.Add(new Entry(name, time));
+        }
 
         internal static void Ini()
         {
@@ -137,6 +143,8 @@ namespace Mistaken.API.Diagnostics
             initiated = true;
         }
 
+        private static readonly object BacklogLockObj = new object();
+        private static readonly object ErrorBacklogLockObj = new object();
         private static readonly List<Entry> Backlog = new List<Entry>();
         private static readonly List<string> ErrorBacklog = new List<string>();
         private static bool initiated = false;
@@ -157,8 +165,12 @@ namespace Mistaken.API.Diagnostics
                 return;
             }
 
-            ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [Application_logMessageReceived] Caused Exception");
-            ErrorBacklog.Add(condition + "\n" + stackTrace);
+            lock (ErrorBacklogLockObj)
+            {
+                ErrorBacklog.Add($"[{DateTime.Now:HH:mm:ss.fff}] [Application_logMessageReceived] Caused Exception");
+                ErrorBacklog.Add(condition + "\n" + stackTrace);
+            }
+
             Log.Error($"Detected Unity LogMessage of typ Exception");
             Log.Error(condition + "\n" + stackTrace);
         }
@@ -228,7 +240,7 @@ namespace Mistaken.API.Diagnostics
                         lastDay = day;
                     }
 
-                    lock (Backlog)
+                    lock (BacklogLockObj)
                     {
                         try
                         {
@@ -241,7 +253,7 @@ namespace Mistaken.API.Diagnostics
                         }
                     }
 
-                    lock (ErrorBacklog)
+                    lock (ErrorBacklogLockObj)
                     {
                         try
                         {
