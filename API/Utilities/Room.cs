@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Enums;
 using Exiled.API.Features;
-using MEC;
+using UnityEngine;
 
 namespace Mistaken.API.Utilities
 {
@@ -57,18 +57,22 @@ namespace Mistaken.API.Utilities
         /// <summary>
         /// Gets neighbor rooms.
         /// </summary>
-        public Room[] Neighbors
-        {
-            get => this.neighbors ?? this.UpdateNeighbors();
-        }
+        public Room[] Neighbors => this.neighbors ?? this.UpdateNeighbors();
 
         /// <summary>
         /// Gets far Neighbor rooms (Neighbors + Neighbors' Neighbors forward from this room the same way as neighbor.
         /// </summary>
-        public Room[] FarNeighbors
-        {
-            get => this.farNeighbors ?? this.UpdateFarNeighbors();
-        }
+        public Room[] FarNeighbors => this.farNeighbors ?? this.UpdateFarNeighbors();
+
+        /// <summary>
+        /// Gets external doors.
+        /// </summary>
+        public IEnumerable<Door> ExternalDoors => (this.doors ?? this.UpdateDoors()).Except(this.ExiledRoom.Doors);
+
+        /// <summary>
+        /// Gets doors.
+        /// </summary>
+        public IEnumerable<Door> Doors => this.doors.Union(this.ExiledRoom.Doors);
 
         internal static void Reload()
         {
@@ -83,10 +87,8 @@ namespace Mistaken.API.Utilities
                 {
                     try
                     {
-                        int z = (int)Math.Floor(item.Position.z);
-                        z -= z % 5;
-                        int x = (int)Math.Floor(item.Position.x);
-                        x -= x % 5;
+                        int z = Round(item.Position.z, 5);
+                        int x = Round(item.Position.x, 5);
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -105,7 +107,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!lczRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
+                        if (!lczRooms.Any(p => Round(p.Position.x, 5) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -129,7 +131,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = lczRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
+                                var room = lczRooms.FirstOrDefault(p => Round(p.Position.z, 5) == z && Round(p.Position.x, 5) == x);
                                 if (room is null)
                                     LCZ[i, j] = null;
                                 else
@@ -155,10 +157,8 @@ namespace Mistaken.API.Utilities
                 {
                     foreach (var item in hczRooms)
                     {
-                        int z = (int)Math.Floor(item.Position.z);
-                        z -= z % 5;
-                        int x = (int)Math.Floor(item.Position.x);
-                        x -= x % 5;
+                        int z = Round(item.Position.z, 5);
+                        int x = Round(item.Position.x, 5);
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -178,7 +178,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!hczRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
+                        if (!hczRooms.Any(p => Round(p.Position.x, 5) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -202,7 +202,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = hczRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
+                                var room = hczRooms.FirstOrDefault(p => Round(p.Position.z, 5) == z && Round(p.Position.x, 5) == x);
                                 if (room is null)
                                     HCZ[i, j] = null;
                                 else
@@ -228,10 +228,8 @@ namespace Mistaken.API.Utilities
                 {
                     foreach (var item in ezRooms)
                     {
-                        int z = (int)Math.Floor(item.Position.z);
-                        z -= z % 5;
-                        int x = (int)Math.Floor(item.Position.x);
-                        x -= x % 5;
+                        int z = Round(item.Position.z, 5);
+                        int x = Round(item.Position.x, 5);
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -251,7 +249,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!ezRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
+                        if (!ezRooms.Any(p => Round(p.Position.x, 5) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -275,7 +273,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = ezRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
+                                var room = ezRooms.FirstOrDefault(p => Round(p.Position.z, 5) == z && Round(p.Position.x, 5) == x);
                                 if (room is null)
                                     EZ[i, j] = null;
                                 else
@@ -301,10 +299,8 @@ namespace Mistaken.API.Utilities
                 {
                     try
                     {
-                        int z = (int)Math.Floor(item.Position.z);
-                        z -= z % 5;
-                        int x = (int)Math.Floor(item.Position.x);
-                        x -= x % 5;
+                        int z = Round(item.Position.z, 5);
+                        int x = Round(item.Position.x, 5);
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -323,7 +319,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!ezHczRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
+                        if (!ezHczRooms.Any(p => Round(p.Position.x, 5) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -347,7 +343,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = ezHczRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
+                                var room = ezHczRooms.FirstOrDefault(p => Round(p.Position.z, 5) == z && Round(p.Position.x, 5) == x);
                                 if (room is null)
                                     EZ_HCZ[i, j] = null;
                                 else
@@ -395,8 +391,12 @@ namespace Mistaken.API.Utilities
             this.UpdateNeighbors();
         }
 
+        private static int Round(float toRound, int roundTo = 5)
+            => (int)(toRound - (toRound % roundTo));
+
         private Room[] farNeighbors = null;
         private Room[] neighbors = null;
+        private Door[] doors = null;
 
         private void UpdateMyXAndMyY()
         {
@@ -484,6 +484,7 @@ namespace Mistaken.API.Utilities
 
             list.Remove(this);
             list.Remove(null);
+            list.RemoveWhere(other => !other.ExternalDoors.Any(otherDoor => this.ExternalDoors.Contains(otherDoor)));
             this.neighbors = list.ToArray();
             return this.neighbors;
         }
@@ -540,6 +541,20 @@ namespace Mistaken.API.Utilities
             list.Remove(this);
             this.farNeighbors = list.ToArray();
             return this.farNeighbors;
+        }
+
+        private Door[] UpdateDoors()
+        {
+            HashSet<Door> list = new HashSet<Door>();
+            foreach (var door in Exiled.API.Features.Map.Doors)
+            {
+                var dist = Vector3.Distance(door.Position, this.ExiledRoom.Position);
+                if (dist <= 11 && dist >= 5)
+                    list.Add(door);
+            }
+
+            this.doors = list.ToArray();
+            return this.doors;
         }
     }
 }
