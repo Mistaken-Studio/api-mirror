@@ -15,7 +15,7 @@ namespace Mistaken.API
     public enum SessionVarType
     {
         /// <plugin>CommandsExtender-Admin</plugin>
-        TALK,
+        TALK = 2,
 
         /// <plugin>Globaly used</plugin>
         ITEM_LESS_CLSSS_CHANGE,
