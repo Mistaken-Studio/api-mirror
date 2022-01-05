@@ -84,7 +84,9 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         int z = (int)Math.Floor(item.Position.z);
+                        z -= z % 5;
                         int x = (int)Math.Floor(item.Position.x);
+                        x -= x % 5;
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -103,7 +105,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!lczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
+                        if (!lczRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -127,7 +129,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = lczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                var room = lczRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
                                 if (room is null)
                                     LCZ[i, j] = null;
                                 else
@@ -154,7 +156,9 @@ namespace Mistaken.API.Utilities
                     foreach (var item in hczRooms)
                     {
                         int z = (int)Math.Floor(item.Position.z);
+                        z -= z % 5;
                         int x = (int)Math.Floor(item.Position.x);
+                        x -= x % 5;
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -174,7 +178,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!hczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
+                        if (!hczRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -198,7 +202,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = hczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                var room = hczRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
                                 if (room is null)
                                     HCZ[i, j] = null;
                                 else
@@ -225,7 +229,9 @@ namespace Mistaken.API.Utilities
                     foreach (var item in ezRooms)
                     {
                         int z = (int)Math.Floor(item.Position.z);
+                        z -= z % 5;
                         int x = (int)Math.Floor(item.Position.x);
+                        x -= x % 5;
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -245,7 +251,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!ezRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
+                        if (!ezRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -269,7 +275,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = ezRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                var room = ezRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
                                 if (room is null)
                                     EZ[i, j] = null;
                                 else
@@ -296,7 +302,9 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         int z = (int)Math.Floor(item.Position.z);
+                        z -= z % 5;
                         int x = (int)Math.Floor(item.Position.x);
+                        x -= x % 5;
                         if (!zAxis.Contains(z))
                             zAxis.Add(z);
                         if (!xAxis.Contains(x))
@@ -315,7 +323,7 @@ namespace Mistaken.API.Utilities
                     try
                     {
                         var x = xAxis[i];
-                        if (!ezHczRooms.Any(p => (int)Math.Floor(p.Position.x) == x))
+                        if (!ezHczRooms.Any(p => ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x))
                         {
                             xAxis.RemoveAt(i);
                             i--;
@@ -339,7 +347,7 @@ namespace Mistaken.API.Utilities
                             try
                             {
                                 var x = xAxis[j];
-                                var room = ezHczRooms.FirstOrDefault(p => (int)Math.Floor(p.Position.z) == z && (int)Math.Floor(p.Position.x) == x);
+                                var room = ezHczRooms.FirstOrDefault(p => ((int)Math.Floor(p.Position.z - (p.Position.z % 5))) == z && ((int)Math.Floor(p.Position.x - (p.Position.x % 5))) == x);
                                 if (room is null)
                                     EZ_HCZ[i, j] = null;
                                 else
