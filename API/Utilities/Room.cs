@@ -382,9 +382,9 @@ namespace Mistaken.API.Utilities
             Rooms.Add(exiledRoom, this);
         }
 
-        internal int MyX { get; private set; }
+        internal int MyX { get; private set; } = -1;
 
-        internal int MyY { get; private set; }
+        internal int MyY { get; private set; } = -1;
 
         internal void Initialize()
         {
@@ -400,6 +400,13 @@ namespace Mistaken.API.Utilities
 
         private void UpdateMyXAndMyY()
         {
+            if (this.ExiledRoom.Type == RoomType.Pocket)
+            {
+                this.MyX = -1;
+                this.MyY = -1;
+                return;
+            }
+
             switch (this.ExiledRoom.Zone)
             {
                 case ZoneType.Entrance:
