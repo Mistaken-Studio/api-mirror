@@ -452,6 +452,12 @@ namespace Mistaken.API.Utilities
         private Room[] UpdateNeighbors()
         {
             this.UpdateMyXAndMyY();
+            if (this.MyX == -1 || this.MyY == -1)
+            {
+                this.neighbors = new Room[0];
+                return this.neighbors;
+            }
+
             HashSet<Room> list = new HashSet<Room>();
             switch (this.ExiledRoom.Zone)
             {
@@ -498,6 +504,12 @@ namespace Mistaken.API.Utilities
 
         private Room[] UpdateFarNeighbors()
         {
+            if (this.MyX == -1 || this.MyY == -1)
+            {
+                this.farNeighbors = new Room[0];
+                return this.farNeighbors;
+            }
+
             HashSet<Room> list = new HashSet<Room>();
             if (this.Neighbors is null)
             {
