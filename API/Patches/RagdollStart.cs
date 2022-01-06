@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="CCMTargetConsolePrintPatch.cs" company="Mistaken">
+// <copyright file="RagdollStart.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -10,32 +10,31 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using Mirror;
 using NorthwoodLib.Pools;
+using UnityEngine;
 
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
 namespace Mistaken.API.Patches
 {
-    [HarmonyPatch(typeof(CharacterClassManager), nameof(CharacterClassManager.TargetConsolePrint))]
-    internal static class CCMTargetConsolePrintPatch
+    [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Start))]
+    internal static class RagdollStart
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             var label = generator.DefineLabel();
-            var label2 = generator.DefineLabel();
 
             List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
 
-            newInstructions[0].WithLabels(label);
+            var index = newInstructions.FindLastIndex(x => x.opcode == OpCodes.Ldarg_0);
 
-            newInstructions.InsertRange(0, new CodeInstruction[]
+            newInstructions[index].WithLabels(label);
+
+            newInstructions.InsertRange(index, new CodeInstruction[]
             {
-                new CodeInstruction(OpCodes.Ldarg_1),
-                new CodeInstruction(OpCodes.Brfalse_S, label2),
-                new CodeInstruction(OpCodes.Ldarg_1),
-                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(NetworkConnection), nameof(NetworkConnection.isReady))),
-                new CodeInstruction(OpCodes.Brfalse_S, label2),
-                new CodeInstruction(OpCodes.Br_S, label),
-                new CodeInstruction(OpCodes.Ret).WithLabels(label2),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Brtrue_S, label),
+                new CodeInstruction(OpCodes.Pop),
+                new CodeInstruction(OpCodes.Ret),
             });
 
             for (int i = 0; i < newInstructions.Count; i++)

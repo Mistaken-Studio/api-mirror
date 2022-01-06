@@ -87,6 +87,7 @@
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
     <Compile Include="Patches\PlayerMovementSyncForcePosition.cs" />
+    <Compile Include="Patches\RagdollStart.cs" />
     <Compile Include="Patches\ReceivingStatusEffectFix.cs" />
     <Compile Include="Patches\RoundInProgressPatch.cs" />
     <Compile Include="Patches\FixExiledRoomType.cs" />

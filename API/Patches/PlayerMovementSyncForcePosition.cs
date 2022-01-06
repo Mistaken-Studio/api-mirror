@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
+using Mirror;
 using NorthwoodLib.Pools;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ namespace Mistaken.API.Patches
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             var label = generator.DefineLabel();
+            var label2 = generator.DefineLabel();
 
             List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
 
@@ -30,8 +32,13 @@ namespace Mistaken.API.Patches
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(PlayerMovementSync), nameof(PlayerMovementSync.connectionToClient))),
-                new CodeInstruction(OpCodes.Brtrue_S, label),
-                new CodeInstruction(OpCodes.Ret),
+                new CodeInstruction(OpCodes.Brfalse_S, label2),
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(PlayerMovementSync), nameof(PlayerMovementSync.connectionToClient))),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(NetworkConnection), nameof(NetworkConnection.isReady))),
+                new CodeInstruction(OpCodes.Brfalse_S, label2),
+                new CodeInstruction(OpCodes.Br_S, label),
+                new CodeInstruction(OpCodes.Ret).WithLabels(label2),
             });
 
             for (int i = 0; i < newInstructions.Count; i++)
