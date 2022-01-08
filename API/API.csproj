@@ -82,6 +82,7 @@
     <Compile Include="DoorPermissionsHandler.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
+    <Compile Include="Patches\CharacterClassManagerTargetConsolePrint.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
