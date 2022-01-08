@@ -26,7 +26,7 @@ namespace Mistaken.API.Patches
 
             newInstructions.InsertRange(0, new CodeInstruction[]
             {
-                new CodeInstruction(OpCodes.Ldsfld, AccessTools.PropertyGetter(typeof(Extensions.Extensions), nameof(Extensions.Extensions.SyncToyPosition))),
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(Extensions.Extensions), nameof(Extensions.Extensions.SyncToyPosition))),
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(HashSet<AdminToys.AdminToyBase>), nameof(HashSet<AdminToys.AdminToyBase>.Contains), parameters: new Type[] { typeof(AdminToys.AdminToyBase) })),
                 new CodeInstruction(OpCodes.Brtrue_S, label),
