@@ -21,6 +21,48 @@ namespace Mistaken.API.Patches
     {
         private static readonly Dictionary<ReferenceHub, GameConsoleTransmission> GameConsoleTransmissions = new Dictionary<ReferenceHub, GameConsoleTransmission>();
 
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
+
+            var gct = generator.DeclareLocal(typeof(GameConsoleTransmission));
+            var label1 = generator.DefineLabel();
+            var label2 = generator.DefineLabel();
+
+            newInstructions[0].WithLabels(label1);
+            newInstructions[2].WithLabels(label2);
+
+            newInstructions.InsertRange(0, new CodeInstruction[]
+            {
+                // Current
+                // GetComponent<GameConsoleTransmission>().SendToClient(connection, text, color);
+
+                // Target
+                // GameConsoleTransmissions[ReferenceHub].SendToClient(connection, text, color)
+
+                // Result
+                // if(!ReferenceHubAwake.GameConsoleTransmissions.TryGetValue(this._hub, out gct))
+                //      GetComponent<GameConsoleTransmission>()
+                // else
+                //      gct
+                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(CharacterClassManagerTargetConsolePrint), nameof(CharacterClassManagerTargetConsolePrint.GameConsoleTransmissions))),
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(CharacterClassManager), nameof(CharacterClassManager._hub))),
+                new CodeInstruction(OpCodes.Ldloca_S, gct),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Dictionary<ReferenceHub, GameConsoleTransmission>), nameof(Dictionary<ReferenceHub, GameConsoleTransmission>.TryGetValue))),
+                new CodeInstruction(OpCodes.Brfalse_S, label1),
+                new CodeInstruction(OpCodes.Ldloc, gct),
+                new CodeInstruction(OpCodes.Br_S, label2),
+            });
+
+            for (int i = 0; i < newInstructions.Count; i++)
+                yield return newInstructions[i];
+
+            NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Return(newInstructions);
+
+            yield break;
+        }
+
         [HarmonyPatch(typeof(ReferenceHub), nameof(ReferenceHub.Awake))]
         private static class ReferenceHubAwake
         {
@@ -68,48 +110,6 @@ namespace Mistaken.API.Patches
 
                 yield break;
             }
-        }
-
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
-
-            var gct = generator.DeclareLocal(typeof(GameConsoleTransmission));
-            var label1 = generator.DefineLabel();
-            var label2 = generator.DefineLabel();
-
-            newInstructions[0].WithLabels(label1);
-            newInstructions[2].WithLabels(label2);
-
-            newInstructions.InsertRange(0, new CodeInstruction[]
-            {
-                // Current
-                // GetComponent<GameConsoleTransmission>().SendToClient(connection, text, color);
-
-                // Target
-                // GameConsoleTransmissions[ReferenceHub].SendToClient(connection, text, color)
-
-                // Result
-                // if(!ReferenceHubAwake.GameConsoleTransmissions.TryGetValue(this._hub, out gct))
-                //      GetComponent<GameConsoleTransmission>()
-                // else
-                //      gct
-                new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(CharacterClassManagerTargetConsolePrint), nameof(CharacterClassManagerTargetConsolePrint.GameConsoleTransmissions))),
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(CharacterClassManager), nameof(CharacterClassManager._hub))),
-                new CodeInstruction(OpCodes.Ldloca_S, gct),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Dictionary<ReferenceHub, GameConsoleTransmission>), nameof(Dictionary<ReferenceHub, GameConsoleTransmission>.TryGetValue))),
-                new CodeInstruction(OpCodes.Brfalse_S, label1),
-                new CodeInstruction(OpCodes.Ldloc, gct),
-                new CodeInstruction(OpCodes.Br_S, label2),
-            });
-
-            for (int i = 0; i < newInstructions.Count; i++)
-                yield return newInstructions[i];
-
-            NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Return(newInstructions);
-
-            yield break;
         }
     }
 }
