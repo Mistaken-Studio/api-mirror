@@ -167,13 +167,16 @@ namespace Mistaken.API
         /// <param name="parent">Toy's parent.</param>
         /// <param name="color">Toy's color.</param>
         /// <param name="syncPosition">Should toy's position be synce once every frame.</param>
+        /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
         /// <returns>Spawned toy.</returns>
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool syncPosition)
+        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool syncPosition, byte? movementSmoothing = null)
         {
             AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseObject, parent);
             PrimitiveObjectToy ptoy = toy.GetComponent<PrimitiveObjectToy>();
             ptoy.NetworkPrimitiveType = type;
             ptoy.NetworkMaterialColor = color;
+            if (!(movementSmoothing is null))
+                ptoy.MovementSmoothing = movementSmoothing ?? 0;
             ptoy.transform.localPosition = Vector3.zero;
             ptoy.transform.localRotation = Quaternion.identity;
             ptoy.transform.localScale = Vector3.one;
@@ -197,13 +200,16 @@ namespace Mistaken.API
         /// <param name="scale">Toy's scale.</param>
         /// <param name="color">Toy's color.</param>
         /// <param name="syncPosition">Should toy's position be synce once every frame.</param>
+        /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
         /// <returns>Spawned toy.</returns>
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Vector3 position, Quaternion rotation, Vector3 scale, Color color, bool syncPosition)
+        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Vector3 position, Quaternion rotation, Vector3 scale, Color color, bool syncPosition, byte? movementSmoothing = null)
         {
             AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseObject);
             PrimitiveObjectToy ptoy = toy.GetComponent<PrimitiveObjectToy>();
             ptoy.NetworkPrimitiveType = type;
             ptoy.NetworkMaterialColor = color;
+            if (!(movementSmoothing is null))
+                ptoy.MovementSmoothing = movementSmoothing ?? 0;
             ptoy.transform.position = position;
             ptoy.transform.rotation = rotation;
             ptoy.transform.localScale = scale;
@@ -227,8 +233,9 @@ namespace Mistaken.API
         /// <param name="range">Toy's ligh range.</param>
         /// <param name="shadows">Should toy's light cause shadows.</param>
         /// <param name="syncPosition">Should toy's position be synce once every frame.</param>
+        /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
         /// <returns>Spawned toy.</returns>
-        public static LightSourceToy SpawnLight(Transform parent, Color color, float intensity, float range, bool shadows, bool syncPosition)
+        public static LightSourceToy SpawnLight(Transform parent, Color color, float intensity, float range, bool shadows, bool syncPosition, byte? movementSmoothing = null)
         {
             AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseLight, parent);
             LightSourceToy ptoy = toy.GetComponent<LightSourceToy>();
@@ -236,6 +243,8 @@ namespace Mistaken.API
             ptoy.NetworkLightIntensity = intensity;
             ptoy.NetworkLightRange = range;
             ptoy.NetworkLightShadows = shadows;
+            if (!(movementSmoothing is null))
+                ptoy.MovementSmoothing = movementSmoothing ?? 0;
             ptoy.transform.localPosition = Vector3.zero;
             ptoy.transform.localRotation = Quaternion.identity;
             ptoy.transform.localScale = Vector3.one;
@@ -260,8 +269,9 @@ namespace Mistaken.API
         /// <param name="range">Toy's ligh range.</param>
         /// <param name="shadows">Should toy's light cause shadows.</param>
         /// <param name="syncPosition">Should toy's position be synce once every frame.</param>
+        /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
         /// <returns>Spawned toy.</returns>
-        public static LightSourceToy SpawnLight(Vector3 position, Quaternion rotation, Vector3 scale, Color color, float intensity, float range, bool shadows, bool syncPosition)
+        public static LightSourceToy SpawnLight(Vector3 position, Quaternion rotation, Vector3 scale, Color color, float intensity, float range, bool shadows, bool syncPosition, byte? movementSmoothing = null)
         {
             AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseLight);
             LightSourceToy ptoy = toy.GetComponent<LightSourceToy>();
@@ -269,6 +279,8 @@ namespace Mistaken.API
             ptoy.NetworkLightIntensity = intensity;
             ptoy.NetworkLightRange = range;
             ptoy.NetworkLightShadows = shadows;
+            if (!(movementSmoothing is null))
+                ptoy.MovementSmoothing = movementSmoothing ?? 0;
             ptoy.transform.position = position;
             ptoy.transform.rotation = rotation;
             ptoy.transform.localScale = scale;
