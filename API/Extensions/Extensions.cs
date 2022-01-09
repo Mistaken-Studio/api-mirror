@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AdminToys;
 using CommandSystem;
 using Exiled.API.Features;
 using Exiled.API.Features.Items;
@@ -364,127 +363,6 @@ namespace Mistaken.API.Extensions
                 item.Process.CurrentAmount = item.CurrentAmount;
 
             return death;
-        }
-
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool syncPosition)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseObject, parent);
-            PrimitiveObjectToy ptoy = toy.GetComponent<PrimitiveObjectToy>();
-            ptoy.NetworkPrimitiveType = type;
-            ptoy.NetworkMaterialColor = color;
-            ptoy.transform.localPosition = Vector3.zero;
-            ptoy.transform.localRotation = Quaternion.identity;
-            ptoy.transform.localScale = Vector3.one;
-            ptoy.NetworkScale = ptoy.transform.lossyScale;
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (syncPosition)
-                SyncToyPosition.Add(ptoy);
-            else
-                ptoy.UpdatePositionServer();
-
-            return ptoy;
-        }
-
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Vector3 position, Quaternion rotation, Vector3 scale, Color color, bool syncPosition)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseObject);
-            PrimitiveObjectToy ptoy = toy.GetComponent<PrimitiveObjectToy>();
-            ptoy.NetworkPrimitiveType = type;
-            ptoy.NetworkMaterialColor = color;
-            ptoy.transform.position = position;
-            ptoy.transform.rotation = rotation;
-            ptoy.transform.localScale = scale;
-            ptoy.NetworkScale = ptoy.transform.lossyScale;
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (syncPosition)
-                SyncToyPosition.Add(ptoy);
-            else
-                ptoy.UpdatePositionServer();
-
-            return ptoy;
-        }
-
-        public static LightSourceToy SpawnLight(Transform parent, Color color, float intensity, float range, bool shadows, bool syncPosition)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseLight, parent);
-            LightSourceToy ptoy = toy.GetComponent<LightSourceToy>();
-            ptoy.NetworkLightColor = color;
-            ptoy.NetworkLightIntensity = intensity;
-            ptoy.NetworkLightRange = range;
-            ptoy.NetworkLightShadows = shadows;
-            ptoy.transform.localPosition = Vector3.zero;
-            ptoy.transform.localRotation = Quaternion.identity;
-            ptoy.transform.localScale = Vector3.one;
-            ptoy.NetworkScale = ptoy.transform.localScale;
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (syncPosition)
-                SyncToyPosition.Add(ptoy);
-            else
-                ptoy.UpdatePositionServer();
-            return ptoy;
-        }
-
-        public static LightSourceToy SpawnLight(Vector3 position, Quaternion rotation, Vector3 scale, Color color, float intensity, float range, bool shadows, bool syncPosition)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseLight);
-            LightSourceToy ptoy = toy.GetComponent<LightSourceToy>();
-            ptoy.NetworkLightColor = color;
-            ptoy.NetworkLightIntensity = intensity;
-            ptoy.NetworkLightRange = range;
-            ptoy.NetworkLightShadows = shadows;
-            ptoy.transform.position = position;
-            ptoy.transform.rotation = rotation;
-            ptoy.transform.localScale = scale;
-            ptoy.NetworkScale = ptoy.transform.localScale;
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (syncPosition)
-                SyncToyPosition.Add(ptoy);
-            else
-                ptoy.UpdatePositionServer();
-            return ptoy;
-        }
-
-        internal static readonly HashSet<AdminToyBase> SyncToyPosition = new HashSet<AdminToyBase>();
-
-        private static LightSourceToy primitiveBaseLight = null;
-        private static PrimitiveObjectToy primitiveBaseObject = null;
-
-        private static PrimitiveObjectToy PrimitiveBaseObject
-        {
-            get
-            {
-                if (primitiveBaseObject == null)
-                {
-                    foreach (var gameObject in NetworkClient.prefabs.Values)
-                    {
-                        if (gameObject.TryGetComponent<PrimitiveObjectToy>(out var component))
-                            primitiveBaseObject = component;
-                    }
-                }
-
-                return primitiveBaseObject;
-            }
-        }
-
-        private static LightSourceToy PrimitiveBaseLight
-        {
-            get
-            {
-                if (primitiveBaseLight == null)
-                {
-                    foreach (var gameObject in NetworkClient.prefabs.Values)
-                    {
-                        if (gameObject.TryGetComponent<LightSourceToy>(out var component))
-                            primitiveBaseLight = component;
-                    }
-                }
-
-                return primitiveBaseLight;
-            }
         }
     }
 }
