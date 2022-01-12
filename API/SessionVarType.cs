@@ -62,5 +62,8 @@ namespace Mistaken.API
         /// <plugin>BetterDoors</plugin>
         /// <returns><see cref="ItemPickupBase"/>, <see cref="KeycardPickup"/></returns>
         THROWN_ITEM,
+
+        /// <plugin>CommandsExtender-Admin</plugin>
+        POST_TALK,
     }
 }
