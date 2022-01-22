@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
 using MEC;
@@ -163,8 +164,14 @@ namespace Mistaken.API
             if (!CustomInfoTargeted.ContainsKey(player))
                 CustomInfoTargeted[player] = new Dictionary<Player, Dictionary<string, string>>();
 
-            string for_players = string.Join("\n", CustomInfo[player].Values);
-            player.CustomInfo = string.IsNullOrWhiteSpace(for_players) ? null : for_players;
+            string for_players = string.Join(Environment.NewLine, CustomInfo[player].Values);
+            if (string.IsNullOrWhiteSpace(for_players))
+            {
+                for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
+                player.CustomInfo = for_players;
+            }
+            else
+                player.CustomInfo = null;
 
             if (CustomInfoTargeted[player].Count > 0)
             {
@@ -190,7 +197,9 @@ namespace Mistaken.API
                                 return;
                             if (item.Key?.Connection?.identity == null)
                                 return;
-                            item.Key.SetPlayerInfoForTargetOnly(player, string.Join("\n", tmp));
+                            var toSet = string.Join(Environment.NewLine, tmp);
+                            toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
+                            item.Key.SetPlayerInfoForTargetOnly(player, toSet);
                         },
                         "Update");
                 }
