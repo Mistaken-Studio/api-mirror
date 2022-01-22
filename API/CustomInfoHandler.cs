@@ -164,7 +164,7 @@ namespace Mistaken.API
             if (!CustomInfoTargeted.ContainsKey(player))
                 CustomInfoTargeted[player] = new Dictionary<Player, Dictionary<string, string>>();
 
-            string for_players = string.Join(Environment.NewLine, CustomInfo[player].Values);
+            string for_players = string.Join(" | ", CustomInfo[player].Values);
             if (string.IsNullOrWhiteSpace(for_players))
             {
                 for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
@@ -197,7 +197,7 @@ namespace Mistaken.API
                                 return;
                             if (item.Key?.Connection?.identity == null)
                                 return;
-                            var toSet = string.Join(Environment.NewLine, tmp);
+                            var toSet = string.Join(" | ", tmp);
                             toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
                             item.Key.SetPlayerInfoForTargetOnly(player, toSet);
                         },
