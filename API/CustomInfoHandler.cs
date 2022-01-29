@@ -167,7 +167,8 @@ namespace Mistaken.API
             string for_players = string.Join(" | ", CustomInfo[player].Values);
             if (!string.IsNullOrWhiteSpace(for_players))
             {
-                for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty).Substring(0, 39);
+                for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
+                for_players = for_players.Substring(0, Math.Min(39, for_players.Length));
                 player.CustomInfo = for_players;
             }
             else
@@ -198,7 +199,8 @@ namespace Mistaken.API
                             if (item.Key?.Connection?.identity == null)
                                 return;
                             var toSet = string.Join(" | ", tmp);
-                            toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty).Substring(0, 39);
+                            toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
+                            toSet = toSet.Substring(0, Math.Min(39, toSet.Length));
                             item.Key.SetPlayerInfoForTargetOnly(player, toSet);
                         },
                         "Update");
