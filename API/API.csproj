@@ -88,6 +88,7 @@
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
     <Compile Include="Patches\FixNWDumbPatch.cs" />
+    <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
     <Compile Include="Patches\ToysDontSyncEveryFunckingFramePatch.cs" />
     <Compile Include="Patches\PlayerMovementSyncForcePosition.cs" />
     <Compile Include="Patches\RagdollStart.cs" />
