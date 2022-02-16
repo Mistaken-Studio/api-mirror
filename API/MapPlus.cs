@@ -169,7 +169,7 @@ namespace Mistaken.API
         /// <param name="syncPosition">Should toy's position be synce once every frame.</param>
         /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
         /// <returns>Spawned toy.</returns>
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool syncPosition, byte? movementSmoothing = null)
+        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool hasCollision, bool syncPosition, byte? movementSmoothing = null)
         {
             AdminToyBase toy = UnityEngine.Object.Instantiate(PrimitiveBaseObject, parent);
             PrimitiveObjectToy ptoy = toy.GetComponent<PrimitiveObjectToy>();
@@ -180,7 +180,9 @@ namespace Mistaken.API
             ptoy.transform.localPosition = Vector3.zero;
             ptoy.transform.localRotation = Quaternion.identity;
             ptoy.transform.localScale = Vector3.one;
-            ptoy.NetworkScale = ptoy.transform.lossyScale;
+            ptoy.NetworkScale = hasCollision ?
+                new Vector3(Math.Abs(ptoy.transform.lossyScale.x), Math.Abs(ptoy.transform.lossyScale.y), Math.Abs(ptoy.transform.lossyScale.z)) :
+                new Vector3(-Math.Abs(ptoy.transform.lossyScale.x), -Math.Abs(ptoy.transform.lossyScale.y), -Math.Abs(ptoy.transform.lossyScale.z));
             NetworkServer.Spawn(toy.gameObject);
 
             if (syncPosition)
@@ -189,6 +191,12 @@ namespace Mistaken.API
                 ptoy.UpdatePositionServer();
 
             return ptoy;
+        }
+
+        /// <inheritdoc cref="SpawnPrimitive(PrimitiveType, Transform, Color, bool, bool, byte?)"/>
+        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool syncPosition, byte? movementSmoothing = null)
+        {
+            return SpawnPrimitive(type, parent, color, true, syncPosition, movementSmoothing);
         }
 
         /// <summary>
