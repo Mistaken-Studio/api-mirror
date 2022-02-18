@@ -72,6 +72,10 @@ namespace Mistaken.API.Diagnostics.Patches
 
                             Extensions.Utilities.LogTime(customEventHandler.Method, time);
                         }
+                        catch (TargetInvocationException ex)
+                        {
+                            Extensions.Utilities.LogException(ex.InnerException, customEventHandler.Method, fullName);
+                        }
                         catch (Exception ex)
                         {
                             Extensions.Utilities.LogException(ex, customEventHandler.Method, fullName);
