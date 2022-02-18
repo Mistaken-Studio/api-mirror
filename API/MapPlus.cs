@@ -166,6 +166,7 @@ namespace Mistaken.API
         /// <param name="type">Toy type.</param>
         /// <param name="parent">Toy's parent.</param>
         /// <param name="color">Toy's color.</param>
+        /// <param name="hasCollision">If toy should have collision.</param>
         /// <param name="syncPosition">Should toy's position be synce once every frame.</param>
         /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
         /// <returns>Spawned toy.</returns>
