@@ -27,6 +27,11 @@ namespace Mistaken.API.Diagnostics
         public static event Action<System.Exception, string> OnErrorCatched;
 
         /// <summary>
+        /// Called when module throws error when handling event.
+        /// </summary>
+        public static event Action<string, string> OnUnityCatchedException;
+
+        /// <summary>
         /// Logs Error.
         /// </summary>
         /// <param name="ex">Catched exception.</param>
@@ -113,10 +118,12 @@ namespace Mistaken.API.Diagnostics
         {
             if (type != LogType.Exception)
             {
-                if (type == LogType.Exception || type == LogType.Assert)
+                if (type == LogType.Error || type == LogType.Assert)
                     Log.Debug($"[DIAGNOSTICS] Skipped {type}, {condition}");
                 return;
             }
+
+            OnUnityCatchedException?.Invoke(condition, stackTrace);
 
             lock (ErrorBacklogLockObj)
             {
