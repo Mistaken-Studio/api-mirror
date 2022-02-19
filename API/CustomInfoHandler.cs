@@ -164,11 +164,13 @@ namespace Mistaken.API
             if (!CustomInfoTargeted.ContainsKey(player))
                 CustomInfoTargeted[player] = new Dictionary<Player, Dictionary<string, string>>();
 
-            string for_players = string.Join(" | ", CustomInfo[player].Values);
+            string for_players = string.Join("\n", CustomInfo[player].Values);
             if (!string.IsNullOrWhiteSpace(for_players))
             {
-                for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
-                for_players = for_players.Substring(0, Math.Min(39, for_players.Length));
+                for_players = Regex.Replace(for_players, $"<color=[{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
+
+                // for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
+                // for_players = for_players.Substring(0, Math.Min(400, for_players.Length));
                 player.CustomInfo = for_players;
             }
             else
@@ -198,9 +200,11 @@ namespace Mistaken.API
                                 return;
                             if (item.Key?.Connection?.identity == null)
                                 return;
-                            var toSet = string.Join(" | ", tmp);
-                            toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
-                            toSet = toSet.Substring(0, Math.Min(39, toSet.Length));
+                            var toSet = string.Join("\n", tmp);
+                            toSet = Regex.Replace(toSet, $"<color=[{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
+
+                            // toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
+                            // toSet = toSet.Substring(0, Math.Min(400, toSet.Length));
                             item.Key.SetPlayerInfoForTargetOnly(player, toSet);
                         },
                         "Update");
