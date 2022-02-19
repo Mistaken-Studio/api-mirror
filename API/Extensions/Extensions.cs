@@ -95,6 +95,8 @@ namespace Mistaken.API.Extensions
                 // Xname
                 case "76561198123437513":
                 case "373911388575236096":
+                    return true;
+
                 default:
                     return false;
             }

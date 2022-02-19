@@ -93,7 +93,7 @@ namespace Mistaken.API
 
             if (ServerStatic.StopNextRound == ServerStatic.NextRoundAction.Restart)
             {
-                NetworkServer.SendToAll<RoundRestartMessage>(new RoundRestartMessage(RoundRestartType.FullRestart, (float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true));
+                NetworkServer.SendToAll<RoundRestartMessage>(new RoundRestartMessage(RoundRestartType.FullRestart, (float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true, true));
                 IdleMode.PauseIdleMode = true;
                 MEC.Timing.CallDelayed(1, () => Server.Restart());
             }
