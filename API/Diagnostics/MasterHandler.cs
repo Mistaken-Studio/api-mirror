@@ -14,6 +14,8 @@ using Exiled.API.Features;
 using MEC;
 using UnityEngine;
 
+#pragma warning disable CS0162 // Wykryto nieosi¹galny kod
+
 namespace Mistaken.API.Diagnostics
 {
     /// <summary>
@@ -21,6 +23,11 @@ namespace Mistaken.API.Diagnostics
     /// </summary>
     public static partial class MasterHandler
     {
+        /// <summary>
+        /// If diagnostics data should be logged (Exceptions will still be logged and catched).
+        /// </summary>
+        public const bool DiagnosticsEnabled = false;
+
         /// <summary>
         /// Called when module throws error when handling event.
         /// </summary>
@@ -77,6 +84,9 @@ namespace Mistaken.API.Diagnostics
 
         internal static void LogTime(string name, double time)
         {
+            if (!DiagnosticsEnabled)
+                return;
+
             lock (BacklogLockObj)
                 Backlog.Add(new Entry(name, time));
         }
@@ -92,12 +102,14 @@ namespace Mistaken.API.Diagnostics
                 File.WriteAllText(Path.Combine(Paths.Exiled, "RunResult.txt"), Newtonsoft.Json.JsonConvert.SerializeObject(CurrentStatus));
             }
 
-            CustomNetworkManager.singleton.gameObject.AddComponent<DeltaTimeChecker>();
+            if (DiagnosticsEnabled)
+                CustomNetworkManager.singleton.gameObject.AddComponent<DeltaTimeChecker>();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.logMessageReceived += Application_logMessageReceived;
 
-            _ = SaveLoop();
+            if (DiagnosticsEnabled)
+                _ = SaveLoop();
             initiated = true;
         }
 
