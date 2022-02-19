@@ -167,9 +167,16 @@ namespace Mistaken.API
             string for_players = string.Join("\n", CustomInfo[player].Values);
             if (!string.IsNullOrWhiteSpace(for_players))
             {
-                for_players = Regex.Replace(for_players, $"<color=[{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
+                // for_players = Regex.Replace(for_players, $"<color=[^{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]>", string.Empty);
+                // Log.Debug(for_players.Replace('<', '[').Replace('>', ']'), true);
+                /*for_players = Regex.Replace(for_players, "(<color=.*>)|(</color>)", string.Empty);
+                for_players = Regex.Replace(for_players, "(<b>)|(</b>)", string.Empty);
+                for_players = Regex.Replace(for_players, "(<i>)|(</i>)", string.Empty);
+                for_players = Regex.Replace(for_players, "<|>", string.Empty);*/
+                // for_players = for_players.Replace('<', '[').Replace('>', ']');
+                // Log.Debug(for_players, true);
 
-                // for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
+                for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
                 // for_players = for_players.Substring(0, Math.Min(400, for_players.Length));
                 player.CustomInfo = for_players;
             }
@@ -201,9 +208,16 @@ namespace Mistaken.API
                             if (item.Key?.Connection?.identity == null)
                                 return;
                             var toSet = string.Join("\n", tmp);
-                            toSet = Regex.Replace(toSet, $"<color=[{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
+                            //toSet = Regex.Replace(toSet, $"<color=[^{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
+                            // Log.Debug(toSet.Replace("<", "[").Replace(">", "]").Replace("\n", "|_n"), true);
+                            //toSet = Regex.Replace(toSet, "<color=.*>", $"<color={Misc.AllowedColors[Misc.PlayerInfoColorTypes.Yellow]}>");
+                            /*toSet = Regex.Replace(toSet, "(<color=.*>)|(</color>)", string.Empty);
+                            toSet = Regex.Replace(toSet, "(<b>)|(</b>)", string.Empty);
+                            toSet = Regex.Replace(toSet, "(<i>)|(</i>)", string.Empty);
+                            toSet = Regex.Replace(toSet, "<|>", string.Empty);*/
+                            // Log.Debug(toSet, true);
 
-                            // toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
+                            toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
                             // toSet = toSet.Substring(0, Math.Min(400, toSet.Length));
                             item.Key.SetPlayerInfoForTargetOnly(player, toSet);
                         },
