@@ -46,6 +46,12 @@ namespace Mistaken.API
             Patches.Vars.EnableVarPatchs.Patch();
             Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony);
 
+            Exiled.Events.Events.DisabledPatchesHashSet
+                .Add(typeof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler)
+                .GetMethod(nameof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler.ServerRequestReceived)));
+
+            Exiled.Events.Events.Instance.ReloadDisabledPatches();
+
             new BetterWarheadHandler(this);
             new CustomInfoHandler(this);
             new VanishHandler(this);

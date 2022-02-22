@@ -86,6 +86,7 @@
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
+    <Compile Include="Patches\FixUnloadingEvent.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
     <Compile Include="Patches\FixNWDumbPatch.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
