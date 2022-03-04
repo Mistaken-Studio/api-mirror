@@ -65,5 +65,8 @@ namespace Mistaken.API
 
         /// <plugin>CommandsExtender-Admin</plugin>
         POST_TALK,
+
+        /// <plugin>RAMod</plugin>
+        STREAMER_MODE,
     }
 }
