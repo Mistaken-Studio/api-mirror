@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
 using MEC;
+using Utils.Networking;
 
 namespace Mistaken.API.Utilities
 {
@@ -172,6 +173,33 @@ namespace Mistaken.API.Utilities
             private static int ohLevel = -1;
             private static CoroutineHandle? handle;
 
+            private const string Overheat_Detected_Evacuate_Alert = "ALERT ALERT .";
+            private const string Overheat_Detected_Evacuate_Alert_Transcript = "<color=red>ALERT ALERT</color>, ";
+
+            private const string Overheat_Minutes = "MINUTES";
+            private const string Overheat_Minutes_Transcript = "MINUTES</color>";
+
+            private const string Overheat_Seconds = "SECONDS";
+            private const string Overheat_Seconds_Transcript = "SECONDS</color>";
+
+            private const string Overheat_Detected_Evacuate_Detected = "DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN TMINUS ";
+            private const string Overheat_Detected_Evacuate_Detected_Transcript = "DETECTED FACILITY REACTOR CORE OVERHEAT, REACTOR WILL OVERHEAT IN T-MINUS <color=yellow>";
+
+            private const string Overheat_Detected_Evacuate_Message = ". ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY";
+            private const string Overheat_Detected_Evacuate_Message_Transcript = "<split> ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT, IT WILL CAUSE THERMAL EXPLOSION OF FACILITY";
+
+            private static string Overheat_Begin_Message => $"{Overheat_Detected_Evacuate_Alert} {Overheat_Detected_Evacuate_Detected} {{0}} {{1}} {Overheat_Detected_Evacuate_Message}";
+
+            private static string Overheat_Begin_Message_Transcript => $"{Overheat_Detected_Evacuate_Alert_Transcript} {Overheat_Detected_Evacuate_Detected_Transcript} {{0}} {{1}} {Overheat_Detected_Evacuate_Message_Transcript}";
+
+            private static string Overheat_Update_Message => $"DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN TMINUS {{0}} {{1}}";
+
+            private static string Overheat_Update_Message_Transcript => $"<color=red>DANGER</color>, REACTOR OVERHEAT STATUS <split> REACTOR WILL OVERHEAT IN T-MINUS <color=yellow>{{0}} {{1}}";
+
+            private static string Overheat_LightSystem_Message => "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT";
+
+            private static string Overheat_LightSystem_Message_Transcript => "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT";
+
             private static IEnumerator<float> HandleOverheat(int roundId, int proggressLevel, int startLevel)
             {
                 if (RoundPlus.RoundId != roundId)
@@ -188,9 +216,15 @@ namespace Mistaken.API.Utilities
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
                             NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 30 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                string.Format(Overheat_Begin_Message, "30", Overheat_Minutes),
                                 0.15f,
                                 0.10f);
+                            new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                            {
+                                new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message, "30", Overheat_Minutes) }),
+                            }).SendToAuthenticated();
+                            Log.Debug("HMMMMM");
+                            Log.Debug(string.Format(Overheat_Begin_Message_Transcript, "30", Overheat_Minutes_Transcript).Replace("<", "[").Replace(">", "]"));
                             yield return Timing.WaitForSeconds(300);
                             break;
                         }
@@ -202,16 +236,24 @@ namespace Mistaken.API.Utilities
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 25 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                    string.Format(Overheat_Begin_Message, "25", Overheat_Minutes),
                                     0.15f,
                                     0.10f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message_Transcript, "25", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
                             else
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 25 MINUTES",
+                                    string.Format(Overheat_Update_Message, "25", Overheat_Minutes),
                                     0.20f,
                                     0.15f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Update_Message_Transcript, "25", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(300);
@@ -225,16 +267,24 @@ namespace Mistaken.API.Utilities
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                        "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 20 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                        string.Format(Overheat_Begin_Message, "20", Overheat_Minutes),
                                         0.15f,
                                         0.10f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message_Transcript, "20", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
                             else
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 20 MINUTES",
+                                    string.Format(Overheat_Update_Message, "20", Overheat_Minutes),
                                     0.20f,
                                     0.15f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Update_Message_Transcript, "20", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(300);
@@ -248,16 +298,24 @@ namespace Mistaken.API.Utilities
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 15 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                    string.Format(Overheat_Begin_Message, "15", Overheat_Minutes),
                                     0.20f,
                                     0.15f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message_Transcript, "15", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
                             else
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 15 MINUTES",
+                                    string.Format(Overheat_Update_Message, "15", Overheat_Minutes),
                                     0.20f,
                                     0.15f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Update_Message_Transcript, "15", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(300);
@@ -271,16 +329,24 @@ namespace Mistaken.API.Utilities
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 10 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                    string.Format(Overheat_Begin_Message, "10", Overheat_Minutes),
                                     0.25f,
                                     0.20f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message_Transcript, "10", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
                             else
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 10 MINUTES",
+                                    string.Format(Overheat_Update_Message, "10", Overheat_Minutes),
                                     0.25f,
                                     0.20f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Update_Message_Transcript, "10", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(300);
@@ -294,16 +360,24 @@ namespace Mistaken.API.Utilities
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 5 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                    string.Format(Overheat_Begin_Message, "5", Overheat_Minutes),
                                     0.30f,
                                     0.25f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message_Transcript, "5", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
                             else
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 5 MINUTES",
+                                    string.Format(Overheat_Update_Message, "5", Overheat_Minutes),
                                     0.30f,
                                     0.25f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Update_Message_Transcript, "5", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(120);
@@ -317,25 +391,37 @@ namespace Mistaken.API.Utilities
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 3 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                    string.Format(Overheat_Begin_Message, "3", Overheat_Minutes),
                                     0.35f,
                                     0.30f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message_Transcript, "3", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
                             else
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 3 MINUTES",
+                                    string.Format(Overheat_Update_Message, "3", Overheat_Minutes),
                                     0.35f,
                                     0.30f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Update_Message_Transcript, "3", Overheat_Minutes_Transcript) }),
+                                }).SendToAuthenticated();
                             }
 
                             RespawnLock = true;
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
                             NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
+                                Overheat_LightSystem_Message,
                                 0.35f,
                                 0.30f);
+                            new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                            {
+                                new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { Overheat_LightSystem_Message_Transcript }),
+                            }).SendToAuthenticated();
                             foreach (var item in Exiled.API.Features.Map.Rooms)
                                 item.TurnOffLights(3000);
                             LockBlackout = true;
@@ -350,16 +436,24 @@ namespace Mistaken.API.Utilities
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 90 SECONDS . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
+                                    string.Format(Overheat_Begin_Message, "90", Overheat_Seconds),
                                     0.40f,
                                     0.35f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Begin_Message_Transcript, "90", Overheat_Seconds_Transcript) }),
+                                }).SendToAuthenticated();
                                 RespawnLock = true;
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
-                                    false,
-                                    false);
+                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
+                                    Overheat_LightSystem_Message,
+                                    0.35f,
+                                    0.30f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { Overheat_LightSystem_Message_Transcript }),
+                                }).SendToAuthenticated();
                                 foreach (var item in Exiled.API.Features.Map.Rooms)
                                     item.TurnOffLights(3000);
                                 LockBlackout = true;
@@ -367,9 +461,13 @@ namespace Mistaken.API.Utilities
                             else
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 90 SECONDS . STARTING COUNTDOWN",
+                                    string.Format(Overheat_Update_Message, "90", Overheat_Seconds) + " . STARTING COUNTDOWN",
                                     0.40f,
                                     0.35f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { string.Format(Overheat_Update_Message_Transcript, "90", Overheat_Seconds_Transcript) + ", STARTING COUNTDOWN" }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(30);
@@ -384,10 +482,14 @@ namespace Mistaken.API.Utilities
                             {
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "T MINUS 60 SECONDS",
-                                    false,
-                                    false);
+                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
+                                   "TMINUS 60 SECONDS",
+                                   0.40f,
+                                   0.35f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { "T-MINUS <color=yellow>60 SECONDS</color>" }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(30);
@@ -402,10 +504,14 @@ namespace Mistaken.API.Utilities
                             {
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "T MINUS 30 SECONDS",
-                                    false,
-                                    false);
+                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
+                                   "TMINUS 30 SECONDS",
+                                   0.40f,
+                                   0.35f);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { "T-MINUS <color=yellow>30 SECONDS</color>" }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(20);
@@ -420,10 +526,15 @@ namespace Mistaken.API.Utilities
                             {
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "10 SECONDS 9 . 8 . 7 . 6 . 5 . 4 . 3 . 2 . 1",
+
+                                Respawning.RespawnEffectsController.PlayCassieAnnouncement(
+                                    "10 SECONDS 9 yield_1 8 yield_1 7 yield_1 6 yield_1 5 yield_1 4 yield_1 3 yield_1 2 yield_1 1",
                                     false,
                                     false);
+                                new Subtitles.SubtitleMessage(new Subtitles.SubtitlePart[]
+                                {
+                                    new Subtitles.SubtitlePart(Subtitles.SubtitleType.Custom, new string[] { "10 SECONDS, 9, 8, 7, 6, 5, 4, 3, 2, 1" }),
+                                }).SendToAuthenticated();
                             }
 
                             yield return Timing.WaitForSeconds(5);
@@ -491,7 +602,11 @@ namespace Mistaken.API.Utilities
             {
                 while (Cassie.IsSpeaking)
                     yield return Timing.WaitForOneFrame;
-                Cassie.Message("FACILITY TESLA GATES REACTIVATION IN 3 . 2 . 1 . . ");
+                Respawning.RespawnEffectsController.PlayCassieAnnouncement(
+                    "FACILITY TESLA GATES REACTIVATION IN 3 . 2 . 1 . . ",
+                    false,
+                    false,
+                    true);
                 yield return Timing.WaitForSeconds(8);
             }
 
@@ -506,7 +621,11 @@ namespace Mistaken.API.Utilities
         {
             while (Cassie.IsSpeaking)
                 yield return Timing.WaitForOneFrame;
-            Cassie.Message("FACILITY DOOR SYSTEM REACTIVATION IN 3 . 2 . 1 . . . . . PROCEDURE SUCCESSFUL", false, true);
+            Respawning.RespawnEffectsController.PlayCassieAnnouncement(
+                    "FACILITY DOOR SYSTEM REACTIVATION IN 3 . 2 . 1 . . . . . PROCEDURE SUCCESSFUL",
+                    false,
+                    false,
+                    true);
             yield return Timing.WaitForSeconds(8);
             CloseAllDoors();
         }
