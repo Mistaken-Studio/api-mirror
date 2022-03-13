@@ -175,7 +175,6 @@ namespace Mistaken.API
                 for_players = Regex.Replace(for_players, "<|>", string.Empty);*/
                 // for_players = for_players.Replace('<', '[').Replace('>', ']');
                 // Log.Debug(for_players, true);
-
                 for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
 
                 // for_players = for_players.Substring(0, Math.Min(400, for_players.Length));
@@ -219,7 +218,6 @@ namespace Mistaken.API
                             toSet = Regex.Replace(toSet, "<|>", string.Empty);*/
 
                             // Log.Debug(toSet, true);
-
                             toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
 
                             // toSet = toSet.Substring(0, Math.Min(400, toSet.Length));

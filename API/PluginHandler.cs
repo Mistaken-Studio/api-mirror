@@ -48,7 +48,7 @@ namespace Mistaken.API
 
             Exiled.Events.Events.DisabledPatchesHashSet
                 .Add(typeof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler)
-                .GetMethod(nameof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler.ServerRequestReceived)));
+                .GetMethod(nameof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler.ServerRequestReceived), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic));
 
             Exiled.Events.Events.Instance.ReloadDisabledPatches();
 
