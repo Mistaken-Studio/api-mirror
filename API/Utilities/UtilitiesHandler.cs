@@ -6,6 +6,7 @@
 
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
+using System.Linq;
 
 namespace Mistaken.API.Utilities
 {
@@ -68,6 +69,11 @@ namespace Mistaken.API.Utilities
         {
             if (Map.RespawnLock)
                 ev.Players.Clear();
+            foreach (var player in ev.Players)
+            {
+                if (player.GetSessionVariable<bool>(SessionVarType.RESPAWN_BLOCK))
+                    ev.Players.Remove(player);
+            }
         }
     }
 }

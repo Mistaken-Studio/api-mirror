@@ -68,5 +68,8 @@ namespace Mistaken.API
 
         /// <plugin>RAMod</plugin>
         STREAMER_MODE,
+
+        /// <plugin>BetterSCP.SCP500</plugin>
+        RESPAWN_BLOCK,
     }
 }
