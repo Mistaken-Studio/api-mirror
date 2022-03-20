@@ -1,12 +1,12 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="UtilitiesHandler.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Linq;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
-using System.Linq;
 
 namespace Mistaken.API.Utilities
 {
