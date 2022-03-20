@@ -1,9 +1,10 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="UtilitiesHandler.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Linq;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
 
@@ -68,6 +69,11 @@ namespace Mistaken.API.Utilities
         {
             if (Map.RespawnLock)
                 ev.Players.Clear();
+            foreach (var player in ev.Players.ToArray())
+            {
+                if (player.GetSessionVariable<bool>(SessionVarType.RESPAWN_BLOCK))
+                    ev.Players.Remove(player);
+            }
         }
     }
 }
