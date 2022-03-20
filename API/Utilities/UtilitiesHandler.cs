@@ -69,7 +69,7 @@ namespace Mistaken.API.Utilities
         {
             if (Map.RespawnLock)
                 ev.Players.Clear();
-            foreach (var player in ev.Players)
+            foreach (var player in ev.Players.ToArray())
             {
                 if (player.GetSessionVariable<bool>(SessionVarType.RESPAWN_BLOCK))
                     ev.Players.Remove(player);
