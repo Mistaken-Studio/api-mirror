@@ -79,7 +79,7 @@ namespace Mistaken.API.Utilities
             Rooms.Clear();
             try
             {
-                var lczRooms = Exiled.API.Features.Map.Rooms.Where(r => r.Zone == ZoneType.LightContainment);
+                var lczRooms = Exiled.API.Features.Room.List.Where(r => r.Zone == ZoneType.LightContainment);
 
                 List<int> zAxis = new List<int>();
                 List<int> xAxis = new List<int>();
@@ -149,7 +149,7 @@ namespace Mistaken.API.Utilities
                     Log.Error(ex);
                 }
 
-                var hczRooms = Exiled.API.Features.Map.Rooms.Where(r => r.Zone == ZoneType.HeavyContainment && r.Type != RoomType.Pocket);
+                var hczRooms = Exiled.API.Features.Room.List.Where(r => r.Zone == ZoneType.HeavyContainment && r.Type != RoomType.Pocket);
 
                 zAxis.Clear();
                 xAxis.Clear();
@@ -220,7 +220,7 @@ namespace Mistaken.API.Utilities
                     Log.Error(ex);
                 }
 
-                var ezRooms = Exiled.API.Features.Map.Rooms.Where(r => r.Zone == ZoneType.Entrance);
+                var ezRooms = Exiled.API.Features.Room.List.Where(r => r.Zone == ZoneType.Entrance);
 
                 zAxis.Clear();
                 xAxis.Clear();
@@ -291,7 +291,7 @@ namespace Mistaken.API.Utilities
                     Log.Error(ex);
                 }
 
-                var ezHczRooms = Exiled.API.Features.Map.Rooms.Where(r => (r.Zone == ZoneType.HeavyContainment || r.Zone == ZoneType.Entrance) && r.Type != RoomType.Pocket);
+                var ezHczRooms = Exiled.API.Features.Room.List.Where(r => (r.Zone == ZoneType.HeavyContainment || r.Zone == ZoneType.Entrance) && r.Type != RoomType.Pocket);
 
                 zAxis.Clear();
                 xAxis.Clear();
@@ -565,7 +565,7 @@ namespace Mistaken.API.Utilities
         private Door[] UpdateDoors()
         {
             HashSet<Door> list = new HashSet<Door>();
-            foreach (var door in Exiled.API.Features.Map.Doors)
+            foreach (var door in Door.List)
             {
                 var dist = Vector3.Distance(door.Position, this.ExiledRoom.Position);
                 if (dist <= 11 && dist >= 5)
