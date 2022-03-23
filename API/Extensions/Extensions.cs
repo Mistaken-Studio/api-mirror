@@ -303,17 +303,16 @@ namespace Mistaken.API.Extensions
         }
 
         /// <summary>
-        /// Throws <paramref name="throwable"/> from <paramref name="position"/> with <paramref name="direction"/> and <paramref name="force"/>.
+        /// Throws <paramref name="nade"/> from <paramref name="position"/> with <paramref name="direction"/> and <paramref name="force"/>.
         /// </summary>
-        /// <param name="throwable">Item to throw.</param>
+        /// <param name="nade">Item to throw.</param>
         /// <param name="position">Position to throw from.</param>
         /// <param name="direction">Direction of throw.</param>
         /// <param name="force">Force of throw.</param>
         /// <param name="upWardFactor">Up force of throw.</param>
         /// <returns>Thrown projectile.</returns>
-        public static ThrownProjectile Throw(this Throwable throwable, Vector3 position, Vector3 direction, float force, float upWardFactor = 1f)
+        public static ThrownProjectile Throw(this ThrowableItem nade, Vector3 position, Vector3 direction, float force, float upWardFactor = 1f)
         {
-            var nade = throwable.Base;
             nade._destroyTime = Time.timeSinceLevelLoad + nade._postThrownAnimationTime;
             nade._alreadyFired = true;
 
@@ -339,14 +338,14 @@ namespace Mistaken.API.Extensions
         }
 
         /// <summary>
-        /// Throws <paramref name="throwable"/> from <paramref name="position"/> with <paramref name="direction"/> and default force.
+        /// Throws <paramref name="nade"/> from <paramref name="position"/> with <paramref name="direction"/> and default force.
         /// </summary>
-        /// <param name="throwable">Item to throw.</param>
+        /// <param name="nade">Item to throw.</param>
         /// <param name="position">Position to throw from.</param>
         /// <param name="direction">Direction of throw.</param>
         /// <returns>Thrown projectile.</returns>
-        public static ThrownProjectile Throw(this Throwable throwable, Vector3 position, Vector3 direction)
-            => Throw(throwable, position, direction, throwable.Base.WeakThrowSettings.StartVelocity, throwable.Base.WeakThrowSettings.UpwardsFactor);
+        public static ThrownProjectile Throw(this ThrowableItem nade, Vector3 position, Vector3 direction)
+            => Throw(nade, position, direction, nade.WeakThrowSettings.StartVelocity, nade.WeakThrowSettings.UpwardsFactor);
 
         /// <summary>
         /// Returns if player will die because of damage caused by <paramref name="handler"/>.
