@@ -3,7 +3,7 @@
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
-
+/*
 using System;
 using System.Threading;
 using Exiled.API.Enums;
@@ -22,7 +22,7 @@ namespace Mistaken.API.Patches
         {
             if (rawName.RemoveBracketsOnEndOfName() == "LCZ_330")
             {
-                __result = RoomType.Lcz012;
+                __result = RoomType.Lcz330;
 
                 return false;
             }
@@ -30,4 +30,4 @@ namespace Mistaken.API.Patches
             return true;
         }
     }
-}
+}*/
