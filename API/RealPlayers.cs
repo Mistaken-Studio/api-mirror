@@ -41,7 +41,7 @@ namespace Mistaken.API
         /// </summary>
         /// <param name="value">Team.</param>
         /// <returns>Maching players.</returns>
-        public static IEnumerable<Player> Get(Team value) => List.Where(p => p.Team == value);
+        public static IEnumerable<Player> Get(Team value) => List.Where(p => p.Role.Team == value);
 
         /// <summary>
         /// Returns players that play as specified class.
@@ -69,7 +69,7 @@ namespace Mistaken.API
         /// </summary>
         /// <param name="value">Team.</param>
         /// <returns>If there is maching player.</returns>
-        public static bool Any(Team value) => List.Any(p => p.Team == value);
+        public static bool Any(Team value) => List.Any(p => p.Role.Team == value);
 
         /// <summary>
         /// Returns if there is maching player.

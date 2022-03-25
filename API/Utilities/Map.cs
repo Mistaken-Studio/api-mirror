@@ -52,7 +52,7 @@ namespace Mistaken.API.Utilities
         /// </summary>
         public static void OpenAllDoors()
         {
-            foreach (var d in Exiled.API.Features.Map.Doors)
+            foreach (var d in Door.List)
                 d.IsOpen = true;
         }
 
@@ -61,7 +61,7 @@ namespace Mistaken.API.Utilities
         /// </summary>
         public static void CloseAllDoors()
         {
-            foreach (var d in Exiled.API.Features.Map.Doors)
+            foreach (var d in Door.List)
                 d.IsOpen = false;
         }
 
@@ -126,7 +126,7 @@ namespace Mistaken.API.Utilities
                 {
                     try
                     {
-                        foreach (var item in Exiled.API.Features.Map.Rooms)
+                        foreach (var item in Exiled.API.Features.Room.List)
                         {
                             if (!OnlyHCZ || item.Zone == Exiled.API.Enums.ZoneType.HeavyContainment)
                                 item.TurnOffLights(Length);
@@ -336,7 +336,7 @@ namespace Mistaken.API.Utilities
                                 "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
                                 0.35f,
                                 0.30f);
-                            foreach (var item in Exiled.API.Features.Map.Rooms)
+                            foreach (var item in Exiled.API.Features.Room.List)
                                 item.TurnOffLights(3000);
                             LockBlackout = true;
                             yield return Timing.WaitForSeconds(90);
@@ -360,7 +360,7 @@ namespace Mistaken.API.Utilities
                                     "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
                                     false,
                                     false);
-                                foreach (var item in Exiled.API.Features.Map.Rooms)
+                                foreach (var item in Exiled.API.Features.Room.List)
                                     item.TurnOffLights(3000);
                                 LockBlackout = true;
                             }
@@ -453,7 +453,7 @@ namespace Mistaken.API.Utilities
                             foreach (var player in RealPlayers.List)
                             {
                                 player.ReferenceHub.playerStats.TargetReceiveSpecificDeathReason(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
-                                player.Role = RoleType.Spectator;
+                                player.Role.Type = RoleType.Spectator;
                             }
 
                             Round.IsLocked = false;
@@ -497,7 +497,7 @@ namespace Mistaken.API.Utilities
 
             for (int i = 0; i < 5; i++)
             {
-                Exiled.API.Features.Map.TeslaGates.ToList().ForEach(tesla => tesla.RpcInstantBurst());
+                Exiled.API.Features.TeslaGate.List.ToList().ForEach(tesla => tesla.ForceTrigger());
                 yield return Timing.WaitForSeconds(0.5f);
             }
         }

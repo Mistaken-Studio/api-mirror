@@ -48,10 +48,10 @@ namespace Mistaken.API
 
             KeycardPermissions basePermissions = (ev.Player.CurrentItem as Keycard)?.Permissions ?? KeycardPermissions.None;
 
-            if ((basePermissions & (KeycardPermissions)ev.Generator._requiredPermission) != 0)
+            if ((basePermissions & ev.Generator.KeycardPermissions) != 0)
                 return; // Keycard gives access, but still ev.IsAllowed = false, so maybe plugin denied it?
 
-            if (((value | basePermissions) & (KeycardPermissions)ev.Generator._requiredPermission) != 0)
+            if (((value | basePermissions) & ev.Generator.KeycardPermissions) != 0)
                 ev.IsAllowed = true;
         }
 

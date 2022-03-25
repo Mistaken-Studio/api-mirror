@@ -148,7 +148,7 @@ namespace Mistaken.API
                         }
                         else if (level == 2)
                         {
-                            if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || !(player.Team == Team.TUT || player.Team == Team.RIP))
+                            if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || !(player.Role.Team == Team.TUT || player.Role.Team == Team.RIP))
                                 Hide(player, seenPlayer.Id);
                         }
                         else if (level == 3)
