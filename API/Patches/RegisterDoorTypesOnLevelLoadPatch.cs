@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="GenerateCachePatch.cs" company="Mistaken">
+// <copyright file="RegisterDoorTypesOnLevelLoadPatch.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -9,7 +9,7 @@ using static Exiled.Events.Events;
 
 namespace Mistaken.API.Patches
 {
-    internal static class GenerateCachePatch
+    internal static class RegisterDoorTypesOnLevelLoadPatch
     {
         public static event CustomEventHandler GeneratedCache;
 
