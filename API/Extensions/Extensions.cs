@@ -52,6 +52,14 @@ namespace Mistaken.API.Extensions
         }
 
         /// <summary>
+        /// Get's spectated player.
+        /// </summary>
+        /// <param name="player">Spectator.</param>
+        /// <returns>Spectated player or null if not spectating anyone.</returns>
+        public static Player GetSpectatedPlayer(this Player player)
+            => (player.Id != player.ReferenceHub.spectatorManager.CurrentSpectatedPlayer.playerId) ? Player.Get(player.ReferenceHub.spectatorManager.CurrentSpectatedPlayer) : null;
+
+        /// <summary>
         /// Checks if player has base game permission.
         /// </summary>
         /// <param name="me">Player.</param>
