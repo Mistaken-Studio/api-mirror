@@ -93,6 +93,7 @@ namespace Mistaken.API
 
         private void Server_WaitingForPlayers()
         {
+            Mistaken.API.Patches.RoundStartedPatch.AlreadyStarted = false;
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
         }
