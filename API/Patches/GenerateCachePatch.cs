@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="RegisterDoorTypesOnLevelLoadPatch.cs" company="Mistaken">
+// <copyright file="GenerateCachePatch.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -10,7 +10,7 @@ using static Exiled.Events.Events;
 
 namespace Mistaken.API.Patches
 {
-    internal static class RegisterDoorTypesOnLevelLoadPatch
+    internal static class GenerateCachePatch
     {
         public static event CustomEventHandler GeneratedCache;
 
@@ -21,7 +21,7 @@ namespace Mistaken.API.Patches
 
         private static IEnumerator<float> InvokeDelay()
         {
-            yield return MEC.Timing.WaitForSeconds(0.3f);
+            yield return MEC.Timing.WaitForOneFrame;
             GeneratedCache.InvokeSafely();
         }
     }
