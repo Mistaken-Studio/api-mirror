@@ -34,13 +34,9 @@ namespace Mistaken.API.Patches
             });
 
             for (int i = 0; i < newInstructions.Count; i++)
-            {
-                Log.Debug(newInstructions[i]);
                 yield return newInstructions[i];
-            }
 
             NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Return(newInstructions);
-
             yield break;
         }
     }

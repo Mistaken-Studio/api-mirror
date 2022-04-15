@@ -7,13 +7,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CommandSystem;
 using Exiled.API.Features;
 using Footprinting;
 using InventorySystem.Items.Pickups;
 using InventorySystem.Items.ThrowableProjectiles;
-using LiteNetLib.Utils;
 using Mirror;
 using PlayerStatsSystem;
 using UnityEngine;
@@ -393,12 +391,17 @@ namespace Mistaken.API.Extensions
         /// <returns>Real dealt damage, damage absorbed by AHP and damage absorbed by HP.</returns>
         public static float GetRealDamageAmount(this Player player, StandardDamageHandler handler, out float dealtHealthDamage, out float absorbedAhpDamage)
         {
-            var prevDamage = handler.Damage;
+            var tmp = player.ActiveArtificialHealthProcesses.Select(x => new { Process = x, x.CurrentAmount });
+            var hp = player.Health;
+            var damage = handler.Damage;
             handler.ApplyDamage(player.ReferenceHub);
             var realDamage = handler.Damage;
             absorbedAhpDamage = handler.AbsorbedAhpDamage;
             dealtHealthDamage = handler.DealtHealthDamage;
-            handler.Damage = prevDamage;
+            handler.Damage = damage;
+            player.Health = hp;
+            foreach (var item in tmp)
+                item.Process.CurrentAmount = item.CurrentAmount;
             return realDamage;
         }
 
