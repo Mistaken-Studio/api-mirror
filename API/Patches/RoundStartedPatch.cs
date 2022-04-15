@@ -26,7 +26,7 @@ namespace Mistaken.API.Patches
 
             newInstructions.InsertRange(newInstructions.Count - 2, new CodeInstruction[]
             {
-                new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(RoundStartedPatch), "AlreadyStarted")),
+                new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(RoundStartedPatch), "AlreadyStarted")),
                 new CodeInstruction(OpCodes.Brtrue, label),
                 new CodeInstruction(OpCodes.Ldc_I4_1),
                 new CodeInstruction(OpCodes.Call, AccessTools.PropertySetter(typeof(RoundStartedPatch), "AlreadyStarted")),

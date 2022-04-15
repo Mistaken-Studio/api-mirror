@@ -289,7 +289,16 @@ namespace Mistaken.API.GUI
         {
             if (!this.constructedStrings.TryGetValue(player, out string text))
                 return;
-            player.ShowHint(text, 7200);
+            try
+            {
+                if (player?.IsConnected ?? false && !(player.Connection is null))
+                    player.ShowHint(text, 7200);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
             this.constructedStrings.TryRemove(player, out _);
         }
     }
