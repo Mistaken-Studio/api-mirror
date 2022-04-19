@@ -8,10 +8,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
+using Mistaken.API.Extensions;
 using UnityEngine;
 
 namespace Mistaken.API.GUI
@@ -289,7 +289,16 @@ namespace Mistaken.API.GUI
         {
             if (!this.constructedStrings.TryGetValue(player, out string text))
                 return;
-            player.ShowHint(text, 7200);
+            try
+            {
+                if (player.IsConnected())
+                    player.ShowHint(text, 7200);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
             this.constructedStrings.TryRemove(player, out _);
         }
     }

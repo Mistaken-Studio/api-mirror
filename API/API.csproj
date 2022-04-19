@@ -81,10 +81,12 @@
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
+    <Compile Include="Patches\Fix0492ShotgunDamagePatch.cs" />
     <Compile Include="Patches\FixUnloadingEvent.cs" />
     <Compile Include="Patches\GenerateCachePatch.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
     <Compile Include="Patches\FixNWDumbPatch.cs" />
+    <Compile Include="Patches\RoundStartedPatch.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
     <Compile Include="Patches\ToysDontSyncEveryFunckingFramePatch.cs" />
     <Compile Include="Patches\PlayerMovementSyncForcePosition.cs" />

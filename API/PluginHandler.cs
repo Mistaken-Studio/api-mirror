@@ -44,7 +44,7 @@ namespace Mistaken.API
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.Patch(
-                typeof(Exiled.Events.Events).Assembly.GetType("Exiled.Events.Handlers.Internal.MapGenerated").GetMethod("GenerateCache", BindingFlags.NonPublic | BindingFlags.Static),
+                typeof(Exiled.Events.Handlers.Warhead).Assembly.GetType("Exiled.Events.Handlers.Internal.MapGenerated").GetMethod("GenerateCache", BindingFlags.NonPublic | BindingFlags.Static),
                 postfix: new HarmonyLib.HarmonyMethod(typeof(Patches.GenerateCachePatch), nameof(Patches.GenerateCachePatch.Postfix)));
             this.Harmony.PatchAll();
             Patches.Vars.EnableVarPatchs.Patch();
@@ -93,6 +93,7 @@ namespace Mistaken.API
 
         private void Server_WaitingForPlayers()
         {
+            Mistaken.API.Patches.RoundStartedPatch.AlreadyStarted = false;
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
         }

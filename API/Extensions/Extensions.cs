@@ -9,9 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CommandSystem;
 using Exiled.API.Features;
-using Exiled.API.Features.Items;
-using Exiled.CustomItems.API.Features;
-using Exiled.CustomRoles.API.Features;
 using Footprinting;
 using InventorySystem.Items.Pickups;
 using InventorySystem.Items.ThrowableProjectiles;
@@ -50,6 +47,14 @@ namespace Mistaken.API.Extensions
         {
             me.Broadcast(duration, $"<color=orange>[<color=green>{tag}</color>]</color> {message}", flags);
         }
+
+        /// <summary>
+        /// Get's spectated player.
+        /// </summary>
+        /// <param name="player">Spectator.</param>
+        /// <returns>Spectated player or null if not spectating anyone.</returns>
+        public static Player GetSpectatedPlayer(this Player player)
+            => (player.Id != player.ReferenceHub.spectatorManager.CurrentSpectatedPlayer.playerId) ? Player.Get(player.ReferenceHub.spectatorManager.CurrentSpectatedPlayer) : null;
 
         /// <summary>
         /// Checks if player has base game permission.
@@ -353,17 +358,68 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player.</param>
         /// <param name="handler">Damage Cause.</param>
         /// <returns>If player will die because of this damage.</returns>
+        [System.Obsolete("Use overload with StandardDamageHandler!")]
         public static bool WillDie(this Player player, DamageHandlerBase handler)
+            => WillDie(player, (StandardDamageHandler)handler);
+
+        /// <summary>
+        /// Returns if player will die because of damage caused by <paramref name="handler"/>.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="handler">Damage Cause.</param>
+        /// <returns>If player will die because of this damage.</returns>
+        public static bool WillDie(this Player player, StandardDamageHandler handler)
         {
             var tmp = player.ActiveArtificialHealthProcesses.Select(x => new { Process = x, x.CurrentAmount });
             var hp = player.Health;
+            var damage = handler.Damage;
             var death = handler.ApplyDamage(player.ReferenceHub) == DamageHandlerBase.HandlerOutput.Death;
-
+            handler.Damage = damage;
             player.Health = hp;
             foreach (var item in tmp)
                 item.Process.CurrentAmount = item.CurrentAmount;
-
             return death;
         }
+
+        /// <summary>
+        /// Returns real dealt damage to the player.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="handler">Damage Cause.</param>
+        /// <param name="dealtHealthDamage">Damage Absorbed by HP.</param>
+        /// <param name="absorbedAhpDamage">Damage Absorbed by AHP.</param>
+        /// <returns>Real dealt damage, damage absorbed by AHP and damage absorbed by HP.</returns>
+        public static float GetRealDamageAmount(this Player player, StandardDamageHandler handler, out float dealtHealthDamage, out float absorbedAhpDamage)
+        {
+            var tmp = player.ActiveArtificialHealthProcesses.Select(x => new { Process = x, x.CurrentAmount });
+            var hp = player.Health;
+            var damage = handler.Damage;
+            handler.ApplyDamage(player.ReferenceHub);
+            var realDamage = handler.Damage;
+            absorbedAhpDamage = handler.AbsorbedAhpDamage;
+            dealtHealthDamage = handler.DealtHealthDamage;
+            handler.Damage = damage;
+            player.Health = hp;
+            foreach (var item in tmp)
+                item.Process.CurrentAmount = item.CurrentAmount;
+            return realDamage;
+        }
+
+        /// <summary>
+        /// Returns real dealt damage to the player.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="handler">Damage Cause.</param>
+        /// <returns>Real dealt damage.</returns>
+        public static float GetRealDamageAmount(this Player player, StandardDamageHandler handler)
+            => GetRealDamageAmount(player, handler, out _, out _);
+
+        /// <summary>
+        /// Checks if player is really connected to the server.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <returns>True if player is connected. Otherwise false.</returns>
+        public static bool IsConnected(this Player player)
+            => player?.IsConnected ?? false && !(player.Connection is null);
     }
 }
