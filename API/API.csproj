@@ -82,6 +82,7 @@
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
     <Compile Include="Patches\Fix0492ShotgunDamagePatch.cs" />
+    <Compile Include="Patches\FixShotgunNWShitPatch.cs" />
     <Compile Include="Patches\FixUnloadingEvent.cs" />
     <Compile Include="Patches\GenerateCachePatch.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Patches\Vars\NicknamePatch.cs" />
     <Compile Include="Patches\Vars\NoClipPatch.cs" />
     <Compile Include="Patches\Vars\OverwatchPatch.cs" />
+    <Compile Include="Patches\YeetConsolePatch.cs" />
     <Compile Include="PlayerPreferences.cs" />
     <Compile Include="PluginHandler.cs" />
     <Compile Include="BetterWarheadHandler.cs" />

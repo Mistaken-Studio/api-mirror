@@ -96,6 +96,7 @@ namespace Mistaken.API
             Mistaken.API.Patches.RoundStartedPatch.AlreadyStarted = false;
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
+            MEC.Timing.RunCoroutine(Patches.YeetConsolePatch.UpdateConsolePrint());
         }
 
         private void GenerateCachePatch_GeneratedCache()
