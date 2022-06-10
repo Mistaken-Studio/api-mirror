@@ -37,15 +37,11 @@ namespace Mistaken.API
             Instance = this;
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
-            Patches.GenerateCachePatch.GeneratedCache += this.GenerateCachePatch_GeneratedCache;
             MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
 
             Patches.TestFixPatch.MainThread = Thread.CurrentThread;
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
-            this.Harmony.Patch(
-                typeof(Exiled.Events.Handlers.Warhead).Assembly.GetType("Exiled.Events.Handlers.Internal.MapGenerated").GetMethod("GenerateCache", BindingFlags.NonPublic | BindingFlags.Static),
-                postfix: new HarmonyLib.HarmonyMethod(typeof(Patches.GenerateCachePatch), nameof(Patches.GenerateCachePatch.Postfix)));
             this.Harmony.PatchAll();
             Patches.Vars.EnableVarPatchs.Patch();
             Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony);
@@ -77,7 +73,6 @@ namespace Mistaken.API
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= this.Server_WaitingForPlayers;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
-            Patches.GenerateCachePatch.GeneratedCache -= this.GenerateCachePatch_GeneratedCache;
 
             this.Harmony.UnpatchAll();
             Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony);
@@ -97,10 +92,8 @@ namespace Mistaken.API
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
             MEC.Timing.RunCoroutine(Patches.YeetConsolePatch.UpdateConsolePrint());
+            Utilities.Room.Reload();
         }
-
-        private void GenerateCachePatch_GeneratedCache()
-            => Utilities.Room.Reload();
 
         private void Server_RestartingRound()
         {

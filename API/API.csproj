@@ -84,7 +84,6 @@
     <Compile Include="Patches\Fix0492ShotgunDamagePatch.cs" />
     <Compile Include="Patches\FixShotgunNWShitPatch.cs" />
     <Compile Include="Patches\FixUnloadingEvent.cs" />
-    <Compile Include="Patches\GenerateCachePatch.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
     <Compile Include="Patches\FixNWDumbPatch.cs" />
     <Compile Include="Patches\RoundStartedPatch.cs" />
