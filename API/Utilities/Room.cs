@@ -559,11 +559,6 @@ namespace Mistaken.API.Utilities
 
             list.Remove(this);
             this.farNeighbors = list.ToArray();
-            foreach (var n in this.farNeighbors)
-            {
-                Log.Debug("Far neighbor: " + n.ExiledRoom.Name);
-            }
-
             return this.farNeighbors;
         }
 
