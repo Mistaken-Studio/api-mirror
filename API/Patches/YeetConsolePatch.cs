@@ -27,11 +27,14 @@ namespace Mistaken.API.Patches
                 yield return Timing.WaitForSeconds(0.5f);
                 foreach (var message in ConsoleMessages.ToArray())
                 {
-                    if (!(message.Connection is null))
+                    if (message.Connection is null || message.Transmission is null)
                     {
-                        message.Transmission.SendToClient(message.Connection, message.Text, message.Color);
                         ConsoleMessages.Remove(message);
+                        continue;
                     }
+
+                    message.Transmission.SendToClient(message.Connection, message.Text, message.Color);
+                    ConsoleMessages.Remove(message);
                 }
             }
         }
