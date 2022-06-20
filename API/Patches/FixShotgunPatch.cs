@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FixShotgunNWShitPatch.cs" company="Mistaken">
+// <copyright file="FixShotgunPatch.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -15,7 +15,7 @@ using UnityEngine;
 namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(BuckshotHitreg), nameof(BuckshotHitreg.ServerPerformShot))]
-    internal static class FixShotgunNWShitPatch
+    internal static class FixShotgunPatch
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
@@ -30,7 +30,9 @@ namespace Mistaken.API.Patches
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(BuckshotHitreg), nameof(BuckshotHitreg.Hits))),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(FixShotgunNWShitPatch), nameof(FixShotgunNWShitPatch.ApplyHits))),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(FixShotgunPatch), nameof(FixShotgunPatch.ApplyHits))),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Stloc_2),
             });
 
             for (int i = 0; i < newInstructions.Count; i++)
@@ -59,8 +61,6 @@ namespace Mistaken.API.Patches
 
                 if (target.Damage(damage, new PlayerStatsSystem.FirearmDamageHandler(instance.Firearm, damage, false), hitPosition))
                     num += damage;
-
-                instance.ShowHitIndicator(target.NetworkId, num, instance.Hub.transform.position);
             }
 
             return num;

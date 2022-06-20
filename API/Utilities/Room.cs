@@ -67,12 +67,12 @@ namespace Mistaken.API.Utilities
         /// <summary>
         /// Gets external doors.
         /// </summary>
-        public IEnumerable<Door> ExternalDoors => (this.doors ?? this.UpdateDoors()).Except(this.ExiledRoom.Doors);
+        public IEnumerable<Door> ExternalDoors => this.ExiledRoom.Doors.Except(this.doors ?? this.UpdateInternalDoors());
 
         /// <summary>
         /// Gets doors.
         /// </summary>
-        public IEnumerable<Door> Doors => this.doors.Union(this.ExiledRoom.Doors);
+        public IEnumerable<Door> Doors => this.doors ?? this.UpdateInternalDoors();
 
         internal static void Reload()
         {
@@ -562,14 +562,19 @@ namespace Mistaken.API.Utilities
             return this.farNeighbors;
         }
 
-        private Door[] UpdateDoors()
+        private Door[] UpdateInternalDoors()
         {
-            HashSet<Door> list = new HashSet<Door>();
-            foreach (var door in Door.List)
+            HashSet<Door> list = this.ExiledRoom.Doors.ToHashSet();
+            foreach (var room in Exiled.API.Features.Room.List)
             {
-                var dist = Vector3.Distance(door.Position, this.ExiledRoom.Position);
-                if (dist <= 11 && dist >= 5)
-                    list.Add(door);
+                if (room == this.ExiledRoom)
+                    continue;
+
+                foreach (var thisRoomsDoor in list.ToArray())
+                {
+                    if (room.Doors.Contains(thisRoomsDoor))
+                        list.Remove(thisRoomsDoor);
+                }
             }
 
             this.doors = list.ToArray();
