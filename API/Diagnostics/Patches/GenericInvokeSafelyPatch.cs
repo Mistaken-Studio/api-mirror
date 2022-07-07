@@ -14,14 +14,14 @@ namespace Mistaken.API.Diagnostics.Patches
 {
     // [HarmonyPatch(typeof(Exiled.Events.Extensions.Event), nameof(Exiled.Events.Extensions.Event.InvokeSafely), typeof(Exiled.Events.Events.CustomEventHandler<>))]
     // [HarmonyPatch]
-    internal static class GenericInvokeSafelyPatch
+    public static class GenericInvokeSafelyPatch
     {
-        internal static void PatchEvents(Harmony harmony)
+        public static void PatchEvents(Harmony harmony, Type eventList)
         {
-            var baseType = typeof(Exiled.Events.Extensions.Event)
+            var baseType = eventList
                 .GetMethods()
                 .First(x => x.Name == nameof(Exiled.Events.Extensions.Event.InvokeSafely) && x.IsGenericMethod);
-            var types = Assembly.GetAssembly(typeof(Exiled.Events.Extensions.Event)).GetTypes().Where(x => x.IsSubclassOf(typeof(System.EventArgs))).ToArray();
+            var types = Assembly.GetAssembly(eventList).GetTypes().Where(x => x.IsSubclassOf(typeof(System.EventArgs))).ToArray();
             for (int i = 0; i < types.Length; i++)
             {
                 Type item = types[i];
@@ -40,10 +40,10 @@ namespace Mistaken.API.Diagnostics.Patches
             }
         }
 
-        internal static void UnpatchEvents(Harmony harmony)
+        public static void UnpatchEvents(Harmony harmony, Type eventList)
         {
-            var baseType = typeof(Exiled.Events.Extensions.Event).GetMethods().First(x => x.Name == nameof(Exiled.Events.Extensions.Event.InvokeSafely) && x.IsGenericMethod);
-            foreach (var item in Assembly.GetAssembly(typeof(Exiled.Events.Extensions.Event)).GetTypes().Where(x => x.IsSubclassOf(typeof(System.EventArgs))))
+            var baseType = eventList.GetMethods().First(x => x.Name == nameof(Exiled.Events.Extensions.Event.InvokeSafely) && x.IsGenericMethod);
+            foreach (var item in Assembly.GetAssembly(eventList).GetTypes().Where(x => x.IsSubclassOf(typeof(System.EventArgs))))
                 harmony.Unpatch(baseType.MakeGenericMethod(item), HarmonyPatchType.Prefix);
         }
 
@@ -66,10 +66,12 @@ namespace Mistaken.API.Diagnostics.Patches
                         var customEventHandler = invocationList[i];
                         try
                         {
+                            // Log.Debug($"[DIAGNOSTICS] [{typeof(T).FullName}] Handling by {fullName}");
                             startTime = DateTime.UtcNow;
                             customEventHandler.DynamicInvoke(arg);
                             time = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
+                            // Log.Debug($"[DIAGNOSTICS] [{typeof(T).FullName}] Handled by {fullName}");
                             Extensions.Utilities.LogTime(customEventHandler.Method, time);
                         }
                         catch (TargetInvocationException ex)

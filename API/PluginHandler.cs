@@ -44,7 +44,7 @@ namespace Mistaken.API
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
             Patches.Vars.EnableVarPatchs.Patch();
-            Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony);
+            Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
 
             Exiled.Events.Events.DisabledPatchesHashSet
                 .Add(typeof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler)
@@ -75,7 +75,7 @@ namespace Mistaken.API
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
 
             this.Harmony.UnpatchAll();
-            Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony);
+            Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
 
             Diagnostics.Module.OnDisable(this);
 
