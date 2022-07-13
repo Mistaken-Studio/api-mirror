@@ -31,7 +31,8 @@ namespace Mistaken.API.GUI
         /// </summary>
         public static void Ini()
         {
-            Server.Host.GameObject.AddComponent<PseudoGUIHandler>();
+            if (Instance is null)
+                Server.Host.GameObject.AddComponent<PseudoGUIHandler>();
         }
 
         /// <summary>
@@ -114,6 +115,7 @@ namespace Mistaken.API.GUI
                         // 10s
                         if (this.frames > 99)
                         {
+                            Log.Debug($"ThreadID: {System.Threading.Thread.CurrentThread.ManagedThreadId}");
                             foreach (var item in RealPlayers.List)
                             {
                                 try
@@ -182,6 +184,7 @@ namespace Mistaken.API.GUI
 
         private void Destroy()
         {
+            Instance = null;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
             this.active = false;
         }
