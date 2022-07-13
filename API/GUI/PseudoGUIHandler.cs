@@ -115,7 +115,6 @@ namespace Mistaken.API.GUI
                         // 10s
                         if (this.frames > 99)
                         {
-                            Log.Debug($"ThreadID: {System.Threading.Thread.CurrentThread.ManagedThreadId}");
                             foreach (var item in RealPlayers.List)
                             {
                                 try
