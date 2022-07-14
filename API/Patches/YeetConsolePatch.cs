@@ -27,7 +27,7 @@ namespace Mistaken.API.Patches
                 yield return Timing.WaitForSeconds(0.5f);
                 foreach (var message in ConsoleMessages.ToArray())
                 {
-                    if (message.Connection is null || message.Transmission is null)
+                    if (message.Connection is null || message.Transmission == null)
                     {
                         ConsoleMessages.Remove(message);
                         continue;
