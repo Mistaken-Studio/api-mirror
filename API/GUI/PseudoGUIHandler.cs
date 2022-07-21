@@ -89,10 +89,12 @@ namespace Mistaken.API.GUI
             ToUpdate.TryAdd(player, null);
         }
 
+        private static readonly string DirectoryPath = Path.Combine(Paths.Plugins, "PseudoGUI", Server.Port.ToString());
         private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>>();
         private static readonly ConcurrentDictionary<Player, object> ToUpdate = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
         private static readonly ConcurrentDictionary<Player, object> ToIgnore = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
         private readonly ConcurrentDictionary<Player, string> constructedStrings = new ConcurrentDictionary<Player, string>();
+        private readonly object lck = new object();
         private StreamWriter fileStream;
         private int frames = 0;
         private Task guiCalculationThread;
@@ -102,11 +104,11 @@ namespace Mistaken.API.GUI
         {
             Instance = this;
             Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
-            string dirPath = Path.Combine(Paths.Plugins, "PseudoGUI", Server.Port.ToString());
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
+            if (!Directory.Exists(DirectoryPath))
+                Directory.CreateDirectory(DirectoryPath);
 
-            this.fileStream = File.CreateText(Path.Combine(dirPath, DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
+            this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
+            this.GUILog("START", "Start of log");
 
             this.active = true;
             this.guiCalculationThread = Task.Run(async () =>
@@ -208,7 +210,14 @@ namespace Mistaken.API.GUI
             ToUpdate.Clear();
             ToIgnore.Clear();
             this.constructedStrings.Clear();
-            this.GUILog("ROUND_RESTART", "Cleared old data");
+            this.GUILog("ROUND_RESTART", "End of log");
+            lock (this.lck)
+            {
+                this.fileStream.Dispose();
+                this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
+            }
+
+            this.GUILog("ROUND_RESTART", "Start of log");
         }
 
         private void FixedUpdate()
@@ -245,12 +254,16 @@ namespace Mistaken.API.GUI
         private void GUILog(string module, string message)
         {
             string log = $"{DateTime.UtcNow.ToString("HH:mm:ss.fff")} | {module} | {message}";
-            try
+            lock (this.lck)
             {
-                this.fileStream.WriteLine(log);
-            }
-            catch
-            {
+                try
+                {
+                    this.fileStream.WriteLine(log);
+                }
+                catch
+                {
+                    Log.Error(log);
+                }
             }
         }
 
