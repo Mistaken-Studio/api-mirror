@@ -238,10 +238,7 @@ namespace Mistaken.API.GUI
                         this.constructedStrings.TryRemove(item, out _);
                     }
                     else if (!ToIgnore.ContainsKey(item))
-                    {
-                        this.GUILog("FIXED_UPDATE", $"Updating GUI for player {item.Nickname}");
                         this.UpdateGUI(item);
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -331,7 +328,6 @@ namespace Mistaken.API.GUI
             toWrite += bottomContent;
 
             this.constructedStrings[player] = $"<size=75%><color=#FFFFFFFF>{toWrite}</color><br><br><br><br><br><br><br><br><br><br></size>";
-            this.GUILog("CONSTRUCT_STRING", $"Constructed string for player {player.Nickname}");
         }
 
         private void UpdateGUI(Player player)
@@ -355,7 +351,6 @@ namespace Mistaken.API.GUI
                 Log.Error(ex);
             }
 
-            this.GUILog("UPDATE_GUI", $"Removing player {player.Nickname} from constructed strings list (hint already shown)");
             this.constructedStrings.TryRemove(player, out _);
         }
     }
