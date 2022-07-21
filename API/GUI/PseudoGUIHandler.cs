@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Exiled.API.Features;
@@ -92,6 +93,7 @@ namespace Mistaken.API.GUI
         private static readonly ConcurrentDictionary<Player, object> ToUpdate = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
         private static readonly ConcurrentDictionary<Player, object> ToIgnore = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
         private readonly ConcurrentDictionary<Player, string> constructedStrings = new ConcurrentDictionary<Player, string>();
+        private StreamWriter fileStream;
         private int frames = 0;
         private Task guiCalculationThread;
         private bool active = true;
@@ -100,6 +102,11 @@ namespace Mistaken.API.GUI
         {
             Instance = this;
             Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
+            string dirPath = Path.Combine(Paths.Plugins, "PseudoGUI", Server.Port.ToString());
+            if (!Directory.Exists(dirPath))
+                Directory.CreateDirectory(dirPath);
+
+            this.fileStream = File.CreateText(Path.Combine(dirPath, DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
 
             this.active = true;
             this.guiCalculationThread = Task.Run(async () =>
@@ -120,7 +127,10 @@ namespace Mistaken.API.GUI
                                 try
                                 {
                                     if (!ToIgnore.ContainsKey(item))
+                                    {
+                                        this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (10s)");
                                         this.ConstructString(item);
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
@@ -137,7 +147,10 @@ namespace Mistaken.API.GUI
                         foreach (var item in ToUpdate.Keys.ToArray())
                         {
                             if ((item?.IsConnected ?? false) && !ToIgnore.ContainsKey(item))
+                            {
+                                this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (0.1s)");
                                 this.ConstructString(item);
+                            }
                         }
 
                         ToUpdate.Clear();
@@ -186,6 +199,7 @@ namespace Mistaken.API.GUI
             Instance = null;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
             this.active = false;
+            this.fileStream.Dispose();
         }
 
         private void Server_RestartingRound()
@@ -194,6 +208,7 @@ namespace Mistaken.API.GUI
             ToUpdate.Clear();
             ToIgnore.Clear();
             this.constructedStrings.Clear();
+            this.GUILog("ROUND_RESTART", "Cleared old data");
         }
 
         private void FixedUpdate()
@@ -209,15 +224,33 @@ namespace Mistaken.API.GUI
                         continue;
 
                     if (!(item?.IsConnected ?? false))
+                    {
+                        this.GUILog("FIXED_UPDATE", $"Removing player {item.Nickname} from constructed strings list (player disconnected)");
                         this.constructedStrings.TryRemove(item, out _);
+                    }
                     else if (!ToIgnore.ContainsKey(item))
+                    {
+                        this.GUILog("FIXED_UPDATE", $"Updating GUI for player {item.Nickname}");
                         this.UpdateGUI(item);
+                    }
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex.Message);
                     Log.Error(ex.StackTrace);
                 }
+            }
+        }
+
+        private void GUILog(string module, string message)
+        {
+            string log = $"{DateTime.UtcNow.ToString("HH:mm:ss.fff")} | {module} | {message}";
+            try
+            {
+                this.fileStream.WriteLine(log);
+            }
+            catch
+            {
             }
         }
 
@@ -285,22 +318,31 @@ namespace Mistaken.API.GUI
             toWrite += bottomContent;
 
             this.constructedStrings[player] = $"<size=75%><color=#FFFFFFFF>{toWrite}</color><br><br><br><br><br><br><br><br><br><br></size>";
+            this.GUILog("CONSTRUCT_STRING", $"Constructed string for player {player.Nickname}");
         }
 
         private void UpdateGUI(Player player)
         {
             if (!this.constructedStrings.TryGetValue(player, out string text))
+            {
+                this.GUILog("UPDATE_GUI", $"List of constructed strings was empty for player {player.Nickname}");
                 return;
+            }
+
             try
             {
                 if (player.IsConnected())
+                {
+                    this.GUILog("UPDATE_GUI", $"Showing hint for player {player.Nickname}");
                     player.ShowHint(text, 7200);
+                }
             }
             catch (Exception ex)
             {
                 Log.Error(ex);
             }
 
+            this.GUILog("UPDATE_GUI", $"Removing player {player.Nickname} from constructed strings list (hint already shown)");
             this.constructedStrings.TryRemove(player, out _);
         }
     }
