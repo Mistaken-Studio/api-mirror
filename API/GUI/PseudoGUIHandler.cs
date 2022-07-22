@@ -159,24 +159,26 @@ namespace Mistaken.API.GUI
                             continue;
                         }
 
+                        Player[] toUpdate;
                         lock (toUpdateLock)
                         {
-                            foreach (var item in ToUpdate.ToArray())
+                            toUpdate = ToUpdate.ToArray();
+                            ToUpdate.Clear();
+                        }
+
+                        foreach (var item in toUpdate)
+                        {
+                            if (!item.IsConnected())
+                                continue;
+
+                            lock (toIgnoreLock)
                             {
-                                if (!item.IsConnected())
+                                if (ToIgnore.Contains(item))
                                     continue;
-
-                                lock (toIgnoreLock)
-                                {
-                                    if (ToIgnore.Contains(item))
-                                        continue;
-                                }
-
-                                this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (0.1s)");
-                                this.ConstructString(item);
                             }
 
-                            ToUpdate.Clear();
+                            this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (0.1s)");
+                            this.ConstructString(item);
                         }
                     }
                     catch (Exception ex)
