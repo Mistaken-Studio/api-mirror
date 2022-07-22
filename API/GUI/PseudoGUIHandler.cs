@@ -187,7 +187,7 @@ namespace Mistaken.API.GUI
             });
         }
 
-        private void Destroy()
+        private void OnDestroy()
         {
             Instance = null;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
