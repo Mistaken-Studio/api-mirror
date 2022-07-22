@@ -42,8 +42,11 @@ namespace Mistaken.API.GUI
         /// <param name="p">player to ignore.</param>
         public static void Ignore(Player p)
         {
-            ToIgnore.TryAdd(p, null);
-            ToUpdate.TryRemove(p, out _);
+            lock (toIgnoreLock)
+                ToIgnore.Add(p);
+
+            lock (toUpdateLock)
+                ToUpdate.Remove(p);
         }
 
         /// <summary>
@@ -52,8 +55,10 @@ namespace Mistaken.API.GUI
         /// <param name="p">player to stop ignoring.</param>
         public static void StopIgnore(Player p)
         {
-            ToIgnore.TryRemove(p, out _);
-            ToUpdate.TryAdd(p, null);
+            lock (toIgnoreLock)
+                ToIgnore.Remove(p);
+            lock (toUpdateLock)
+                ToUpdate.Add(p);
         }
 
         internal static void Set(Player player, string key, PseudoGUIPosition type, string content, float duration)
@@ -86,13 +91,16 @@ namespace Mistaken.API.GUI
                 CustomInfo[player][key] = (content, type);
             }
 
-            ToUpdate.TryAdd(player, null);
+            lock (toUpdateLock)
+                ToUpdate.Add(player);
         }
 
         private static readonly string DirectoryPath = Path.Combine(Paths.Plugins, "PseudoGUI", Server.Port.ToString());
         private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>>();
-        private static readonly ConcurrentDictionary<Player, object> ToUpdate = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
-        private static readonly ConcurrentDictionary<Player, object> ToIgnore = new ConcurrentDictionary<Player, object>(); // ConcurrentHashSet
+        private static readonly object toUpdateLock = new object();
+        private static readonly HashSet<Player> ToUpdate = new HashSet<Player>();
+        private static readonly object toIgnoreLock = new object();
+        private static readonly HashSet<Player> ToIgnore = new HashSet<Player>();
         private readonly ConcurrentDictionary<Player, string> constructedStrings = new ConcurrentDictionary<Player, string>();
         private readonly object lck = new object();
         private StreamWriter fileStream;
@@ -128,11 +136,14 @@ namespace Mistaken.API.GUI
                             {
                                 try
                                 {
-                                    if (!ToIgnore.ContainsKey(item))
+                                    lock (toIgnoreLock)
                                     {
-                                        this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (10s)");
-                                        this.ConstructString(item);
+                                        if (ToIgnore.Contains(item))
+                                            continue;
                                     }
+
+                                    this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (10s)");
+                                    this.ConstructString(item);
                                 }
                                 catch (Exception ex)
                                 {
@@ -141,52 +152,32 @@ namespace Mistaken.API.GUI
                                 }
                             }
 
-                            ToUpdate.Clear();
+                            lock (toUpdateLock)
+                                ToUpdate.Clear();
+
                             this.frames = 0;
                             continue;
                         }
 
-                        foreach (var item in ToUpdate.Keys.ToArray())
+                        lock (toUpdateLock)
                         {
-                            if ((item?.IsConnected ?? false) && !ToIgnore.ContainsKey(item))
+                            foreach (var item in ToUpdate.ToArray())
                             {
+                                if (!item.IsConnected())
+                                    continue;
+
+                                lock (toIgnoreLock)
+                                {
+                                    if (ToIgnore.Contains(item))
+                                        continue;
+                                }
+
                                 this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (0.1s)");
                                 this.ConstructString(item);
                             }
+
+                            ToUpdate.Clear();
                         }
-
-                        ToUpdate.Clear();
-
-                        /*while (ToUpdate.Count != 0)
-                        {
-                            try
-                            {
-                                var item = ToUpdate[0];
-                                if ((item?.IsConnected ?? false) && !ToIgnore.Contains(item))
-                                    this.ConstructString(item);
-                                try
-                                {
-                                    ToUpdate.RemoveAt(0);
-                                }
-                                catch (ArgumentOutOfRangeException)
-                                {
-                                    Log.Warn($"[PSUEDOGUI] {nameof(ArgumentOutOfRangeException)} thrown, breaking");
-                                    try
-                                    {
-                                        ToUpdate.Clear();
-                                    }
-                                    catch
-                                    {
-                                    }
-
-                                    break;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ex);
-                            }
-                        }*/
                     }
                     catch (Exception ex)
                     {
@@ -201,14 +192,17 @@ namespace Mistaken.API.GUI
             Instance = null;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
             this.active = false;
-            this.fileStream.Dispose();
+            lock (this.lck)
+                this.fileStream.Dispose();
         }
 
         private void Server_RestartingRound()
         {
             CustomInfo.Clear();
-            ToUpdate.Clear();
-            ToIgnore.Clear();
+            lock (toUpdateLock)
+                ToUpdate.Clear();
+            lock (toIgnoreLock)
+                ToIgnore.Clear();
             this.constructedStrings.Clear();
             this.GUILog("ROUND_RESTART", "End of log");
             lock (this.lck)
@@ -232,13 +226,21 @@ namespace Mistaken.API.GUI
                     if (item == null)
                         continue;
 
-                    if (!(item?.IsConnected ?? false))
+                    if (!item.IsConnected())
                     {
                         this.GUILog("FIXED_UPDATE", $"Removing player {item.Nickname} from constructed strings list (player disconnected)");
                         this.constructedStrings.TryRemove(item, out _);
                     }
-                    else if (!ToIgnore.ContainsKey(item))
+                    else
+                    {
+                        lock (toIgnoreLock)
+                        {
+                            if (ToIgnore.Contains(item))
+                                continue;
+                        }
+
                         this.UpdateGUI(item);
+                    }
                 }
                 catch (Exception ex)
                 {

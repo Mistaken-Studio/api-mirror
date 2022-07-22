@@ -289,7 +289,7 @@ namespace Mistaken.API.Extensions
         /// <param name="me">Playet to check.</param>
         /// <returns>If player is ready, real player.</returns>
         public static bool IsReadyPlayer(this Player me)
-            => me.IsConnected && me.IsVerified && !me.GetSessionVariable<bool>("IsNPC") && me.UserId != null;
+            => me.IsConnected() && me.IsVerified && !me.GetSessionVariable<bool>("IsNPC") && me.UserId != null;
 
         /// <summary>
         /// Spawns BoxCollider.
