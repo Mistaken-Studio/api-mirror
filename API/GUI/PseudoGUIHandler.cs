@@ -107,7 +107,7 @@ namespace Mistaken.API.GUI
             if (!Directory.Exists(DirectoryPath))
                 Directory.CreateDirectory(DirectoryPath);
 
-            this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
+            this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
             this.GUILog("START", "Start of log");
 
             this.active = true;
@@ -214,7 +214,7 @@ namespace Mistaken.API.GUI
             lock (this.lck)
             {
                 this.fileStream.Dispose();
-                this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
+                this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
             }
 
             this.GUILog("ROUND_RESTART", "Start of log");
@@ -250,7 +250,7 @@ namespace Mistaken.API.GUI
 
         private void GUILog(string module, string message)
         {
-            string log = $"{DateTime.UtcNow.ToString("HH:mm:ss.fff")} | {module} | {message}";
+            string log = $"{DateTime.Now.ToString("HH:mm:ss.fff")} | {module} | {message}";
             lock (this.lck)
             {
                 try
