@@ -10,7 +10,7 @@ using Exiled.API.Features;
 using HarmonyLib;
 
 #pragma warning disable SA1118 // Parameters should span multiple lines
-
+/*
 namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(Player), nameof(Player.ShowHint))]
@@ -40,3 +40,4 @@ namespace Mistaken.API.Patches
         }
     }
 }
+*/
