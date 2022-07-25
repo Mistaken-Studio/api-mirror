@@ -1,34 +1,29 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="FixPlayerShowHintPatch.cs" company="Mistaken">
+// <copyright file="PlayerHasHintPatch.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Exiled.API.Features;
 using HarmonyLib;
+using Hints;
 
 #pragma warning disable SA1118 // Parameters should span multiple lines
-/*
+
 namespace Mistaken.API.Patches
 {
-    [HarmonyPatch(typeof(Player), nameof(Player.ShowHint))]
-    internal static class FixPlayerShowHintPatch
+    [HarmonyPatch(typeof(HintDisplay), nameof(HintDisplay.Show))]
+    internal static class PlayerHasHintPatch
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
 
-            Label returnLabel = generator.DefineLabel();
-
-            newInstructions[newInstructions.Count - 1].WithLabels(returnLabel);
-
-            newInstructions.InsertRange(0, new CodeInstruction[]
+            newInstructions.InsertRange(1, new CodeInstruction[]
             {
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Extensions.Extensions), nameof(Extensions.Extensions.IsConnected))),
-                new CodeInstruction(OpCodes.Brfalse_S, returnLabel),
+                new CodeInstruction(OpCodes.Ldnull),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(UnityEngine.Object), "op_Inequality")),
             });
 
             for (int i = 0; i < newInstructions.Count; i++)
@@ -40,4 +35,3 @@ namespace Mistaken.API.Patches
         }
     }
 }
-*/
