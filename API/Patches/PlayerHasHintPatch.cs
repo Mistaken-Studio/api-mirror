@@ -5,33 +5,43 @@
 // -----------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Reflection.Emit;
+using Exiled.API.Features;
 using HarmonyLib;
 using Hints;
+using MEC;
 
-#pragma warning disable SA1118 // Parameters should span multiple lines
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
 namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(HintDisplay), nameof(HintDisplay.Show))]
     internal static class PlayerHasHintPatch
     {
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        private static readonly Dictionary<Player, CoroutineHandle> PlayerHasHintCoroutines = new Dictionary<Player, CoroutineHandle>();
+
+        private static void Postfix(HintDisplay __instance, Hint hint)
         {
-            List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
+            if (__instance == null || __instance.gameObject is null || !(Player.Get(__instance.gameObject) is Player player))
+                return;
 
-            newInstructions.InsertRange(1, new CodeInstruction[]
-            {
-                new CodeInstruction(OpCodes.Ldnull),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(UnityEngine.Object), "op_Inequality")),
-            });
+            if (PlayerHasHintCoroutines.TryGetValue(player, out CoroutineHandle oldcoroutine))
+                Timing.KillCoroutines(oldcoroutine);
 
-            for (int i = 0; i < newInstructions.Count; i++)
-                yield return newInstructions[i];
+            PlayerHasHintCoroutines[player] = Timing.RunCoroutine(HasHintToFalse(player, hint.DurationScalar));
 
-            NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Return(newInstructions);
+            if (!player.HasHint)
+                player.HasHint = true;
+        }
 
-            yield break;
+        private static IEnumerator<float> HasHintToFalse(Player player, float duration)
+        {
+            yield return Timing.WaitForSeconds(duration);
+
+            if (player.GameObject is null)
+                yield break;
+
+            player.HasHint = false;
+            PlayerHasHintCoroutines.Remove(player);
         }
     }
 }

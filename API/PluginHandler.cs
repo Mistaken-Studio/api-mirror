@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Hints;
 using Mirror;
 using RoundRestarting;
 
@@ -49,6 +50,7 @@ namespace Mistaken.API
             Exiled.Events.Events.DisabledPatchesHashSet
                 .Add(typeof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler)
                 .GetMethod(nameof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler.ServerRequestReceived), BindingFlags.Static | BindingFlags.NonPublic));
+            Exiled.Events.Events.DisabledPatchesHashSet.Add(typeof(HintDisplay).GetMethod(nameof(HintDisplay.Show), BindingFlags.Instance | BindingFlags.Public));
 
             Exiled.Events.Events.Instance.ReloadDisabledPatches();
 
