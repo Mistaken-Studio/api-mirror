@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Reflection;
 using Exiled.API.Features;
 using HarmonyLib;
 using Hints;
@@ -18,6 +19,7 @@ namespace Mistaken.API.Patches
     internal static class PlayerHasHintPatch
     {
         private static readonly Dictionary<Player, CoroutineHandle> PlayerHasHintCoroutines = new Dictionary<Player, CoroutineHandle>();
+        private static readonly MethodInfo HasHintSetMethod = typeof(Player).GetProperty(nameof(Player.HasHint), BindingFlags.Public | BindingFlags.Instance).GetSetMethod(true);
 
         private static void Postfix(HintDisplay __instance, Hint hint)
         {
@@ -30,7 +32,9 @@ namespace Mistaken.API.Patches
             PlayerHasHintCoroutines[player] = Timing.RunCoroutine(HasHintToFalse(player, hint.DurationScalar));
 
             if (!player.HasHint)
-                player.HasHint = true;
+            {
+                HasHintSetMethod.Invoke(player, new object[] { true });
+            }
         }
 
         private static IEnumerator<float> HasHintToFalse(Player player, float duration)
@@ -40,7 +44,7 @@ namespace Mistaken.API.Patches
             if (player.GameObject is null)
                 yield break;
 
-            player.HasHint = false;
+            HasHintSetMethod.Invoke(player, new object[] { false });
             PlayerHasHintCoroutines.Remove(player);
         }
     }
