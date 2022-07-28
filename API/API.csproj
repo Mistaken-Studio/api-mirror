@@ -90,6 +90,7 @@
     <Compile Include="Patches\FixNWDumbPatch.cs" />
     <Compile Include="Patches\PlayerHasHintPatch.cs" />
     <Compile Include="Patches\RoundStartedPatch.cs" />
+    <Compile Include="Patches\FixExiledSCP914ControllerPatch.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
     <Compile Include="Patches\ToysDontSyncEveryFunckingFramePatch.cs" />
     <Compile Include="Patches\PlayerMovementSyncForcePosition.cs" />
