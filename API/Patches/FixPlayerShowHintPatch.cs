@@ -4,13 +4,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Exiled.API.Features;
 using HarmonyLib;
+using Hints;
 
 #pragma warning disable SA1118 // Parameters should span multiple lines
-/*
+
 namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(Player), nameof(Player.ShowHint))]
@@ -20,19 +22,31 @@ namespace Mistaken.API.Patches
         {
             List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
 
-            Label returnLabel = generator.DefineLabel();
+            int index = newInstructions.FindIndex(x => x.opcode == OpCodes.Ldnull);
 
-            newInstructions[newInstructions.Count - 1].WithLabels(returnLabel);
+            newInstructions.RemoveAt(index);
 
-            newInstructions.InsertRange(0, new CodeInstruction[]
+            newInstructions.InsertRange(index, new CodeInstruction[]
             {
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Extensions.Extensions), nameof(Extensions.Extensions.IsConnected))),
-                new CodeInstruction(OpCodes.Brfalse_S, returnLabel),
+                new CodeInstruction(OpCodes.Ldc_I4_1),
+                new CodeInstruction(OpCodes.Newarr, typeof(HintEffect)),
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Ldc_I4_0),
+                new CodeInstruction(OpCodes.Ldc_R4, 1f),
+                new CodeInstruction(OpCodes.Ldc_R4, 0f),
+                new CodeInstruction(OpCodes.Ldc_R4, 1f),
+                new CodeInstruction(OpCodes.Newobj, AccessTools.Constructor(typeof(AlphaEffect), new Type[]
+                {
+                    typeof(float), typeof(float), typeof(float),
+                })),
+                new CodeInstruction(OpCodes.Stelem_Ref),
             });
 
             for (int i = 0; i < newInstructions.Count; i++)
+            {
+                Log.Debug(newInstructions[i].ToString());
                 yield return newInstructions[i];
+            }
 
             NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Return(newInstructions);
 
@@ -40,4 +54,3 @@ namespace Mistaken.API.Patches
         }
     }
 }
-*/
