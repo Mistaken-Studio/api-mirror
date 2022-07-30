@@ -42,10 +42,10 @@ namespace Mistaken.API.GUI
         /// <param name="p">player to ignore.</param>
         public static void Ignore(Player p)
         {
-            lock (toIgnoreLock)
+            lock (ToIgnoreLock)
                 ToIgnore.Add(p);
 
-            lock (toUpdateLock)
+            lock (ToUpdateLock)
                 ToUpdate.Remove(p);
         }
 
@@ -55,9 +55,9 @@ namespace Mistaken.API.GUI
         /// <param name="p">player to stop ignoring.</param>
         public static void StopIgnore(Player p)
         {
-            lock (toIgnoreLock)
+            lock (ToIgnoreLock)
                 ToIgnore.Remove(p);
-            lock (toUpdateLock)
+            lock (ToUpdateLock)
                 ToUpdate.Add(p);
         }
 
@@ -91,15 +91,15 @@ namespace Mistaken.API.GUI
                 CustomInfo[player][key] = (content, type);
             }
 
-            lock (toUpdateLock)
+            lock (ToUpdateLock)
                 ToUpdate.Add(player);
         }
 
         private static readonly string DirectoryPath = Path.Combine(Paths.Plugins, "PseudoGUI", Server.Port.ToString());
         private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>>();
-        private static readonly object toUpdateLock = new object();
+        private static readonly object ToUpdateLock = new object();
         private static readonly HashSet<Player> ToUpdate = new HashSet<Player>();
-        private static readonly object toIgnoreLock = new object();
+        private static readonly object ToIgnoreLock = new object();
         private static readonly HashSet<Player> ToIgnore = new HashSet<Player>();
         private readonly ConcurrentDictionary<Player, string> constructedStrings = new ConcurrentDictionary<Player, string>();
         private readonly object lck = new object();
@@ -136,7 +136,7 @@ namespace Mistaken.API.GUI
                             {
                                 try
                                 {
-                                    lock (toIgnoreLock)
+                                    lock (ToIgnoreLock)
                                     {
                                         if (ToIgnore.Contains(item))
                                             continue;
@@ -152,7 +152,7 @@ namespace Mistaken.API.GUI
                                 }
                             }
 
-                            lock (toUpdateLock)
+                            lock (ToUpdateLock)
                                 ToUpdate.Clear();
 
                             this.frames = 0;
@@ -160,7 +160,7 @@ namespace Mistaken.API.GUI
                         }
 
                         Player[] toUpdate;
-                        lock (toUpdateLock)
+                        lock (ToUpdateLock)
                         {
                             toUpdate = ToUpdate.ToArray();
                             ToUpdate.Clear();
@@ -171,7 +171,7 @@ namespace Mistaken.API.GUI
                             if (!item.IsConnected())
                                 continue;
 
-                            lock (toIgnoreLock)
+                            lock (ToIgnoreLock)
                             {
                                 if (ToIgnore.Contains(item))
                                     continue;
@@ -201,9 +201,9 @@ namespace Mistaken.API.GUI
         private void Server_RestartingRound()
         {
             CustomInfo.Clear();
-            lock (toUpdateLock)
+            lock (ToUpdateLock)
                 ToUpdate.Clear();
-            lock (toIgnoreLock)
+            lock (ToIgnoreLock)
                 ToIgnore.Clear();
             this.constructedStrings.Clear();
             this.GUILog("ROUND_RESTART", "End of log");
@@ -235,7 +235,7 @@ namespace Mistaken.API.GUI
                     }
                     else
                     {
-                        lock (toIgnoreLock)
+                        lock (ToIgnoreLock)
                         {
                             if (ToIgnore.Contains(item))
                                 continue;

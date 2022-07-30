@@ -10,6 +10,8 @@ using System.Reflection;
 using Exiled.API.Features;
 using HarmonyLib;
 
+#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+
 namespace Mistaken.API.Diagnostics.Patches
 {
     // [HarmonyPatch(typeof(Exiled.Events.Extensions.Event), nameof(Exiled.Events.Extensions.Event.InvokeSafely), typeof(Exiled.Events.Events.CustomEventHandler<>))]
