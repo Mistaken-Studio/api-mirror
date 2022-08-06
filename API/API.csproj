@@ -83,6 +83,7 @@
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
     <Compile Include="Patches\Fix0492ShotgunDamagePatch.cs" />
     <Compile Include="Patches\FixExiledDamageHandlers.cs" />
+    <Compile Include="Patches\FixItemsDisappearOnEscape.cs" />
     <Compile Include="Patches\FixPlayerShowHintPatch.cs" />
     <Compile Include="Patches\FixShotgunPatch.cs" />
     <Compile Include="Patches\FixUnloadingEvent.cs" />
