@@ -39,6 +39,7 @@ namespace Mistaken.API
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
             MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
+            Exiled.Events.Handlers.Player.ChangingRole += Patches.FixItemsDisappearOnEscape.Player_ChangingRole;
 
             Patches.TestFixPatch.MainThread = Thread.CurrentThread;
 
@@ -75,6 +76,7 @@ namespace Mistaken.API
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= this.Server_WaitingForPlayers;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
+            Exiled.Events.Handlers.Player.ChangingRole -= Patches.FixItemsDisappearOnEscape.Player_ChangingRole;
 
             this.Harmony.UnpatchAll();
             Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
