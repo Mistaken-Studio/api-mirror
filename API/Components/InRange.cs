@@ -62,7 +62,7 @@ namespace Mistaken.API.Components
             {
                 var obj = Instantiate(Prefab, parrent);
                 obj.transform.localPosition = offset;
-                obj.transform.rotation = Quaternion.identity;
+                obj.transform.localRotation = Quaternion.identity;
                 var component = obj.GetComponent<InRange>();
                 component.onEnter = onEnter;
                 component.onExit = onExit;
