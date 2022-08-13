@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
+    <Compile Include="BlockInventoryInteractionHandler.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
