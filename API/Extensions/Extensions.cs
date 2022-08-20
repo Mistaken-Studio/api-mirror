@@ -37,7 +37,7 @@ namespace Mistaken.API.Extensions
         public static Vector3 GetByRoomOffset(this Room me, Vector3 offset)
         {
             var basePos = me.Position;
-            offset = (me.transform.forward * -offset.x) + (me.transform.right * -offset.z) + (Vector3.up * offset.y);
+            offset = (me.transform.right * -offset.x) + (me.transform.forward * -offset.z) + (Vector3.up * offset.y);
             basePos += offset;
             return basePos;
         }
