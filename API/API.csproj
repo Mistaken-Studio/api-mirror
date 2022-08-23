@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
+    <Compile Include="BlockInventoryInteractionHandler.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
     <Compile Include="Patches\Fix0492ShotgunDamagePatch.cs" />
     <Compile Include="Patches\FixExiledDamageHandlers.cs" />
+    <Compile Include="Patches\FixItemsDisappearOnEscape.cs" />
     <Compile Include="Patches\FixPlayerShowHintPatch.cs" />
     <Compile Include="Patches\FixShotgunPatch.cs" />
     <Compile Include="Patches\FixUnloadingEvent.cs" />

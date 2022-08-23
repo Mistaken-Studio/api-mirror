@@ -71,5 +71,8 @@ namespace Mistaken.API
 
         /// <plugin>BetterSCP.SCP500</plugin>
         RESPAWN_BLOCK,
+
+        /// <plugin>Globaly used</plugin>
+        BLOCK_INVENTORY_INTERACTION,
     }
 }
