@@ -5,8 +5,8 @@
 // -----------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Reflection;
 using CommandSystem;
+using Mistaken.API;
 using Mistaken.API.Commands;
 
 namespace Mistaken.CommandsExtender.Commands
@@ -23,18 +23,7 @@ namespace Mistaken.CommandsExtender.Commands
                 "Mistaken Studio's plugin versions list:",
             };
 
-            foreach (var item in Exiled.Loader.Loader.PluginAssemblies)
-            {
-                var att = item.Key.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-
-                if (att is null)
-                    continue;
-
-                if (item.Value.Author != "Mistaken Devs")
-                    continue;
-
-                tor.Add($"[{item.Value.Author}.{item.Value.Name}] {att.InformationalVersion}{(att.InformationalVersion.EndsWith("0") ? " <color=red>DEVELOPMENT BUILD</color>" : string.Empty)}");
-            }
+            tor.AddRange(ExperimentalHandler.GetPluginVersionsList());
 
             success = true;
             return tor.ToArray();

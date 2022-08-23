@@ -65,6 +65,8 @@ namespace Mistaken.API
 
             new Utilities.UtilitiesHandler(this);
 
+            new ExperimentalHandler(this);
+
             Extensions.DoorUtils.Ini();
 
             Diagnostics.Module.OnEnable(this);

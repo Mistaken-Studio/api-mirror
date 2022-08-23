@@ -68,6 +68,7 @@
     <Compile Include="BlockInventoryInteractionHandler.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="ExperimentalHandler.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
     <Compile Include="Diagnostics\Analizer.cs" />
