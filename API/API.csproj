@@ -36,6 +36,7 @@
     <DocumentationFile>bin\Release\0Mistaken.API.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Exiled.Loader" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Loader.dll" />
     <Reference Include="Exiled.API" HintPath="$(MISTAKEN_REFERENCES)\Exiled.API.dll" />
     <Reference Include="Exiled.Events" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Events.dll" />
     <Reference Include="Exiled.Permissions" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Permissions.dll" />
@@ -64,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
+    <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
