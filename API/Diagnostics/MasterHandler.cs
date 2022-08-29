@@ -128,9 +128,9 @@ namespace Mistaken.API.Diagnostics
 
         private static void Application_logMessageReceived(string condition, string stackTrace, LogType type)
         {
-            if (type != LogType.Exception)
+            if (type != LogType.Exception && type != LogType.Error)
             {
-                if (type == LogType.Error || type == LogType.Assert)
+                if (type == LogType.Assert)
                     Log.Debug($"[DIAGNOSTICS] Skipped {type}, {condition}");
                 return;
             }
