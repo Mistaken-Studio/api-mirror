@@ -94,6 +94,7 @@
     <Compile Include="Patches\FixUnloadingEvent.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
     <Compile Include="Patches\FixNWDumbPatch.cs" />
+    <Compile Include="Patches\NetworkConnectionIdentityPatch.cs" />
     <Compile Include="Patches\PlayerHasHintPatch.cs" />
     <Compile Include="Patches\RoundStartedPatch.cs" />
     <Compile Include="Patches\FixExiledSCP914ControllerPatch.cs" />
