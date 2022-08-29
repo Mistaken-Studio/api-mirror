@@ -89,6 +89,7 @@
     <Compile Include="Patches\FixExiledDamageHandlers.cs" />
     <Compile Include="Patches\FixItemsDisappearOnEscape.cs" />
     <Compile Include="Patches\FixPlayerShowHintPatch.cs" />
+    <Compile Include="Patches\FixServerDyingPatch.cs" />
     <Compile Include="Patches\FixShotgunPatch.cs" />
     <Compile Include="Patches\FixUnloadingEvent.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
