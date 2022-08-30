@@ -67,8 +67,6 @@ namespace Mistaken.API
 
             new ExperimentalHandler(this);
 
-            Extensions.DoorUtils.Ini();
-
             Diagnostics.Module.OnEnable(this);
 
             base.OnEnabled();
@@ -96,6 +94,7 @@ namespace Mistaken.API
         private void Server_WaitingForPlayers()
         {
             Mistaken.API.Patches.RoundStartedPatch.AlreadyStarted = false;
+            Extensions.DoorUtils.Ini();
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
             MEC.Timing.RunCoroutine(Patches.YeetConsolePatch.UpdateConsolePrint());

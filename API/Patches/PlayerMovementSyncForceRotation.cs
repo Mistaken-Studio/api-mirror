@@ -1,24 +1,20 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PlayerMovementSyncForcePosition.cs" company="Mistaken">
+// <copyright file="PlayerMovementSyncForceRotation.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Exiled.API.Features;
 using HarmonyLib;
 using Mirror;
-using NorthwoodLib.Pools;
-using UnityEngine;
 
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
 namespace Mistaken.API.Patches
 {
-    [HarmonyPatch(typeof(PlayerMovementSync), nameof(PlayerMovementSync.ForcePosition), typeof(Vector3), typeof(string), typeof(bool), typeof(bool))]
-    internal static class PlayerMovementSyncForcePosition
+    [HarmonyPatch(typeof(PlayerMovementSync), nameof(PlayerMovementSync.ForceRotation), typeof(PlayerMovementSync.PlayerRotation))]
+    internal static class PlayerMovementSyncForceRotation
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
@@ -29,7 +25,6 @@ namespace Mistaken.API.Patches
             List<CodeInstruction> newInstructions = NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Rent(instructions);
 
             newInstructions[0].WithLabels(label);
-
             newInstructions.InsertRange(0, new CodeInstruction[]
             {
                 new CodeInstruction(OpCodes.Ldarg_0),

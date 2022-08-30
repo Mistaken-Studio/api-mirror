@@ -82,6 +82,7 @@
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="Patches\CharacterClassManagerTargetConsolePrint.cs" />
+    <Compile Include="Patches\DebugPatch.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\CCMTargetConsolePrintPatch.cs" />
@@ -94,8 +95,10 @@
     <Compile Include="Patches\FixUnloadingEvent.cs" />
     <Compile Include="Patches\MakeCustomSyncWriterPatch.cs" />
     <Compile Include="Patches\FixNWDumbPatch.cs" />
-    <Compile Include="Patches\NetworkConnectionIdentityPatches.cs" />
+    <Compile Include="Patches\NCIdentityPatches.cs" />
     <Compile Include="Patches\PlayerHasHintPatch.cs" />
+    <Compile Include="Patches\PlayerMovementSyncForceRotation.cs" />
+    <Compile Include="Patches\PocketDimensionTeleportSuccessEscapePatch.cs" />
     <Compile Include="Patches\RoundStartedPatch.cs" />
     <Compile Include="Patches\FixExiledSCP914ControllerPatch.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
