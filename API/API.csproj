@@ -77,6 +77,15 @@
     <Compile Include="Diagnostics\Patches\GenericInvokeSafelyPatch.cs" />
     <Compile Include="Diagnostics\Patches\InvokeSafelyPatch.cs" />
     <Compile Include="Diagnostics\Patches\Utilities.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\DamageExtensions.cs" />
+    <Compile Include="Extensions\DntExtensions.cs" />
+    <Compile Include="Extensions\PermissionsExtensions.cs" />
+    <Compile Include="Extensions\PlayerExtensions.cs" />
+    <Compile Include="Extensions\ProjectileExtensions.cs" />
+    <Compile Include="Extensions\RoomExtensions.cs" />
+    <Compile Include="Extensions\SessionVariableExtensions.cs" />
+    <Compile Include="Extensions\SyncVarExtensions.cs" />
     <Compile Include="InfiniteAmmoHandler.cs" />
     <Compile Include="DoorPermissionsHandler.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
@@ -129,7 +138,6 @@
     <Compile Include="Diagnostics\ModuleLogger.cs" />
     <Compile Include="Diagnostics\Status.cs" />
     <Compile Include="Patches\DoorPatch.cs" />
-    <Compile Include="Extensions\ShuffleList.cs" />
     <Compile Include="Diagnostics\Module.cs" />
     <Compile Include="Extensions\DoorUtils.cs" />
     <Compile Include="Commands\IBetterCommand.cs" />
@@ -141,7 +149,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealPlayers.cs" />
     <Compile Include="RoundPlus.cs" />
-    <Compile Include="Extensions\SyncVar.cs" />
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield.cs" />
     <Compile Include="Utilities\Map.cs" />

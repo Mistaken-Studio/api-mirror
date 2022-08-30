@@ -11,9 +11,10 @@ using System.Text.RegularExpressions;
 using CommandSystem;
 using Exiled.API.Enums;
 using Exiled.API.Features;
-using Exiled.API.Features.Items;
 using Mistaken.API.Extensions;
 using Utils;
+
+using static Exiled.Permissions.Extensions.Permissions;
 
 namespace Mistaken.API.Commands
 {
@@ -50,7 +51,7 @@ namespace Mistaken.API.Commands
             DateTime start = DateTime.Now;
             if (sender.IsPlayer())
             {
-                if (this is IPermissionLocked && !((CommandSender)sender).CheckPermission(this.FullPermission))
+                if (this is IPermissionLocked && !sender.CheckPermission(this.FullPermission))
                 {
                     response = $"<b>Access Denied</b>\nMissing {this.FullPermission}";
                     Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
@@ -245,63 +246,6 @@ namespace Mistaken.API.Commands
                     Log.Debug($"No mach found for {match.Value}", PluginHandler.Instance.Config.VerbouseOutput);
                     return match.Value;
                 }));
-
-                /*while (newQuery.Contains("@\""))
-                {
-                    int index1 = newQuery.IndexOf("@\"") + 2;
-                    int index2 = newQuery.IndexOf('"', index1 + 1);
-
-                    if (index2 == -1)
-                        break;
-
-                    bool changed = false;
-                    var value = newQuery.Substring(index1, index2 - index1);
-                    foreach (var player in RealPlayers.List)
-                    {
-                        if (value == player.Nickname || value == player.DisplayNickname)
-                        {
-                            newQuery = newQuery.Replace($"@\"{value}\"", player.Id.ToString());
-                            Log.Debug($"Replaced @\"{value}\" with {player.Id}", PluginHandler.Instance.Config.VerbouseOutput);
-                            changed = true;
-                            break;
-                        }
-                    }
-
-                    if (!changed)
-                    {
-                        Log.Debug($"Not Replaced @\"{value}\"", PluginHandler.Instance.Config.VerbouseOutput);
-                        break;
-                    }
-                }
-
-                while (newQuery.Contains("@"))
-                {
-                    int index1 = newQuery.IndexOf("@") + 1;
-                    int index2 = newQuery.IndexOf('.', index1 + 1);
-
-                    if (index2 == -1)
-                        break;
-
-                    bool changed = false;
-
-                    var value = newQuery.Substring(index1, index2 - index1);
-                    foreach (var player in RealPlayers.List)
-                    {
-                        if (value == player.Nickname || value == player.DisplayNickname)
-                        {
-                            newQuery = newQuery.Replace($"@{value}", player.Id.ToString());
-                            Log.Debug($"Replaced @{value}. with {player.Id}", PluginHandler.Instance.Config.VerbouseOutput);
-                            changed = true;
-                            break;
-                        }
-                    }
-
-                    if (!changed)
-                    {
-                        Log.Debug($"Not Replaced @{value}", PluginHandler.Instance.Config.VerbouseOutput);
-                        break;
-                    }
-                }*/
             }
 
             response = string.Join("\n", this.Execute(sender, newQuery.Split(' ').Skip(1).ToArray(), out bool successfull));
