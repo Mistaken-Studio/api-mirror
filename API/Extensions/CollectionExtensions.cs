@@ -1,15 +1,17 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="ShuffleList.cs" company="Mistaken">
+// <copyright file="CollectionExtensions.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Mistaken.API.Extensions
 {
-    public static partial class Extensions
+    /// <summary>
+    /// Collection Extensions.
+    /// </summary>
+    public static class CollectionExtensions
     {
         /// <summary>
         /// Randomizes supplied list.
