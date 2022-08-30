@@ -68,6 +68,9 @@
     <Compile Include="BlockInventoryInteractionHandler.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Events\Events.cs" />
+    <Compile Include="Events\Patches\PostInitializationEventPatch.cs" />
+    <Compile Include="Events\Patches\PreWaitingForPlayersPatch.cs" />
     <Compile Include="ExperimentalHandler.cs" />
     <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
     <Compile Include="CustomSlots\Patch.cs" />
