@@ -39,21 +39,13 @@ namespace Mistaken.API
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
             MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
-            Exiled.Events.Handlers.Player.ChangingRole += Patches.FixItemsDisappearOnEscape.Player_ChangingRole;
 
-            Patches.TestFixPatch.MainThread = Thread.CurrentThread;
+            Patches.NoFindObjectOfTypeOnOtherThreadsPatch.MainThread = Thread.CurrentThread;
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
             Patches.Vars.EnableVarPatchs.Patch();
             Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
-
-            Exiled.Events.Events.DisabledPatchesHashSet
-                .Add(typeof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler)
-                .GetMethod(nameof(InventorySystem.Items.Firearms.BasicMessages.FirearmBasicMessagesHandler.ServerRequestReceived), BindingFlags.Static | BindingFlags.NonPublic));
-            Exiled.Events.Events.DisabledPatchesHashSet.Add(typeof(HintDisplay).GetMethod(nameof(HintDisplay.Show), BindingFlags.Instance | BindingFlags.Public));
-
-            Exiled.Events.Events.Instance.ReloadDisabledPatches();
 
             new BetterWarheadHandler(this);
             new CustomInfoHandler(this);
@@ -77,7 +69,6 @@ namespace Mistaken.API
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= this.Server_WaitingForPlayers;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
-            Exiled.Events.Handlers.Player.ChangingRole -= Patches.FixItemsDisappearOnEscape.Player_ChangingRole;
 
             this.Harmony.UnpatchAll();
             Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
@@ -93,11 +84,9 @@ namespace Mistaken.API
 
         private void Server_WaitingForPlayers()
         {
-            Mistaken.API.Patches.RoundStartedPatch.AlreadyStarted = false;
             Extensions.DoorUtils.Ini();
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
-            MEC.Timing.RunCoroutine(Patches.YeetConsolePatch.UpdateConsolePrint());
             Utilities.Room.Reload();
         }
 

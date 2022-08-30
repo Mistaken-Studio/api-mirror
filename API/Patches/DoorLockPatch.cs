@@ -19,7 +19,7 @@ namespace Mistaken.API.Patches
         private static bool Prefix(DoorLockReason reason, ref DoorLockMode __result)
 #pragma warning restore SA1313 // Parameter names should begin with lower-case letter
         {
-            if ((ushort)reason > 256)
+            if (reason > DoorLockReason.Lockdown2176)
             {
                 __result = DoorLockMode.FullLock;
                 return false;

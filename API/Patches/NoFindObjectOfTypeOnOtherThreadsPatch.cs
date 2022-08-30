@@ -1,5 +1,5 @@
-// -----------------------------------------------------------------------
-// <copyright file="TestFixPatch.cs" company="Mistaken">
+﻿// -----------------------------------------------------------------------
+// <copyright file="NoFindObjectOfTypeOnOtherThreadsPatch.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -12,7 +12,8 @@ using HarmonyLib;
 namespace Mistaken.API.Patches
 {
     [HarmonyPatch(typeof(UnityEngine.Object), nameof(UnityEngine.Object.FindObjectOfType), typeof(Type))]
-    internal static class TestFixPatch
+    [HarmonyPatch(typeof(UnityEngine.Object), nameof(UnityEngine.Object.FindObjectsOfType), typeof(Type))]
+    internal static class NoFindObjectOfTypeOnOtherThreadsPatch
     {
         internal static Thread MainThread { get; set; }
 
