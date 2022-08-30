@@ -85,6 +85,7 @@
     <Compile Include="Extensions\ProjectileExtensions.cs" />
     <Compile Include="Extensions\RoomExtensions.cs" />
     <Compile Include="Extensions\SessionVariableExtensions.cs" />
+    <Compile Include="Extensions\SyncVar.cs" />
     <Compile Include="Extensions\SyncVarExtensions.cs" />
     <Compile Include="InfiniteAmmoHandler.cs" />
     <Compile Include="DoorPermissionsHandler.cs" />
