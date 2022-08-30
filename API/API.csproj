@@ -93,7 +93,6 @@
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
-    <Compile Include="Patches\NoFindObjectOfTypeOnOtherThreadsPatch.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
     <Compile Include="Patches\ToysDontSyncEveryFunckingFramePatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />

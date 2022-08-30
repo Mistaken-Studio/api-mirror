@@ -40,8 +40,6 @@ namespace Mistaken.API
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
             MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
 
-            Patches.NoFindObjectOfTypeOnOtherThreadsPatch.MainThread = Thread.CurrentThread;
-
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
             Patches.Vars.EnableVarPatchs.Patch();
