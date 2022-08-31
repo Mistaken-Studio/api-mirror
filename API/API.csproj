@@ -69,8 +69,6 @@
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="ExperimentalHandler.cs" />
-    <Compile Include="CustomSlots\CustomSlotsHandler.cs" />
-    <Compile Include="CustomSlots\Patch.cs" />
     <Compile Include="Diagnostics\Analizer.cs" />
     <Compile Include="Diagnostics\DeltaTimeChecker.cs" />
     <Compile Include="Diagnostics\MasterHandler.Entry.cs" />

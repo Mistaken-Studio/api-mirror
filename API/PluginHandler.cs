@@ -4,14 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Reflection;
-using System.Threading;
 using Exiled.API.Enums;
 using Exiled.API.Features;
-using Hints;
 using Mirror;
 using RoundRestarting;
 
+// ReSharper disable MemberCanBeMadeStatic.Local
 namespace Mistaken.API
 {
     /// <inheritdoc/>
@@ -51,7 +49,6 @@ namespace Mistaken.API
             new DoorPermissionsHandler(this);
             new InfiniteAmmoHandler(this);
             new BlockInventoryInteractionHandler(this);
-            new CustomSlots.CustomSlotsHandler(this);
 
             new Utilities.UtilitiesHandler(this);
 
@@ -92,12 +89,12 @@ namespace Mistaken.API
         {
             MapPlus.PostRoundCleanup();
 
-            if (ServerStatic.StopNextRound == ServerStatic.NextRoundAction.Restart)
-            {
-                NetworkServer.SendToAll<RoundRestartMessage>(new RoundRestartMessage(RoundRestartType.FullRestart, (float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true, true));
-                IdleMode.PauseIdleMode = true;
-                MEC.Timing.CallDelayed(1, () => Server.Restart());
-            }
+            if (ServerStatic.StopNextRound != ServerStatic.NextRoundAction.Restart)
+                return;
+
+            NetworkServer.SendToAll(new RoundRestartMessage(RoundRestartType.FullRestart, GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true, true));
+            IdleMode.PauseIdleMode = true;
+            MEC.Timing.CallDelayed(1, Server.Restart);
         }
     }
 }
