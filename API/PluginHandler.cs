@@ -9,7 +9,6 @@ using Exiled.API.Features;
 using Mirror;
 using RoundRestarting;
 
-// ReSharper disable MemberCanBeMadeStatic.Local
 namespace Mistaken.API
 {
     /// <inheritdoc/>
@@ -35,8 +34,8 @@ namespace Mistaken.API
         {
             Instance = this;
 
-            Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
-            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
+            Exiled.Events.Handlers.Server.WaitingForPlayers += Server_WaitingForPlayers;
+            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += Server_RestartingRound);
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
@@ -62,8 +61,8 @@ namespace Mistaken.API
         /// <inheritdoc/>
         public override void OnDisabled()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= this.Server_WaitingForPlayers;
-            Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= Server_WaitingForPlayers;
+            Exiled.Events.Handlers.Server.RestartingRound -= Server_RestartingRound;
 
             this.Harmony.UnpatchAll();
             Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
@@ -77,7 +76,7 @@ namespace Mistaken.API
 
         internal HarmonyLib.Harmony Harmony { get; private set; }
 
-        private void Server_WaitingForPlayers()
+        private static void Server_WaitingForPlayers()
         {
             Extensions.DoorUtils.Ini();
             GUI.PseudoGUIHandler.Ini();
@@ -85,7 +84,7 @@ namespace Mistaken.API
             Utilities.Room.Reload();
         }
 
-        private void Server_RestartingRound()
+        private static void Server_RestartingRound()
         {
             MapPlus.PostRoundCleanup();
 
