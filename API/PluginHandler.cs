@@ -4,11 +4,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Reflection;
-using System.Threading;
 using Exiled.API.Enums;
 using Exiled.API.Features;
-using Hints;
 using Mirror;
 using RoundRestarting;
 
@@ -37,8 +34,8 @@ namespace Mistaken.API
         {
             Instance = this;
 
-            Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
-            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound);
+            Exiled.Events.Handlers.Server.WaitingForPlayers += Server_WaitingForPlayers;
+            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += Server_RestartingRound);
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
             this.Harmony.PatchAll();
@@ -51,7 +48,6 @@ namespace Mistaken.API
             new DoorPermissionsHandler(this);
             new InfiniteAmmoHandler(this);
             new BlockInventoryInteractionHandler(this);
-            new CustomSlots.CustomSlotsHandler(this);
 
             new Utilities.UtilitiesHandler(this);
 
@@ -65,8 +61,8 @@ namespace Mistaken.API
         /// <inheritdoc/>
         public override void OnDisabled()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= this.Server_WaitingForPlayers;
-            Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= Server_WaitingForPlayers;
+            Exiled.Events.Handlers.Server.RestartingRound -= Server_RestartingRound;
 
             this.Harmony.UnpatchAll();
             Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
@@ -80,7 +76,7 @@ namespace Mistaken.API
 
         internal HarmonyLib.Harmony Harmony { get; private set; }
 
-        private void Server_WaitingForPlayers()
+        private static void Server_WaitingForPlayers()
         {
             Extensions.DoorUtils.Ini();
             GUI.PseudoGUIHandler.Ini();
@@ -88,16 +84,16 @@ namespace Mistaken.API
             Utilities.Room.Reload();
         }
 
-        private void Server_RestartingRound()
+        private static void Server_RestartingRound()
         {
             MapPlus.PostRoundCleanup();
 
-            if (ServerStatic.StopNextRound == ServerStatic.NextRoundAction.Restart)
-            {
-                NetworkServer.SendToAll<RoundRestartMessage>(new RoundRestartMessage(RoundRestartType.FullRestart, (float)GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true, true));
-                IdleMode.PauseIdleMode = true;
-                MEC.Timing.CallDelayed(1, () => Server.Restart());
-            }
+            if (ServerStatic.StopNextRound != ServerStatic.NextRoundAction.Restart)
+                return;
+
+            NetworkServer.SendToAll(new RoundRestartMessage(RoundRestartType.FullRestart, GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true, true));
+            IdleMode.PauseIdleMode = true;
+            MEC.Timing.CallDelayed(1, Server.Restart);
         }
     }
 }
