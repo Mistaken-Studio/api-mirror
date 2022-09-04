@@ -1,4 +1,10 @@
-﻿using Exiled.Events.Extensions;
+﻿// -----------------------------------------------------------------------
+// <copyright file="Events.cs" company="Mistaken">
+// Copyright (c) Mistaken. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+using Exiled.Events.Extensions;
 
 namespace Mistaken.API.Events
 {

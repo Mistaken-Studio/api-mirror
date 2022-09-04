@@ -1,4 +1,10 @@
-﻿using HarmonyLib;
+﻿// -----------------------------------------------------------------------
+// <copyright file="PreWaitingForPlayersPatch.cs" company="Mistaken">
+// Copyright (c) Mistaken. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+using HarmonyLib;
 
 namespace Mistaken.API.Events.Patches
 {

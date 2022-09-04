@@ -7,7 +7,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Exiled.API.Features;
@@ -20,7 +19,7 @@ namespace Mistaken.API.GUI
     /// <summary>
     /// PseudGUIHandler component.
     /// </summary>
-    public partial class PseudoGUIHandler : MonoBehaviour
+    public class PseudoGUIHandler : MonoBehaviour
     {
         /// <summary>
         /// Gets instance of <see cref="PseudoGUIHandler"/>.
@@ -94,16 +93,13 @@ namespace Mistaken.API.GUI
             lock (ToUpdateLock)
                 ToUpdate.Add(player);
         }
-
-        private static readonly string DirectoryPath = Path.Combine(Paths.Plugins, "PseudoGUI", Server.Port.ToString());
+        
         private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>>();
         private static readonly object ToUpdateLock = new object();
         private static readonly HashSet<Player> ToUpdate = new HashSet<Player>();
         private static readonly object ToIgnoreLock = new object();
         private static readonly HashSet<Player> ToIgnore = new HashSet<Player>();
         private readonly ConcurrentDictionary<Player, string> constructedStrings = new ConcurrentDictionary<Player, string>();
-        private readonly object lck = new object();
-        private StreamWriter fileStream;
         private int frames = 0;
         private Task guiCalculationThread;
         private bool active = true;
@@ -112,11 +108,6 @@ namespace Mistaken.API.GUI
         {
             Instance = this;
             Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
-            if (!Directory.Exists(DirectoryPath))
-                Directory.CreateDirectory(DirectoryPath);
-
-            this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
-            this.GUILog("START", "Start of log");
 
             this.active = true;
             this.guiCalculationThread = Task.Run(async () =>
@@ -142,7 +133,6 @@ namespace Mistaken.API.GUI
                                             continue;
                                     }
 
-                                    this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (10s)");
                                     this.ConstructString(item);
                                 }
                                 catch (Exception ex)
@@ -177,7 +167,6 @@ namespace Mistaken.API.GUI
                                     continue;
                             }
 
-                            this.GUILog("CALC_THREAD", $"Constructing string for player {item.Nickname} (0.1s)");
                             this.ConstructString(item);
                         }
                     }
@@ -194,8 +183,6 @@ namespace Mistaken.API.GUI
             Instance = null;
             Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
             this.active = false;
-            lock (this.lck)
-                this.fileStream.Dispose();
         }
 
         private void Server_RestartingRound()
@@ -206,14 +193,6 @@ namespace Mistaken.API.GUI
             lock (ToIgnoreLock)
                 ToIgnore.Clear();
             this.constructedStrings.Clear();
-            this.GUILog("ROUND_RESTART", "End of log");
-            lock (this.lck)
-            {
-                this.fileStream.Dispose();
-                this.fileStream = File.CreateText(Path.Combine(DirectoryPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log"));
-            }
-
-            this.GUILog("ROUND_RESTART", "Start of log");
         }
 
         private void FixedUpdate()
@@ -230,7 +209,6 @@ namespace Mistaken.API.GUI
 
                     if (!item.IsConnected())
                     {
-                        this.GUILog("FIXED_UPDATE", $"Removing player {item.Nickname} from constructed strings list (player disconnected)");
                         this.constructedStrings.TryRemove(item, out _);
                     }
                     else
@@ -248,22 +226,6 @@ namespace Mistaken.API.GUI
                 {
                     Log.Error(ex.Message);
                     Log.Error(ex.StackTrace);
-                }
-            }
-        }
-
-        private void GUILog(string module, string message)
-        {
-            string log = $"{DateTime.Now.ToString("HH:mm:ss.fff")} | {module} | {message}";
-            lock (this.lck)
-            {
-                try
-                {
-                    this.fileStream.WriteLine(log);
-                }
-                catch
-                {
-                    Log.Error(log);
                 }
             }
         }
@@ -337,18 +299,14 @@ namespace Mistaken.API.GUI
         private void UpdateGUI(Player player)
         {
             if (!this.constructedStrings.TryGetValue(player, out string text))
-            {
-                this.GUILog("UPDATE_GUI", $"List of constructed strings was empty for player {player.Nickname}");
                 return;
-            }
+            
 
             try
             {
                 if (player.IsConnected())
-                {
-                    this.GUILog("UPDATE_GUI", $"Showing hint for player {player.Nickname}");
                     player.ShowHint(text, 7200);
-                }
+                
             }
             catch (Exception ex)
             {

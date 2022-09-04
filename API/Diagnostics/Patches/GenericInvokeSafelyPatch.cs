@@ -68,6 +68,7 @@ namespace Mistaken.API.Diagnostics.Patches
                         var customEventHandler = invocationList[i];
                         try
                         {
+                            // MasterHandler.LogJunk(customEventHandler.Method.FullDescription());
                             // Log.Debug($"[DIAGNOSTICS] [{typeof(T).FullName}] Handling by {fullName}");
                             startTime = DateTime.UtcNow;
                             customEventHandler.DynamicInvoke(arg);

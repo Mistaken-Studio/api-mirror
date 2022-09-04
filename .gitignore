@@ -4,6 +4,7 @@
 
 /API/obj
 /.vs
+/.idea
 /API/bin/Debug
 /API/.vs/API/v16
 /packages

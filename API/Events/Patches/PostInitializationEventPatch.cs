@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// -----------------------------------------------------------------------
+// <copyright file="PostInitializationEventPatch.cs" company="Mistaken">
+// Copyright (c) Mistaken. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -6,6 +12,7 @@ using NorthwoodLib.Pools;
 
 #pragma warning disable SA1118
 #pragma warning disable SA1115
+
 namespace Mistaken.API.Events.Patches
 {
     [HarmonyPatch(typeof(ServerConsole), nameof(ServerConsole.CheckRoot))]

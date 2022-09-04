@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
@@ -82,6 +83,18 @@ namespace Mistaken.API.Diagnostics
             OnErrorCatched?.Invoke(ex, method);
         }
 
+        private static FileStream fileStream;
+
+        internal static void LogJunk(string name)
+        {
+            if (fileStream is null)
+                fileStream = File.OpenWrite(Path.Combine(Paths.Plugins, "Diagnostics", "Junk", Server.Port.ToString(), DateTime.Now.ToString("yyyy-MM-dd_HH:mm:ss") + ".log"));
+
+            var tow = Encoding.UTF8.GetBytes($"[{DateTime.Now:HH:mm:ss.fff}] {name}\n");
+            fileStream.Write(tow, 0, tow.Length);
+            fileStream.Flush(true);
+        }
+
         internal static void LogTime(string name, double time)
         {
             if (!DiagnosticsEnabled)
@@ -108,7 +121,7 @@ namespace Mistaken.API.Diagnostics
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.logMessageReceived += Application_logMessageReceived;
 
-            if (DiagnosticsEnabled)
+            if (DiagnosticsEnabled && false)
                 _ = SaveLoop();
             initiated = true;
         }
