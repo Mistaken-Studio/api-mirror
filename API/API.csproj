@@ -125,6 +125,7 @@
     <Compile Include="RoundPlus.cs" />
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield.cs" />
+    <Compile Include="StructureType.cs" />
     <Compile Include="Utilities\Map.cs" />
     <Compile Include="Utilities\OverheatLevel.cs" />
     <Compile Include="Utilities\Room.cs" />
