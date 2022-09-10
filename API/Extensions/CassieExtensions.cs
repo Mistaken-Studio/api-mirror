@@ -1,0 +1,78 @@
+﻿// -----------------------------------------------------------------------
+// <copyright file="CassieExtensions.cs" company="Mistaken">
+// Copyright (c) Mistaken. All rights reserved.
+// </copyright>
+// -----------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using Exiled.API.Features;
+
+namespace Mistaken.API.Extensions
+{
+    /// <summary>
+    /// Cassie extensions.
+    /// </summary>
+    public static class CassieExtensions
+    {
+        /// <summary>
+        /// Plays an CASSIE announcement with custom subtitles.
+        /// </summary>
+        /// <param name="message">Message for CASSIE.</param>
+        /// <param name="translation">Message displayed in subtitles.</param>
+        /// <param name="glitchChance">Glitch chance.</param>
+        /// <param name="jamChance">Jam chance.</param>
+        /// <param name="isHeld">Is held.</param>
+        /// <param name="isNoisy">Is noisy.</param>
+        /// <param name="isSubtitles">Is subtitles.</param>
+        public static void GlitchyMessageTranslated(string message, string translation, float glitchChance = 0f, float jamChance = 0f, bool isHeld = false, bool isNoisy = true, bool isSubtitles = true)
+        {
+            if (glitchChance > 0f || jamChance > 0f)
+            {
+                string[] array = message.Split(' ');
+                List<string> newWords = NorthwoodLib.Pools.ListPool<string>.Shared.Rent();
+                for (int i = 0; i < array.Length; i++)
+                {
+                    newWords.Add(array[i]);
+                    if (i < array.Length - 1)
+                    {
+                        if (UnityEngine.Random.value < glitchChance)
+                            newWords.Add(".G" + UnityEngine.Random.Range(1, 7));
+
+                        if (UnityEngine.Random.value < jamChance)
+                            newWords.Add("JAM_" + UnityEngine.Random.Range(0, 70).ToString("000") + "_" + UnityEngine.Random.Range(2, 6));
+                    }
+                }
+
+                message = string.Empty;
+                foreach (string newWord in newWords)
+                    message += newWord + " ";
+                NorthwoodLib.Pools.ListPool<string>.Shared.Return(newWords);
+            }
+
+            Cassie.MessageTranslated(message, translation, isHeld, isNoisy, isSubtitles);
+        }
+
+        /// <summary>
+        /// Get's the CASSIE's unit name from regular unit name (ex. LIMA-06).
+        /// </summary>
+        /// <param name="unitName">Regular unit name.</param>
+        /// <returns>CASSIE's unit name (ex. NATO_L 06).</returns>
+        public static string GetCassieUnitName(string unitName)
+        {
+            string result;
+            try
+            {
+                string[] array = unitName.Split(new char[] { '-' });
+                result = "NATO_" + array[0][0].ToString() + " " + array[1];
+            }
+            catch
+            {
+                ServerConsole.AddLog("Error, couldn't convert '" + unitName + "' into a CASSIE-readable form.", ConsoleColor.Gray);
+                result = "ERROR";
+            }
+
+            return result;
+        }
+    }
+}
