@@ -52,27 +52,5 @@ namespace Mistaken.API.Extensions
 
             Cassie.MessageTranslated(message, translation, isHeld, isNoisy, isSubtitles);
         }
-
-        /// <summary>
-        /// Get's the CASSIE's unit name from regular unit name (ex. LIMA-06).
-        /// </summary>
-        /// <param name="unitName">Regular unit name.</param>
-        /// <returns>CASSIE's unit name (ex. NATO_L 06).</returns>
-        public static string GetCassieUnitName(string unitName)
-        {
-            string result;
-            try
-            {
-                string[] array = unitName.Split(new char[] { '-' });
-                result = "NATO_" + array[0][0].ToString() + " " + array[1];
-            }
-            catch
-            {
-                ServerConsole.AddLog("Error, couldn't convert '" + unitName + "' into a CASSIE-readable form.", ConsoleColor.Gray);
-                result = "ERROR";
-            }
-
-            return result;
-        }
     }
 }
