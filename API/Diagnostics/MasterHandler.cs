@@ -83,8 +83,6 @@ namespace Mistaken.API.Diagnostics
             OnErrorCatched?.Invoke(ex, method);
         }
 
-        private static FileStream fileStream;
-
         internal static void LogJunk(string name)
         {
             if (fileStream is null)
@@ -131,6 +129,8 @@ namespace Mistaken.API.Diagnostics
         private static readonly List<Entry> Backlog = new List<Entry>();
         private static readonly List<string> ErrorBacklog = new List<string>();
         private static bool initiated = false;
+
+        private static FileStream fileStream;
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {

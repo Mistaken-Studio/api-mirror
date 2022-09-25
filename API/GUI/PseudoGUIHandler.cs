@@ -93,7 +93,7 @@ namespace Mistaken.API.GUI
             lock (ToUpdateLock)
                 ToUpdate.Add(player);
         }
-        
+
         private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>>();
         private static readonly object ToUpdateLock = new object();
         private static readonly HashSet<Player> ToUpdate = new HashSet<Player>();
@@ -300,13 +300,11 @@ namespace Mistaken.API.GUI
         {
             if (!this.constructedStrings.TryGetValue(player, out string text))
                 return;
-            
 
             try
             {
                 if (player.IsConnected())
                     player.ShowHint(text, 7200);
-                
             }
             catch (Exception ex)
             {

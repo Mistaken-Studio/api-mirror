@@ -32,8 +32,6 @@ namespace Mistaken.API.Events.Patches
                         AccessTools.Method(typeof(Events), nameof(Events.OnPostInitialization))),
                 });
 
-
-
             foreach (var t in newInstructions)
                 yield return t;
 
