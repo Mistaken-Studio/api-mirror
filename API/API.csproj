@@ -96,7 +96,7 @@
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
-    <Compile Include="Patches\ToysDontSyncEveryFunckingFramePatch.cs" />
+    <Compile Include="Toys\ToysPositionSyncOptimizationPatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Vars\BypassPatch.cs" />
     <Compile Include="Patches\Vars\EnableVarPatchs.cs" />
@@ -127,6 +127,7 @@
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield.cs" />
     <Compile Include="StructureType.cs" />
+    <Compile Include="Toys\ToyHandler.cs" />
     <Compile Include="Utilities\Map.cs" />
     <Compile Include="Utilities\OverheatLevel.cs" />
     <Compile Include="Utilities\Room.cs" />
