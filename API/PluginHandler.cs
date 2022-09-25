@@ -54,6 +54,8 @@ namespace Mistaken.API
 
             new ExperimentalHandler(this);
 
+            new Toys.ToyHandler(this);
+
             Extensions.DoorUtils.Ini();
 
             Diagnostics.Module.OnEnable(this);
