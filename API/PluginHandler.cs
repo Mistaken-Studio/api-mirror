@@ -53,6 +53,8 @@ namespace Mistaken.API
 
             new ExperimentalHandler(this);
 
+            Extensions.DoorUtils.Ini();
+
             Diagnostics.Module.OnEnable(this);
 
             base.OnEnabled();
@@ -67,6 +69,8 @@ namespace Mistaken.API
             this.Harmony.UnpatchAll();
             Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
 
+            Extensions.DoorUtils.DeIni();
+
             Diagnostics.Module.OnDisable(this);
 
             base.OnDisabled();
@@ -78,7 +82,6 @@ namespace Mistaken.API
 
         private static void Server_WaitingForPlayers()
         {
-            Extensions.DoorUtils.Ini();
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
             Utilities.Room.Reload();

@@ -27,7 +27,8 @@ namespace Mistaken.API.Extensions
         {
             if (initiated)
                 return;
-            Exiled.Events.Handlers.Server.WaitingForPlayers += Server_WaitingForPlayers;
+
+            Exiled.Events.Handlers.Map.Generated += Map_Generated;
             initiated = true;
         }
 
@@ -36,7 +37,7 @@ namespace Mistaken.API.Extensions
         /// </summary>
         public static void DeIni()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= Server_WaitingForPlayers;
+            Exiled.Events.Handlers.Map.Generated -= Map_Generated;
             initiated = false;
         }
 
@@ -128,7 +129,7 @@ namespace Mistaken.API.Extensions
         private static readonly Dictionary<DoorType, DoorVariant> Prefabs = new Dictionary<DoorType, DoorVariant>();
         private static bool initiated = false;
 
-        private static void Server_WaitingForPlayers()
+        private static void Map_Generated()
         {
             Prefabs.Clear();
             foreach (var spawnpoint in UnityEngine.Object.FindObjectsOfType<DoorSpawnpoint>())
