@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AdminToys;
-using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Interfaces;
 using JetBrains.Annotations;
@@ -16,7 +15,6 @@ using MEC;
 using Mirror;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
-using Mistaken.API.GUI;
 using UnityEngine;
 
 namespace Mistaken.API.Toys
@@ -33,6 +31,7 @@ namespace Mistaken.API.Toys
         /// <param name="hasCollision">If toy should have collision.</param>
         /// <param name="syncPosition">Should toy's position be sync once every frame.</param>
         /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
+        /// <param name="meshRenderer">Color source, if defined color will be synced.</param>
         /// <returns>Spawned toy.</returns>
         public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool hasCollision, bool syncPosition, byte? movementSmoothing, [CanBeNull] MeshRenderer meshRenderer)
         {
@@ -55,6 +54,7 @@ namespace Mistaken.API.Toys
         /// <param name="color">Toy's color.</param>
         /// <param name="syncPosition">Should toy's position be sync once every frame.</param>
         /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
+        /// <param name="meshRenderer">Color source, if defined color will be synced.</param>
         /// <returns>Spawned toy.</returns>
         public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Vector3 position, Quaternion rotation, Vector3 scale, Color color, bool syncPosition, byte? movementSmoothing, [CanBeNull] MeshRenderer meshRenderer)
         {
@@ -293,7 +293,6 @@ namespace Mistaken.API.Toys
                     Exiled.API.Features.Log.Info("Rotated 180° X to compensate for negative scale");
                 }
 
-#warning Potential Bugs ?
                 toy.transform.localScale = new Vector3(
                     Math.Abs(toy.transform.localScale.x),
                     Math.Abs(toy.transform.localScale.y),
@@ -335,12 +334,13 @@ namespace Mistaken.API.Toys
 
                 foreach (var player in RealPlayers.List)
                 {
-                    var curRoom = player.CurrentRoom;
+                    var curRoom = player.GetCurrentRoom();
 
                     if (lastRooms.TryGetValue(player, out var lastRoom) && lastRoom == curRoom)
                         continue; // Skip, room didn't change since last update
-                    Exiled.API.Features.Log.Debug($"Room changed, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");
                     lastRooms[player] = curRoom;
+
+                    Exiled.API.Features.Log.Debug($"Room changed, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");
 
                     var room = Utilities.Room.Get(curRoom);
 
@@ -352,17 +352,14 @@ namespace Mistaken.API.Toys
                         continue;
                     }
 
-                    var otherRooms = room.FarNeighbors;
-
                     HashSet<SynchronizerControllerScript> toSync = NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Rent();
 
                     if (Controllers.TryGetValue(room.ExiledRoom, out var script))
                         toSync.Add(script);
 
-                    // ReSharper disable once LoopCanBeConvertedToQuery
-                    foreach (var item in otherRooms)
+                    foreach (var item in room.FarNeighbors.Select(x => x.ExiledRoom))
                     {
-                        if (Controllers.TryGetValue(item.ExiledRoom, out script))
+                        if (Controllers.TryGetValue(item, out script))
                             toSync.Add(script);
                     }
 
