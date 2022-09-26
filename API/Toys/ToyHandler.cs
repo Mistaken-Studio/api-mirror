@@ -320,7 +320,6 @@ namespace Mistaken.API.Toys
                 Controllers[room] = room.gameObject.AddComponent<SynchronizerControllerScript>();
 
             Module.RunSafeCoroutine(SynchronizationHandler(), nameof(SynchronizationHandler));
-            Module.RunSafeCoroutine(DEBUG(), nameof(DEBUG));
         }
 
         private static IEnumerator<float> SynchronizationHandler()
@@ -374,25 +373,6 @@ namespace Mistaken.API.Toys
                         item.AddSubscriber(player);
 
                     NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Return(toSync);
-                }
-            }
-        }
-
-        private static IEnumerator<float> DEBUG()
-        {
-            yield return Timing.WaitForSeconds(1f);
-
-            while (Round.IsStarted)
-            {
-                yield return Timing.WaitForSeconds(1f);
-
-                foreach (var player in RealPlayers.List)
-                {
-                    player.SetGUI("structures_debug",
-                        PseudoGUIPosition.TOP,
-                        string.Join("\n",
-                            Controllers.Where(x => x.Value.IsSubscriber(player))
-                                .Select(x => x.Key.Type + $" ({x.Key.Position})")));
                 }
             }
         }
