@@ -7,6 +7,7 @@
 using CommandSystem;
 using Exiled.API.Features;
 using Exiled.API.Features.Roles;
+using UnityEngine;
 
 namespace Mistaken.API.Extensions
 {
@@ -15,7 +16,7 @@ namespace Mistaken.API.Extensions
     /// </summary>
     public static class PlayerExtensions
     {
-        /// <inheritdoc cref="MapPlus.Broadcast(string, ushort, string, Broadcast.BroadcastFlags)"/>
+        /// <inheritdoc cref="MapPlus.Broadcast(string, ushort, string, global::Broadcast.BroadcastFlags)"/>
         public static void Broadcast(this Player me, string tag, ushort duration, string message, Broadcast.BroadcastFlags flags = global::Broadcast.BroadcastFlags.Normal)
         {
             me.Broadcast(duration, $"<color=orange>[<color=green>{tag}</color>]</color> {message}", flags);
@@ -47,9 +48,7 @@ namespace Mistaken.API.Extensions
         /// <returns>Is Dev.</returns>
         public static bool IsDev(this Player me)
         {
-            if (me == null)
-                return false;
-            return me.UserId.IsDevUserId();
+            return me?.UserId.IsDevUserId() ?? false;
         }
 
         /// <summary>
@@ -83,14 +82,14 @@ namespace Mistaken.API.Extensions
         /// <summary>
         /// Returns player.
         /// </summary>
-        /// <param name="me">Potentialy player.</param>
+        /// <param name="me">Potently player.</param>
         /// <returns>Player.</returns>
         public static Player GetPlayer(this CommandSender me) => Player.Get(me.SenderId);
 
         /// <summary>
         /// Returns player.
         /// </summary>
-        /// <param name="me">Potentialy player.</param>
+        /// <param name="me">Potently player.</param>
         /// <returns>Player.</returns>
         public static Player GetPlayer(this ICommandSender me) => Player.Get(((CommandSender)me).SenderId);
 
@@ -131,7 +130,7 @@ namespace Mistaken.API.Extensions
         /// <summary>
         /// Returns if player is real, ready player.
         /// </summary>
-        /// <param name="me">Playet to check.</param>
+        /// <param name="me">Player to check.</param>
         /// <returns>If player is ready, real player.</returns>
         public static bool IsReadyPlayer(this Player me)
             => me.IsConnected() && me.IsVerified && me.UserId != null && me.ReferenceHub.Ready;
@@ -142,6 +141,31 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player.</param>
         /// <returns>True if player is connected. Otherwise false.</returns>
         public static bool IsConnected(this Player player)
-            => player?.IsConnected ?? false && !(player.Connection is null);
+            => (player?.IsConnected ?? false) && !(player.Connection is null);
+
+        /// <summary>
+        /// Gets player's current room.
+        /// </summary>
+        /// <param name="player">Player to get room from.</param>
+        /// <returns>Player's current room.</returns>
+        public static Room GetCurrentRoom(this Player player)
+        {
+            Room parentRoom = null;
+
+            if (player.Role is Scp079Role role079)
+                parentRoom = Map.FindParentRoom(role079.Camera.GameObject);
+            else if (player.Role is SpectatorRole roleSpec)
+                parentRoom = roleSpec.SpectatedPlayer.GetCurrentRoom();
+
+            if (parentRoom != null)
+                return parentRoom;
+
+            if (Physics.RaycastNonAlloc(new Ray(player.GameObject.transform.position, Vector3.down), CachedFindParentRoomRaycast, 10f, 1, QueryTriggerInteraction.Ignore) == 1)
+                return CachedFindParentRoomRaycast[0].collider.gameObject.GetComponentInParent<Room>();
+
+            return null;
+        }
+
+        private static readonly RaycastHit[] CachedFindParentRoomRaycast = new RaycastHit[1];
     }
 }

@@ -157,7 +157,7 @@ namespace Mistaken.API
             return lczTime < minTimeLeft;
         }
 
-        /// <inheritdoc cref="ToyHandler.SpawnPrimitive(PrimitiveType, Transform, Color, bool, bool, byte?)"/>
+        /// <inheritdoc cref="ToyHandler.SpawnPrimitive(PrimitiveType, Transform, Color, bool, bool, byte?, MeshRenderer)"/>
         [Obsolete("Moved to ToyHandler.SpawnPrimitive", true)]
         public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type,
             Transform parent,
@@ -181,7 +181,7 @@ namespace Mistaken.API
             return SpawnPrimitive(type, parent, color, true, syncPosition, movementSmoothing);
         }
 
-        /// <inheritdoc cref="ToyHandler.SpawnPrimitive(PrimitiveType, Vector3, Quaternion, Vector3, Color, bool, byte?)"/>
+        /// <inheritdoc cref="ToyHandler.SpawnPrimitive(PrimitiveType, Vector3, Quaternion, Vector3, Color, bool, byte?, MeshRenderer)"/>
         [Obsolete("Moved to ToyHandler.SpawnPrimitive", true)]
         public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type,
             Vector3 position,
