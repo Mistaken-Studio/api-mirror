@@ -171,7 +171,8 @@ namespace Mistaken.API
                     color,
                     hasCollision,
                     syncPosition,
-                    movementSmoothing);
+                    movementSmoothing,
+                    null);
 
         /// <inheritdoc cref="SpawnPrimitive(PrimitiveType, Transform, Color, bool, bool, byte?)"/>
         [Obsolete("Removed, use ToyHandler.SpawnPrimitive", true)]
@@ -196,7 +197,8 @@ namespace Mistaken.API
                     scale,
                     color,
                     syncPosition,
-                    movementSmoothing);
+                    movementSmoothing,
+                    null);
 
         /// <inheritdoc cref="ToyHandler.SpawnLight(Transform, Color, float, float, bool, bool, byte?)"/>
         [Obsolete("Moved to ToyHandler.SpawnLight", true)]
