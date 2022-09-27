@@ -309,7 +309,7 @@ namespace Mistaken.API.Diagnostics
 
         internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new Dictionary<IPlugin<IConfig>, List<Module>>();
 
-        internal static void Server_WaitingForPlayer()
+        internal static void Server_WaitingForPlayers()
         {
             MEC.Timing.KillCoroutines(ToTerminateAfterRoundRestart.ToArray());
             ToTerminateAfterRoundRestart.Clear();
