@@ -35,6 +35,7 @@ namespace Mistaken.API
             Instance = this;
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += Server_WaitingForPlayers;
+            Exiled.Events.Handlers.Server.WaitingForPlayers += Diagnostics.Module.Server_WaitingForPlayers;
             MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += Server_RestartingRound);
 
             this.Harmony = new HarmonyLib.Harmony("com.mistaken.api");
@@ -64,6 +65,7 @@ namespace Mistaken.API
         public override void OnDisabled()
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= Server_WaitingForPlayers;
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= Diagnostics.Module.Server_WaitingForPlayers;
             Exiled.Events.Handlers.Server.RestartingRound -= Server_RestartingRound;
 
             this.Harmony.UnpatchAll();
