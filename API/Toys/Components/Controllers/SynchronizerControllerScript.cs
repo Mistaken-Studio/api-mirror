@@ -25,12 +25,12 @@ namespace Mistaken.API.Toys.Components.Controllers
 
             this.subscribers.Add(player);
 
-            foreach (var synchronizerScript in this.SynchronizerScripts.Where(x => x is PrimitiveSynchronizerScript).ToArray())
+            foreach (var primitiveSynchronizerScript in this.SynchronizerScripts.OfType<PrimitiveSynchronizerScript>())
             {
                 try
                 {
-                    synchronizerScript.ShowFor(player);
-                    synchronizerScript.UpdateSubscriber(player);
+                    primitiveSynchronizerScript.ShowFor(player);
+                    primitiveSynchronizerScript.UpdateSubscriber(player);
                 }
                 catch (System.Exception ex)
                 {
@@ -44,12 +44,15 @@ namespace Mistaken.API.Toys.Components.Controllers
             }
         }
 
-        public void RemoveSubscriber(Player player, bool forceHideObjects = false)
+        public void RemoveSubscriber(Player player)
         {
             this.subscribers.Remove(player);
 
-            foreach (var synchronizerScript in this.SynchronizerScripts.Where(x => x is PrimitiveSynchronizerScript))
-                synchronizerScript.HideFor(player, forceHideObjects);
+            foreach (var primitiveSynchronizerScript in this.SynchronizerScripts.OfType<PrimitiveSynchronizerScript>())
+                primitiveSynchronizerScript.HideFor(player);
+
+            foreach (var lightSynchronizerScript in this.SynchronizerScripts.OfType<LightSynchronizerScript>())
+                lightSynchronizerScript.DisableFor(player);
         }
 
         public bool IsSubscriber(Player player)

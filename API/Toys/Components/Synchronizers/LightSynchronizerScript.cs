@@ -10,6 +10,8 @@ using Exiled.API.Features;
 using Mirror;
 using UnityEngine;
 
+#pragma warning disable SA1118 // Parameter should not span multiple lines
+
 // ReSharper disable UnusedMember.Local
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable NonReadonlyMemberInGetHashCode
@@ -34,6 +36,19 @@ namespace Mistaken.API.Toys.Components.Synchronizers
 
                 this.Start();
             }
+        }
+
+        // Set's 0 intensity of light
+        internal void DisableFor(Player player)
+        {
+            this.SendSync(player.Connection, targetWriter =>
+            {
+                targetWriter.WriteUInt64(0UL);
+                targetWriter.WriteUInt64(16UL); // Intensity (16)
+                targetWriter.WriteSingle(0);
+            });
+
+            ((LightState)this.GetPlayerState(player)).Intensity = 0;
         }
 
         protected override State CurrentState => this.currentLightState;

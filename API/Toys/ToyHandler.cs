@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AdminToys;
+using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Interfaces;
 using JetBrains.Annotations;
@@ -288,17 +289,18 @@ namespace Mistaken.API.Toys
 
         private static void FinishSpawningToy(AdminToyBase toy)
         {
-            NetworkServer.Spawn(toy.gameObject);
-
             toy.UpdatePositionServer();
 
             var script = toy.GetComponent<SynchronizerScript>();
+            if (toy is PrimitiveObjectToy)
+            {
+                if (!(script.Controller is GlobalSynchronizerControllerScript))
+                {
+                    toy.netIdentity.visible = Visibility.ForceHidden;
+                }
+            }
 
-            if (script.Controller is GlobalSynchronizerControllerScript)
-                return;
-
-            foreach (var player in RealPlayers.List)
-                script.HideFor(player, true);
+            NetworkServer.Spawn(toy.gameObject);
         }
 
         private static LightSourceToy InitializeLightSource(AdminToyBase toy, Color color, float intensity, float range, bool shadows, bool syncPosition)
@@ -444,12 +446,15 @@ namespace Mistaken.API.Toys
             {
                 var curRoom = player.GetCurrentRoom();
 
+                if (curRoom is null && player.Position.y > 950 && player.Position.y < 1050)
+                    curRoom = Room.Get(RoomType.Surface);
+
                 if (LastRooms.TryGetValue(player, out var lastRoom) && lastRoom == curRoom)
                     return; // Skip, room didn't change since last update
                 LastRooms[player] = curRoom;
 
-                Exiled.API.Features.Log.Debug(
-                    $"Room changed, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");
+                /*Exiled.API.Features.Log.Debug(
+                    $"{player.Nickname} changed room, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");*/
 
                 var room = Utilities.Room.Get(curRoom);
 
@@ -540,9 +545,6 @@ namespace Mistaken.API.Toys
         private static void Player_Verified(Exiled.Events.EventArgs.VerifiedEventArgs ev)
         {
             globalController.SyncFor(ev.Player);
-
-            foreach (var controller in Controllers.Values)
-                controller.RemoveSubscriber(ev.Player, true);
         }
 
         private void Player_ChangingSpectatedPlayer(Exiled.Events.EventArgs.ChangingSpectatedPlayerEventArgs ev)

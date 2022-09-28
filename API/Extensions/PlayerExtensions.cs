@@ -150,20 +150,25 @@ namespace Mistaken.API.Extensions
         /// <returns>Player's current room.</returns>
         public static Room GetCurrentRoom(this Player player)
         {
-            Room parentRoom = null;
+            switch (player.Role)
+            {
+                case Scp079Role role079:
+                    return Map.FindParentRoom(role079.Camera.GameObject);
+                case SpectatorRole roleSpec:
+                    return roleSpec.SpectatedPlayer?.GetCurrentRoom();
+            }
 
-            if (player.Role is Scp079Role role079)
-                parentRoom = Map.FindParentRoom(role079.Camera.GameObject);
-            else if (player.Role is SpectatorRole roleSpec)
-                parentRoom = roleSpec.SpectatedPlayer.GetCurrentRoom();
-
-            if (parentRoom != null)
-                return parentRoom;
-
-            if (Physics.RaycastNonAlloc(new Ray(player.GameObject.transform.position, Vector3.down), CachedFindParentRoomRaycast, 10f, 1, QueryTriggerInteraction.Ignore) == 1)
-                return CachedFindParentRoomRaycast[0].collider.gameObject.GetComponentInParent<Room>();
-
-            return null;
+            return Physics.RaycastNonAlloc(
+                       new Ray(
+                           player.GameObject.transform.position,
+                           Vector3.down),
+                       CachedFindParentRoomRaycast,
+                       25f,
+                       1,
+                       QueryTriggerInteraction.Ignore) == 1
+                ? CachedFindParentRoomRaycast[0]
+                    .collider.gameObject.GetComponentInParent<Room>()
+                : null;
         }
 
         private static readonly RaycastHit[] CachedFindParentRoomRaycast = new RaycastHit[1];

@@ -54,40 +54,8 @@ namespace Mistaken.API.Toys.Components.Synchronizers
             this.CurrentState.CopyValues(state);
         }
 
-        internal void ShowFor(Player player)
-        {
-            if (this.VisibleFor.Contains(player))
-                return;
-
-            if (Server.SendSpawnMessage is null)
-                throw new NullReferenceException($"{nameof(Server.SendSpawnMessage)} was null");
-
-            if (player.Connection is null)
-                throw new NullReferenceException($"{nameof(player.Connection)} was null");
-
-            Server.SendSpawnMessage.Invoke(null, new object[] { this.Toy.netIdentity, player.Connection });
-
-            this.VisibleFor.Add(player);
-
-            this.ResetState(this.GetPlayerState(player));
-        }
-
-        internal void HideFor(Player player, bool force = false)
-        {
-            if (!force && !this.VisibleFor.Contains(player))
-                return;
-
-            if (player.Connection is null)
-                throw new NullReferenceException($"{nameof(player.Connection)} was null");
-
-            player.Connection.Send(new ObjectDestroyMessage { netId = this.Toy.netId });
-
-            this.VisibleFor.Remove(player);
-        }
-
         protected static readonly MethodInfo MakeCustomSyncWriter;
         protected readonly Dictionary<Player, State> LastStates = new Dictionary<Player, State>();
-        protected readonly HashSet<Player> VisibleFor = new HashSet<Player>();
 
         protected Type ToyType => this.Toy.GetType();
 
@@ -148,11 +116,55 @@ namespace Mistaken.API.Toys.Components.Synchronizers
             return false;
         }
 
+        protected virtual bool ShouldUpdateFor(Player player) => true;
+
         protected virtual void ResetState(State state)
         {
             state.Position = this.Toy.NetworkPosition;
             state.Rotation = this.Toy.NetworkRotation;
             state.Scale = this.Toy.NetworkScale;
+        }
+
+        protected void SendSync(NetworkConnection connection, Action<NetworkWriter> serializerAction)
+        {
+            var writer = NetworkWriterPool.GetWriter();
+            var writer2 = NetworkWriterPool.GetWriter();
+
+            if (this.Toy.netIdentity is null)
+                throw new NullReferenceException("Toy.netIdentity was null");
+
+            if (this.ToyType is null)
+                throw new NullReferenceException("ToyType was null");
+
+            if (this.ToyType == typeof(AdminToyBase))
+                throw new Exception("ToyType was AdminToyBaseType");
+
+            MakeCustomSyncWriter.Invoke(null, new object[]
+            {
+                this.Toy.netIdentity,
+                this.ToyType,
+                null,
+                serializerAction,
+                writer,
+                writer2,
+            });
+
+            connection.Send(new UpdateVarsMessage
+            {
+                netId = this.Toy.netIdentity.netId,
+                payload = writer.ToArraySegment(),
+            });
+
+            NetworkWriterPool.Recycle(writer);
+            NetworkWriterPool.Recycle(writer2);
+        }
+
+        protected State GetPlayerState(Player player)
+        {
+            if (!this.LastStates.TryGetValue(player, out var state))
+                this.LastStates[player] = state = (State)Activator.CreateInstance(this.CurrentState.GetType());
+
+            return state;
         }
 
         protected class State
@@ -202,47 +214,10 @@ namespace Mistaken.API.Toys.Components.Synchronizers
 
         private void SyncFor(Player player, ulong flags)
         {
-            var writer = NetworkWriterPool.GetWriter();
-            var writer2 = NetworkWriterPool.GetWriter();
-
-            if (this.Toy.netIdentity is null)
-                throw new NullReferenceException("Toy.netIdentity was null");
-
-            if (this.ToyType is null)
-                throw new NullReferenceException("ToyType was null");
-
-            if (this.ToyType == typeof(AdminToyBase))
-                throw new Exception("ToyType was AdminToyBaseType");
-
-            if ((flags & (1UL << 62)) != 0)
+            if (!this.ShouldUpdateFor(player))
                 return;
 
-            MakeCustomSyncWriter.Invoke(null, new object[]
-            {
-                this.Toy.netIdentity,
-                this.ToyType,
-                null,
-                this.CustomSyncVarGenerator(flags),
-                writer,
-                writer2,
-            });
-
-            player.ReferenceHub.networkIdentity.connectionToClient.Send(new UpdateVarsMessage
-            {
-                netId = this.Toy.netIdentity.netId,
-                payload = writer.ToArraySegment(),
-            });
-
-            NetworkWriterPool.Recycle(writer);
-            NetworkWriterPool.Recycle(writer2);
-        }
-
-        private State GetPlayerState(Player player)
-        {
-            if (!this.LastStates.TryGetValue(player, out var state))
-                this.LastStates[player] = state = (State)Activator.CreateInstance(this.CurrentState.GetType());
-
-            return state;
+            this.SendSync(player.Connection, this.CustomSyncVarGenerator(flags));
         }
 
         private void LateUpdate()

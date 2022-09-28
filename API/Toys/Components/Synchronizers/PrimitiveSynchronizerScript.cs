@@ -5,7 +5,9 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using AdminToys;
+using Exiled.API.Features;
 using Mirror;
 using UnityEngine;
 
@@ -17,6 +19,37 @@ namespace Mistaken.API.Toys.Components.Synchronizers
         internal MeshRenderer MeshRenderer { get; set; } = null;
 
         internal bool SyncColor => !(this.MeshRenderer is null);
+
+        internal void ShowFor(Player player)
+        {
+            if (this.visibleFor.Contains(player))
+                return;
+
+            if (Server.SendSpawnMessage is null)
+                throw new NullReferenceException($"{nameof(Server.SendSpawnMessage)} was null");
+
+            if (player.Connection is null)
+                throw new NullReferenceException($"{nameof(player.Connection)} was null");
+
+            Server.SendSpawnMessage.Invoke(null, new object[] { this.Toy.netIdentity, player.Connection });
+
+            this.visibleFor.Add(player);
+
+            this.ResetState(this.GetPlayerState(player));
+        }
+
+        internal void HideFor(Player player)
+        {
+            if (!this.visibleFor.Contains(player))
+                return;
+
+            if (player.Connection is null)
+                throw new NullReferenceException($"{nameof(player.Connection)} was null");
+
+            player.Connection.Send(new ObjectDestroyMessage { netId = this.Toy.netId });
+
+            this.visibleFor.Remove(player);
+        }
 
         protected override State CurrentState => this.currentPrimitiveState;
 
@@ -39,6 +72,8 @@ namespace Mistaken.API.Toys.Components.Synchronizers
             if (this.SyncColor && this.currentPrimitiveState.Color != state.Color) tor += 32;
             return tor;
         }
+
+        protected override bool ShouldUpdateFor(Player player) => this.visibleFor.Contains(player);
 
         protected override Action<NetworkWriter> CustomSyncVarGenerator(ulong flags, Action<NetworkWriter> callBackAction = null)
         {
@@ -65,6 +100,8 @@ namespace Mistaken.API.Toys.Components.Synchronizers
 
         protected class PrimitiveState : State
         {
+            public Color Color { get; set; }
+
             public override bool Equals(State other)
                 =>
                     base.Equals(other) &&
@@ -90,10 +127,9 @@ namespace Mistaken.API.Toys.Components.Synchronizers
 
                 primitive.Color = this.Color;
             }
-
-            public Color Color { get; set; }
         }
 
         private readonly PrimitiveState currentPrimitiveState = new PrimitiveState();
+        private readonly HashSet<Player> visibleFor = new HashSet<Player>();
     }
 }
