@@ -19,6 +19,7 @@ using Mistaken.API.Extensions;
 using Mistaken.API.Toys.Components.Controllers;
 using Mistaken.API.Toys.Components.Synchronizers;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Mistaken.API.Toys
 {
@@ -180,6 +181,45 @@ namespace Mistaken.API.Toys
                     throw new ArgumentException("Unexpected mesh name " + filter.mesh.name, nameof(filter));
             }
         }
+
+        /// <summary>
+        /// Spawns Shooting Target.
+        /// </summary>
+        /// <param name="type">ShootingTargetType.</param>
+        /// <param name="position">Position.</param>
+        /// <param name="rotation">Rotation.</param>
+        /// <param name="scale">Scale.</param>
+        /// <returns>Spawned ShootingTarget.</returns>
+        public static ShootingTarget SpawnShootingTarget(ShootingTargetType type, Vector3 position, Quaternion rotation, Vector3 scale)
+        {
+            AdminToyBase prefab;
+            switch (type)
+            {
+                case ShootingTargetType.Binary:
+                    prefab = ShootingTargetObjectBinary;
+                    break;
+                case ShootingTargetType.Sport:
+                    prefab = ShootingTargetObjectSport;
+                    break;
+                case ShootingTargetType.ClassD:
+                    prefab = ShootingTargetObjectDBoy;
+                    break;
+                case ShootingTargetType.Unknown:
+                default:
+                    return null;
+            }
+
+            var toy = Object.Instantiate(prefab);
+            toy.transform.position = position;
+            toy.transform.rotation = rotation;
+            toy.transform.localScale = scale;
+            toy.NetworkScale = toy.transform.lossyScale;
+            NetworkServer.Spawn(toy.gameObject);
+
+            toy.UpdatePositionServer();
+
+            return toy.GetComponent<ShootingTarget>();
+        }
         #endregion
 
         /// <inheritdoc cref="Module"/>
@@ -216,10 +256,14 @@ namespace Mistaken.API.Toys
 
         private static readonly Dictionary<Player, Room> LastRooms = new Dictionary<Player, Room>();
 
+        private static GlobalSynchronizerControllerScript globalController;
+
         private static LightSourceToy primitiveBaseLight;
         private static PrimitiveObjectToy primitiveBaseObject;
 
-        private static GlobalSynchronizerControllerScript globalController;
+        private static ShootingTarget shootingTargetObjectBinary;
+        private static ShootingTarget shootingTargetObjectSport;
+        private static ShootingTarget shootingTargetObjectDboy;
 
         private static PrimitiveObjectToy PrimitiveBaseObject
         {
@@ -252,6 +296,57 @@ namespace Mistaken.API.Toys
                 }
 
                 return primitiveBaseLight;
+            }
+        }
+
+        private static ShootingTarget ShootingTargetObjectBinary
+        {
+            get
+            {
+                if (shootingTargetObjectBinary == null)
+                {
+                    foreach (var gameObject in NetworkClient.prefabs.Values)
+                    {
+                        if (gameObject.TryGetComponent<ShootingTarget>(out var component) && component.name == "binaryTargetPrefab")
+                            shootingTargetObjectBinary = component;
+                    }
+                }
+
+                return shootingTargetObjectBinary;
+            }
+        }
+
+        private static ShootingTarget ShootingTargetObjectSport
+        {
+            get
+            {
+                if (shootingTargetObjectSport == null)
+                {
+                    foreach (var gameObject in NetworkClient.prefabs.Values)
+                    {
+                        if (gameObject.TryGetComponent<ShootingTarget>(out var component) && component.name == "sportTargetPrefab")
+                            shootingTargetObjectSport = component;
+                    }
+                }
+
+                return shootingTargetObjectSport;
+            }
+        }
+
+        private static ShootingTarget ShootingTargetObjectDBoy
+        {
+            get
+            {
+                if (shootingTargetObjectDboy == null)
+                {
+                    foreach (var gameObject in NetworkClient.prefabs.Values)
+                    {
+                        if (gameObject.TryGetComponent<ShootingTarget>(out var component) && component.name == "dboyTargetPrefab")
+                            shootingTargetObjectDboy = component;
+                    }
+                }
+
+                return shootingTargetObjectDboy;
             }
         }
 
