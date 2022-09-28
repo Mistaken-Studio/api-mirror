@@ -15,6 +15,8 @@ using MEC;
 using Mirror;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
+using Mistaken.API.Toys.Components.Controllers;
+using Mistaken.API.Toys.Components.Synchronizers;
 using UnityEngine;
 
 namespace Mistaken.API.Toys
@@ -22,6 +24,8 @@ namespace Mistaken.API.Toys
     /// <inheritdoc/>
     public class ToyHandler : Module
     {
+        #region Public
+
         /// <summary>
         /// Spawns primitive object admin toy.
         /// </summary>
@@ -175,6 +179,7 @@ namespace Mistaken.API.Toys
                     throw new ArgumentException("Unexpected mesh name " + filter.mesh.name, nameof(filter));
             }
         }
+        #endregion
 
         /// <inheritdoc cref="Module"/>
         public ToyHandler(IPlugin<IConfig> plugin)
@@ -190,6 +195,8 @@ namespace Mistaken.API.Toys
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.PostRoundCleanup;
             Exiled.Events.Handlers.Player.Verified += Player_Verified;
+            Exiled.Events.Handlers.Player.ChangingSpectatedPlayer += this.Player_ChangingSpectatedPlayer;
+            Exiled.Events.Handlers.Scp079.ChangingCamera += this.Scp079_ChangingCamera;
         }
 
         /// <inheritdoc/>
@@ -197,12 +204,16 @@ namespace Mistaken.API.Toys
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= this.PostRoundCleanup;
             Exiled.Events.Handlers.Player.Verified -= Player_Verified;
+            Exiled.Events.Handlers.Player.ChangingSpectatedPlayer -= this.Player_ChangingSpectatedPlayer;
+            Exiled.Events.Handlers.Scp079.ChangingCamera -= this.Scp079_ChangingCamera;
         }
 
-        internal static readonly HashSet<AdminToyBase> SyncToyPosition = new HashSet<AdminToyBase>();
+        internal static readonly HashSet<AdminToyBase> ManagedToys = new HashSet<AdminToyBase>();
 
         private static readonly Dictionary<Room, SynchronizerControllerScript> Controllers =
             new Dictionary<Room, SynchronizerControllerScript>();
+
+        private static readonly Dictionary<Player, Room> LastRooms = new Dictionary<Player, Room>();
 
         private static LightSourceToy primitiveBaseLight;
         private static PrimitiveObjectToy primitiveBaseObject;
@@ -254,6 +265,8 @@ namespace Mistaken.API.Toys
             toy.transform.localScale = Vector3.one;
             toy.NetworkScale = toy.transform.localScale;
 
+            ManagedToys.Add(toy);
+
             return toy;
         }
 
@@ -268,6 +281,8 @@ namespace Mistaken.API.Toys
             toy.transform.localScale = scale;
             toy.NetworkScale = toy.transform.localScale;
 
+            ManagedToys.Add(toy);
+
             return toy;
         }
 
@@ -276,6 +291,14 @@ namespace Mistaken.API.Toys
             NetworkServer.Spawn(toy.gameObject);
 
             toy.UpdatePositionServer();
+
+            var script = toy.GetComponent<SynchronizerScript>();
+
+            if (script.Controller is GlobalSynchronizerControllerScript)
+                return;
+
+            foreach (var player in RealPlayers.List)
+                script.HideFor(player, true);
         }
 
         private static LightSourceToy InitializeLightSource(AdminToyBase toy, Color color, float intensity, float range, bool shadows, bool syncPosition)
@@ -402,66 +425,115 @@ namespace Mistaken.API.Toys
 
         private static IEnumerator<float> SynchronizationHandler()
         {
-            Dictionary<Player, Room> lastRooms = new Dictionary<Player, Room>();
-
             while (!Round.IsStarted)
                 yield return Timing.WaitForSeconds(1f);
 
             while (Round.IsStarted)
             {
-                yield return Timing.WaitForSeconds(.1f);
+                yield return Timing.WaitForSeconds(.25f);
 
                 foreach (var player in RealPlayers.List)
+                    UpdateSynchronizationPlayer(player);
+            }
+        }
+
+        private static void UpdateSynchronizationPlayer(Player player)
+        {
+            HashSet<SynchronizerControllerScript> toSync = null;
+            try
+            {
+                var curRoom = player.GetCurrentRoom();
+
+                if (LastRooms.TryGetValue(player, out var lastRoom) && lastRoom == curRoom)
+                    return; // Skip, room didn't change since last update
+                LastRooms[player] = curRoom;
+
+                Exiled.API.Features.Log.Debug(
+                    $"Room changed, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");
+
+                var room = Utilities.Room.Get(curRoom);
+
+                if (room == null)
                 {
-                    HashSet<SynchronizerControllerScript> toSync = null;
-                    try
-                    {
-                        var curRoom = player.GetCurrentRoom();
+                    foreach (var item in Controllers.Values)
+                        item.RemoveSubscriber(player);
 
-                        if (lastRooms.TryGetValue(player, out var lastRoom) && lastRoom == curRoom)
-                            continue; // Skip, room didn't change since last update
-                        lastRooms[player] = curRoom;
-
-                        Exiled.API.Features.Log.Debug(
-                            $"Room changed, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");
-
-                        var room = Utilities.Room.Get(curRoom);
-
-                        if (room == null)
-                        {
-                            foreach (var item in Controllers.Values)
-                                item.RemoveSubscriber(player);
-
-                            continue;
-                        }
-
-                        toSync = NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Rent();
-
-                        if (Controllers.TryGetValue(room.ExiledRoom, out var script))
-                            toSync.Add(script);
-
-                        foreach (var item in room.FarNeighbors.Select(x => x.ExiledRoom))
-                        {
-                            if (Controllers.TryGetValue(item, out script))
-                                toSync.Add(script);
-                        }
-
-                        foreach (var item in Controllers.Values.Where(x => !toSync.Contains(x)))
-                            item.RemoveSubscriber(player);
-
-                        foreach (var item in toSync)
-                            item.AddSubscriber(player);
-                    }
-                    catch (Exception ex)
-                    {
-                        Exiled.API.Features.Log.Error(ex);
-                    }
-                    finally
-                    {
-                        if (!(toSync is null))
-                            NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Return(toSync);
-                    }
+                    return;
                 }
+
+                toSync = NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Rent();
+
+                if (Controllers.TryGetValue(room.ExiledRoom, out var script))
+                    toSync.Add(script);
+
+                foreach (var item in room.FarNeighbors.Select(x => x.ExiledRoom))
+                {
+                    if (Controllers.TryGetValue(item, out script))
+                        toSync.Add(script);
+                }
+
+                foreach (var item in Controllers.Values.Where(x => !toSync.Contains(x)))
+                    item.RemoveSubscriber(player);
+
+                foreach (var item in toSync)
+                    item.AddSubscriber(player);
+
+                // Optimization Example (Code from ColorfulEZ)
+                /*try
+                {
+                    if (!LastRooms.TryGetValue(player, out var lastRoom))
+                        lastRoom = null;
+
+                    if (lastRoom == room)
+                        return;
+
+                    HashSet<API.Utilities.Room> loaded;
+                    if (!(lastRoom is null))
+                    {
+                        loaded = lastRoom.FarNeighbors.ToHashSet();
+                        loaded.Add(lastRoom);
+                    }
+                    else
+                        loaded = new HashSet<API.Utilities.Room>();
+
+                    HashSet<API.Utilities.Room> toLoad;
+                    if (!(room is null))
+                    {
+                        toLoad = room.FarNeighbors.ToHashSet();
+                        toLoad.Add(room);
+                    }
+                    else
+                        toLoad = new HashSet<API.Utilities.Room>();
+
+                    var intersect = loaded.Intersect(toLoad).ToArray();
+
+                    foreach (var item in intersect)
+                    {
+                        loaded.Remove(item);
+                        toLoad.Remove(item);
+                    }
+
+                    foreach (var item in loaded)
+                        UnloadRoomFor(player, item);
+
+                    foreach (var item in toLoad)
+                        LoadRoomFor(player, item);
+
+                    LastRooms[player] = room;
+                }
+                catch (Exception ex)
+                {
+                    Instance.Log.Error(ex);
+                }*/
+            }
+            catch (Exception ex)
+            {
+                Exiled.API.Features.Log.Error(ex);
+            }
+            finally
+            {
+                if (!(toSync is null))
+                    NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Return(toSync);
             }
         }
 
@@ -470,13 +542,23 @@ namespace Mistaken.API.Toys
             globalController.SyncFor(ev.Player);
 
             foreach (var controller in Controllers.Values)
-                controller.RemoveSubscriber(ev.Player);
+                controller.RemoveSubscriber(ev.Player, true);
+        }
+
+        private void Player_ChangingSpectatedPlayer(Exiled.Events.EventArgs.ChangingSpectatedPlayerEventArgs ev)
+        {
+            this.CallDelayed(0.05f, () => UpdateSynchronizationPlayer(ev.Player), nameof(UpdateSynchronizationPlayer));
+        }
+
+        private void Scp079_ChangingCamera(Exiled.Events.EventArgs.ChangingCameraEventArgs ev)
+        {
+            this.CallDelayed(0.05f, () => UpdateSynchronizationPlayer(ev.Player), nameof(UpdateSynchronizationPlayer));
         }
 
         private void PostRoundCleanup()
         {
             globalController = Server.Host.GameObject.AddComponent<GlobalSynchronizerControllerScript>();
-            SyncToyPosition.Clear();
+            ManagedToys.Clear();
 
             foreach (var room in Room.List)
                 Controllers[room] = room.gameObject.AddComponent<SynchronizerControllerScript>();

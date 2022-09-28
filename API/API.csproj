@@ -96,9 +96,9 @@
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
-    <Compile Include="Toys\DisableLightSourceToyUpdatePatch.cs" />
-    <Compile Include="Toys\GlobalSynchronizerControllerScript.cs" />
-    <Compile Include="Toys\ToysPositionSyncOptimizationPatch.cs" />
+    <Compile Include="Toys\Patch\DisableLightSourceToyUpdatePatch.cs" />
+    <Compile Include="Toys\Components\Controllers\GlobalSynchronizerControllerScript.cs" />
+    <Compile Include="Toys\Patch\ToysPositionSyncOptimizationPatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Vars\BypassPatch.cs" />
     <Compile Include="Patches\Vars\EnableVarPatchs.cs" />
@@ -130,10 +130,10 @@
     <Compile Include="Shield.cs" />
     <Compile Include="StructureType.cs" />
     <Compile Include="Toys\ToyHandler.cs" />
-    <Compile Include="Toys\LightSynchronizerScript.cs" />
-    <Compile Include="Toys\PrimitiveSynchronizerScript.cs" />
-    <Compile Include="Toys\SynchronizerControllerScript.cs" />
-    <Compile Include="Toys\SynchronizerScript.cs" />
+    <Compile Include="Toys\Components\Synchronizers\LightSynchronizerScript.cs" />
+    <Compile Include="Toys\Components\Synchronizers\PrimitiveSynchronizerScript.cs" />
+    <Compile Include="Toys\Components\Controllers\SynchronizerControllerScript.cs" />
+    <Compile Include="Toys\Components\Synchronizers\SynchronizerScript.cs" />
     <Compile Include="Utilities\Map.cs" />
     <Compile Include="Utilities\OverheatLevel.cs" />
     <Compile Include="Utilities\Room.cs" />
@@ -150,6 +150,7 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(MISTAKEN_REFERENCES)\$(TargetFileName)

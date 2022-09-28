@@ -13,7 +13,7 @@ using UnityEngine;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable NonReadonlyMemberInGetHashCode
-namespace Mistaken.API.Toys
+namespace Mistaken.API.Toys.Components.Synchronizers
 {
     internal class LightSynchronizerScript : SynchronizerScript
     {

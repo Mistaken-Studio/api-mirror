@@ -4,17 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
-using MEC;
-using Mistaken.API.Diagnostics;
+using Mistaken.API.Toys.Components.Synchronizers;
 using UnityEngine;
+
+#pragma warning disable SA1401 // Fields should be private
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable once IdentifierTypo
-namespace Mistaken.API.Toys
+namespace Mistaken.API.Toys.Components.Controllers
 {
     internal class SynchronizerControllerScript : MonoBehaviour
     {
@@ -25,7 +25,7 @@ namespace Mistaken.API.Toys
 
             this.subscribers.Add(player);
 
-            foreach (var synchronizerScript in this.synchronizerScripts.Where(x => x is PrimitiveSynchronizerScript).ToArray())
+            foreach (var synchronizerScript in this.SynchronizerScripts.Where(x => x is PrimitiveSynchronizerScript).ToArray())
             {
                 try
                 {
@@ -38,18 +38,18 @@ namespace Mistaken.API.Toys
                 }
             }
 
-            foreach (var synchronizerScript in this.synchronizerScripts.Where(x => !(x is PrimitiveSynchronizerScript)))
+            foreach (var synchronizerScript in this.SynchronizerScripts.Where(x => !(x is PrimitiveSynchronizerScript)))
             {
                 synchronizerScript.UpdateSubscriber(player);
             }
         }
 
-        public void RemoveSubscriber(Player player)
+        public void RemoveSubscriber(Player player, bool forceHideObjects = false)
         {
             this.subscribers.Remove(player);
 
-            foreach (var synchronizerScript in this.synchronizerScripts.Where(x => x is PrimitiveSynchronizerScript))
-                synchronizerScript.HideFor(player);
+            foreach (var synchronizerScript in this.SynchronizerScripts.Where(x => x is PrimitiveSynchronizerScript))
+                synchronizerScript.HideFor(player, forceHideObjects);
         }
 
         public bool IsSubscriber(Player player)
@@ -59,20 +59,20 @@ namespace Mistaken.API.Toys
             => this.subscribers;
 
         public void SyncFor(Player player)
-            => this.synchronizerScripts.ForEach(x => x.UpdateSubscriber(player));
+            => this.SynchronizerScripts.ForEach(x => x.UpdateSubscriber(player));
 
         internal virtual void AddScript(SynchronizerScript script)
         {
-            this.synchronizerScripts.Add(script);
+            this.SynchronizerScripts.Add(script);
             script.Controller = this;
         }
 
         internal virtual void RemoveScript(SynchronizerScript script)
         {
-            this.synchronizerScripts.Remove(script);
+            this.SynchronizerScripts.Remove(script);
         }
 
-        protected readonly List<SynchronizerScript> synchronizerScripts = new List<SynchronizerScript>();
+        protected readonly List<SynchronizerScript> SynchronizerScripts = new List<SynchronizerScript>();
 
         private readonly HashSet<Player> subscribers = new HashSet<Player>();
     }

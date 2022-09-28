@@ -11,6 +11,7 @@ using AdminToys;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
 using Mirror;
+using Mistaken.API.Toys.Components.Controllers;
 using UnityEngine;
 
 #pragma warning disable SA1116 // Split parameters should start on line after declaration
@@ -20,7 +21,7 @@ using UnityEngine;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable NonReadonlyMemberInGetHashCode
-namespace Mistaken.API.Toys
+namespace Mistaken.API.Toys.Components.Synchronizers
 {
     internal abstract class SynchronizerScript : MonoBehaviour
     {
@@ -55,9 +56,7 @@ namespace Mistaken.API.Toys
 
         internal void ShowFor(Player player)
         {
-            var state = this.GetPlayerState(player);
-
-            if (state.Visible)
+            if (this.VisibleFor.Contains(player))
                 return;
 
             if (Server.SendSpawnMessage is null)
@@ -68,28 +67,27 @@ namespace Mistaken.API.Toys
 
             Server.SendSpawnMessage.Invoke(null, new object[] { this.Toy.netIdentity, player.Connection });
 
-            state.Visible = true;
+            this.VisibleFor.Add(player);
 
-            this.ResetState(state);
+            this.ResetState(this.GetPlayerState(player));
         }
 
-        internal void HideFor(Player player)
+        internal void HideFor(Player player, bool force = false)
         {
-            var state = this.GetPlayerState(player);
-
-            if (!state.Visible)
+            if (!force && !this.VisibleFor.Contains(player))
                 return;
 
             if (player.Connection is null)
                 throw new NullReferenceException($"{nameof(player.Connection)} was null");
 
-            player.Connection.Send(new ObjectDestroyMessage { netId = this.Toy.netId }, 0);
+            player.Connection.Send(new ObjectDestroyMessage { netId = this.Toy.netId });
 
-            state.Visible = false;
+            this.VisibleFor.Remove(player);
         }
 
         protected static readonly MethodInfo MakeCustomSyncWriter;
         protected readonly Dictionary<Player, State> LastStates = new Dictionary<Player, State>();
+        protected readonly HashSet<Player> VisibleFor = new HashSet<Player>();
 
         protected Type ToyType => this.Toy.GetType();
 
@@ -99,8 +97,7 @@ namespace Mistaken.API.Toys
         {
             return (this.SyncPosition && this.CurrentState.Position != playerState.Position ? 1UL : 0UL)
                    + (this.SyncRotation && this.CurrentState.Rotation != playerState.Rotation ? 2UL : 0UL)
-                   + (this.SyncScale && this.CurrentState.Scale != playerState.Scale ? 4UL : 0UL)
-                   + (playerState.Visible ? (1UL << 63) : (1UL << 62));
+                   + (this.SyncScale && this.CurrentState.Scale != playerState.Scale ? 4UL : 0UL);
         }
 
         protected virtual Action<NetworkWriter> CustomSyncVarGenerator(ulong flags, Action<NetworkWriter> callBackAction = null)
@@ -172,15 +169,11 @@ namespace Mistaken.API.Toys
 
             public Vector3 Scale { get; set; }
 
-            // ToDo - Add support for de-spawning objects
-            public bool Visible { get; set; } = true;
-
             public virtual bool Equals(State other)
                 => !(other is null) &&
                    this.Position.Equals(other.Position) &&
                    this.Rotation.Equals(other.Rotation) &&
-                   this.Scale.Equals(other.Scale) &&
-                   this.Visible == other.Visible;
+                   this.Scale.Equals(other.Scale);
 
             public override bool Equals(object obj)
                 => obj is State other && this.Equals(other);
@@ -192,7 +185,6 @@ namespace Mistaken.API.Toys
                     var hashCode = this.Position.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.Rotation.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.Scale.GetHashCode();
-                    hashCode = (hashCode * 397) ^ this.Visible.GetHashCode();
                     return hashCode;
                 }
             }
@@ -202,7 +194,6 @@ namespace Mistaken.API.Toys
                 other.Position = this.Position;
                 other.Rotation = this.Rotation;
                 other.Scale = this.Scale;
-                other.Visible = this.Visible;
             }
         }
 

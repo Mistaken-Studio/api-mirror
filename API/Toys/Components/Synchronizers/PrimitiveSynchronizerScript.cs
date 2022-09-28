@@ -10,7 +10,7 @@ using Mirror;
 using UnityEngine;
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
-namespace Mistaken.API.Toys
+namespace Mistaken.API.Toys.Components.Synchronizers
 {
     internal class PrimitiveSynchronizerScript : SynchronizerScript
     {
