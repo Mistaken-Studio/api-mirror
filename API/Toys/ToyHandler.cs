@@ -69,15 +69,12 @@ namespace Mistaken.API.Toys
         /// <summary>
         /// Spawns primitive object admin toy.
         /// </summary>
-        /// <param name="type">Toy type.</param>
-        /// <param name="parent">Toy's parent.</param>
-        /// <param name="color">Toy's color.</param>
-        /// <param name="hasCollision">If toy should have collision.</param>
+        /// <param name="original">GameObject to clone.</param>
         /// <param name="syncPosition">Should toy's position be sync once every frame.</param>
         /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
-        /// <param name="meshRenderer">Color source, if defined color will be synced.</param>
+        /// <param name="syncColor">if true color will be synced.</param>
         /// <returns>Spawned toy.</returns>
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, GameObject original, bool syncPosition, byte? movementSmoothing, bool syncColor)
+        public static PrimitiveObjectToy SpawnPrimitive(GameObject original, bool syncPosition, byte? movementSmoothing, bool syncColor)
         {
             var toy = SpawnBase(PrimitiveBaseObject, original.transform, movementSmoothing);
 
@@ -152,6 +149,12 @@ namespace Mistaken.API.Toys
             return lightSourceToy;
         }
 
+        /// <summary>
+        /// Gets primitive type based on meshFilter mesh name.
+        /// </summary>
+        /// <param name="filter">MeshFilter.</param>
+        /// <returns>PrimitiveType.</returns>
+        /// <exception cref="ArgumentException">Thrown when mesh name is not recognized.</exception>
         public static PrimitiveType GetPrimitiveType(MeshFilter filter)
         {
             switch (filter.mesh.name)
@@ -169,7 +172,7 @@ namespace Mistaken.API.Toys
                 case "Sphere Instance":
                     return PrimitiveType.Sphere;
                 default:
-                    throw new Exception("Unexpected mesh name " + filter.mesh.name);
+                    throw new ArgumentException("Unexpected mesh name " + filter.mesh.name, nameof(filter));
             }
         }
 
@@ -185,14 +188,14 @@ namespace Mistaken.API.Toys
         /// <inheritdoc/>
         public override void OnEnable()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers += PostRoundCleanup;
+            Exiled.Events.Handlers.Server.WaitingForPlayers += this.PostRoundCleanup;
             Exiled.Events.Handlers.Player.Verified += Player_Verified;
         }
 
         /// <inheritdoc/>
         public override void OnDisable()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= PostRoundCleanup;
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= this.PostRoundCleanup;
             Exiled.Events.Handlers.Player.Verified -= Player_Verified;
         }
 
@@ -270,8 +273,7 @@ namespace Mistaken.API.Toys
 
         private static void FinishSpawningToy(AdminToyBase toy)
         {
-            // if (!(toy is PrimitiveObjectToy))
-                NetworkServer.Spawn(toy.gameObject);
+            NetworkServer.Spawn(toy.gameObject);
 
             toy.UpdatePositionServer();
         }
@@ -333,8 +335,8 @@ namespace Mistaken.API.Toys
 
                 if (!hasCollision.Value && toy.transform.localScale.x > 0 && (type == PrimitiveType.Plane || type == PrimitiveType.Quad))
                 {
+                    // Exiled.API.Features.Log.Info("Rotated 180° X to compensate for negative scale");
                     toy.transform.eulerAngles += Vector3.right * 180;
-                    Exiled.API.Features.Log.Info("Rotated 180° X to compensate for negative scale");
                 }
 
                 toy.transform.localScale = new Vector3(
@@ -378,8 +380,8 @@ namespace Mistaken.API.Toys
 
             if (!hasCollision && toy.transform.localScale.x > 0 && (primitiveType == PrimitiveType.Plane || primitiveType == PrimitiveType.Quad))
             {
+                // Exiled.API.Features.Log.Info("Rotated 180° X to compensate for negative scale");
                 toy.transform.eulerAngles += Vector3.right * 180;
-                Exiled.API.Features.Log.Info("Rotated 180° X to compensate for negative scale");
             }
 
             toy.transform.localScale = new Vector3(
@@ -396,17 +398,6 @@ namespace Mistaken.API.Toys
             (toy.GetComponentInParent<SynchronizerControllerScript>() ?? globalController).AddScript(syncScript);
 
             return primitiveObjectToy;
-        }
-
-        private static void PostRoundCleanup()
-        {
-            globalController = Server.Host.GameObject.AddComponent<GlobalSynchronizerControllerScript>();
-            SyncToyPosition.Clear();
-
-            foreach (var room in Room.List)
-                Controllers[room] = room.gameObject.AddComponent<SynchronizerControllerScript>();
-
-            Module.RunSafeCoroutine(SynchronizationHandler(), nameof(SynchronizationHandler));
         }
 
         private static IEnumerator<float> SynchronizationHandler()
@@ -461,7 +452,7 @@ namespace Mistaken.API.Toys
                         foreach (var item in toSync)
                             item.AddSubscriber(player);
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         Exiled.API.Features.Log.Error(ex);
                     }
@@ -479,9 +470,18 @@ namespace Mistaken.API.Toys
             globalController.SyncFor(ev.Player);
 
             foreach (var controller in Controllers.Values)
-            {
                 controller.RemoveSubscriber(ev.Player);
-            }
+        }
+
+        private void PostRoundCleanup()
+        {
+            globalController = Server.Host.GameObject.AddComponent<GlobalSynchronizerControllerScript>();
+            SyncToyPosition.Clear();
+
+            foreach (var room in Room.List)
+                Controllers[room] = room.gameObject.AddComponent<SynchronizerControllerScript>();
+
+            this.RunCoroutine(SynchronizationHandler(), nameof(SynchronizationHandler));
         }
     }
 }
