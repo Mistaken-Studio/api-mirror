@@ -43,22 +43,49 @@ namespace Mistaken.API.Toys
 
         internal void UpdateSubscriber(Player player)
         {
-            if (Vector3.Distance(this.transform.position, new Vector3(180, 995, -75)) < 1f && false)
-                Log.Debug("UPDATING " + player.Nickname);
+            var state = this.GetPlayerState(player);
 
-            if (!this.LastStates.ContainsKey(player))
-                this.LastStates[player] = (State)Activator.CreateInstance(this.CurrentState.GetType());
-
-            if (this.LastStates[player] == this.CurrentState)
-            {
-                if (Vector3.Distance(this.transform.position, new Vector3(180, 995, -75)) < 1f && false)
-                    Log.Debug("NO CHANGES FOR " + player.Nickname);
+            if (state == this.CurrentState)
                 return;
-            }
 
-            this.SyncFor(player, this.LastStates[player]);
+            this.SyncFor(player, state);
 
-            this.CurrentState.CopyValues(this.LastStates[player]);
+            this.CurrentState.CopyValues(state);
+        }
+
+        internal void ShowFor(Player player)
+        {
+            var state = this.GetPlayerState(player);
+
+            if (state.Visible)
+                return;
+
+            if (Server.SendSpawnMessage is null)
+                throw new NullReferenceException($"{nameof(Server.SendSpawnMessage)} was null");
+
+            if (player.Connection is null)
+                throw new NullReferenceException($"{nameof(player.Connection)} was null");
+
+            Server.SendSpawnMessage.Invoke(null, new object[] { this.Toy.netIdentity, player.Connection });
+
+            state.Visible = true;
+
+            this.ResetState(state);
+        }
+
+        internal void HideFor(Player player)
+        {
+            var state = this.GetPlayerState(player);
+
+            if (!state.Visible)
+                return;
+
+            if (player.Connection is null)
+                throw new NullReferenceException($"{nameof(player.Connection)} was null");
+
+            player.Connection.Send(new ObjectDestroyMessage { netId = this.Toy.netId }, 0);
+
+            state.Visible = false;
         }
 
         protected static readonly MethodInfo MakeCustomSyncWriter;
@@ -72,7 +99,8 @@ namespace Mistaken.API.Toys
         {
             return (this.SyncPosition && this.CurrentState.Position != playerState.Position ? 1UL : 0UL)
                    + (this.SyncRotation && this.CurrentState.Rotation != playerState.Rotation ? 2UL : 0UL)
-                   + (this.SyncScale && this.CurrentState.Scale != playerState.Scale ? 4UL : 0UL);
+                   + (this.SyncScale && this.CurrentState.Scale != playerState.Scale ? 4UL : 0UL)
+                   + (playerState.Visible ? (1UL << 63) : (1UL << 62));
         }
 
         protected virtual Action<NetworkWriter> CustomSyncVarGenerator(ulong flags, Action<NetworkWriter> callBackAction = null)
@@ -123,6 +151,13 @@ namespace Mistaken.API.Toys
             return false;
         }
 
+        protected virtual void ResetState(State state)
+        {
+            state.Position = this.Toy.NetworkPosition;
+            state.Rotation = this.Toy.NetworkRotation;
+            state.Scale = this.Toy.NetworkScale;
+        }
+
         protected class State
         {
             public static bool operator ==(State a, State b)
@@ -137,11 +172,15 @@ namespace Mistaken.API.Toys
 
             public Vector3 Scale { get; set; }
 
+            // ToDo - Add support for de-spawning objects
+            public bool Visible { get; set; } = true;
+
             public virtual bool Equals(State other)
                 => !(other is null) &&
                    this.Position.Equals(other.Position) &&
                    this.Rotation.Equals(other.Rotation) &&
-                   this.Scale.Equals(other.Scale);
+                   this.Scale.Equals(other.Scale) &&
+                   this.Visible == other.Visible;
 
             public override bool Equals(object obj)
                 => obj is State other && this.Equals(other);
@@ -153,6 +192,7 @@ namespace Mistaken.API.Toys
                     var hashCode = this.Position.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.Rotation.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.Scale.GetHashCode();
+                    hashCode = (hashCode * 397) ^ this.Visible.GetHashCode();
                     return hashCode;
                 }
             }
@@ -162,6 +202,7 @@ namespace Mistaken.API.Toys
                 other.Position = this.Position;
                 other.Rotation = this.Rotation;
                 other.Scale = this.Scale;
+                other.Visible = this.Visible;
             }
         }
 
@@ -181,6 +222,9 @@ namespace Mistaken.API.Toys
 
             if (this.ToyType == typeof(AdminToyBase))
                 throw new Exception("ToyType was AdminToyBaseType");
+
+            if ((flags & (1UL << 62)) != 0)
+                return;
 
             MakeCustomSyncWriter.Invoke(null, new object[]
             {
@@ -202,6 +246,14 @@ namespace Mistaken.API.Toys
             NetworkWriterPool.Recycle(writer2);
         }
 
+        private State GetPlayerState(Player player)
+        {
+            if (!this.LastStates.TryGetValue(player, out var state))
+                this.LastStates[player] = state = (State)Activator.CreateInstance(this.CurrentState.GetType());
+
+            return state;
+        }
+
         private void LateUpdate()
         {
             if (this.Toy == null)
@@ -218,6 +270,11 @@ namespace Mistaken.API.Toys
 
             foreach (var item in this.Controller.GetSubscribers())
                 this.UpdateSubscriber(item);
+        }
+
+        private void OnDestroy()
+        {
+            this.Controller.RemoveScript(this);
         }
     }
 }

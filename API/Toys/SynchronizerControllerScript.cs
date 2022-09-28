@@ -4,8 +4,12 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Exiled.API.Features;
+using MEC;
+using Mistaken.API.Diagnostics;
 using UnityEngine;
 
 // ReSharper disable UnusedMember.Local
@@ -20,15 +24,32 @@ namespace Mistaken.API.Toys
                 return;
 
             this.subscribers.Add(player);
-            foreach (var light in this.synchronizerScripts)
+
+            foreach (var synchronizerScript in this.synchronizerScripts.Where(x => x is PrimitiveSynchronizerScript).ToArray())
             {
-                light.UpdateSubscriber(player);
+                try
+                {
+                    synchronizerScript.ShowFor(player);
+                    synchronizerScript.UpdateSubscriber(player);
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+
+            foreach (var synchronizerScript in this.synchronizerScripts.Where(x => !(x is PrimitiveSynchronizerScript)))
+            {
+                synchronizerScript.UpdateSubscriber(player);
             }
         }
 
         public void RemoveSubscriber(Player player)
         {
             this.subscribers.Remove(player);
+
+            foreach (var synchronizerScript in this.synchronizerScripts.Where(x => x is PrimitiveSynchronizerScript))
+                synchronizerScript.HideFor(player);
         }
 
         public bool IsSubscriber(Player player)
@@ -40,20 +61,19 @@ namespace Mistaken.API.Toys
         public void SyncFor(Player player)
             => this.synchronizerScripts.ForEach(x => x.UpdateSubscriber(player));
 
-        internal void AddScript(SynchronizerScript script)
+        internal virtual void AddScript(SynchronizerScript script)
         {
             this.synchronizerScripts.Add(script);
             script.Controller = this;
         }
 
+        internal virtual void RemoveScript(SynchronizerScript script)
+        {
+            this.synchronizerScripts.Remove(script);
+        }
+
+        protected readonly List<SynchronizerScript> synchronizerScripts = new List<SynchronizerScript>();
+
         private readonly HashSet<Player> subscribers = new HashSet<Player>();
-
-        private readonly List<SynchronizerScript> synchronizerScripts = new List<SynchronizerScript>();
-    }
-
-    internal class GlobalSynchronizerControllerScript : SynchronizerControllerScript
-    {
-        public override IEnumerable<Player> GetSubscribers()
-            => RealPlayers.List;
     }
 }

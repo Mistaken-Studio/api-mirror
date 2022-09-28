@@ -67,6 +67,28 @@ namespace Mistaken.API.Toys
         }
 
         /// <summary>
+        /// Spawns primitive object admin toy.
+        /// </summary>
+        /// <param name="type">Toy type.</param>
+        /// <param name="parent">Toy's parent.</param>
+        /// <param name="color">Toy's color.</param>
+        /// <param name="hasCollision">If toy should have collision.</param>
+        /// <param name="syncPosition">Should toy's position be sync once every frame.</param>
+        /// <param name="movementSmoothing">Toy's movementSmoothing.</param>
+        /// <param name="meshRenderer">Color source, if defined color will be synced.</param>
+        /// <returns>Spawned toy.</returns>
+        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, GameObject original, bool syncPosition, byte? movementSmoothing, bool syncColor)
+        {
+            var toy = SpawnBase(PrimitiveBaseObject, original.transform, movementSmoothing);
+
+            var primitiveObjectToy = InitializePrimitive(toy, original, syncPosition, syncColor);
+
+            FinishSpawningToy(toy);
+
+            return primitiveObjectToy;
+        }
+
+        /// <summary>
         /// Spawns light source admin toy.
         /// </summary>
         /// <param name="parent">Toy's parent.</param>
@@ -128,6 +150,27 @@ namespace Mistaken.API.Toys
             FinishSpawningToy(toy);
 
             return lightSourceToy;
+        }
+
+        public static PrimitiveType GetPrimitiveType(MeshFilter filter)
+        {
+            switch (filter.mesh.name)
+            {
+                case "Plane Instance":
+                    return PrimitiveType.Plane;
+                case "Cylinder Instance":
+                    return PrimitiveType.Cylinder;
+                case "Cube Instance":
+                    return PrimitiveType.Cube;
+                case "Capsule Instance":
+                    return PrimitiveType.Capsule;
+                case "Quad Instance":
+                    return PrimitiveType.Quad;
+                case "Sphere Instance":
+                    return PrimitiveType.Sphere;
+                default:
+                    throw new Exception("Unexpected mesh name " + filter.mesh.name);
+            }
         }
 
         /// <inheritdoc cref="Module"/>
@@ -227,7 +270,8 @@ namespace Mistaken.API.Toys
 
         private static void FinishSpawningToy(AdminToyBase toy)
         {
-            NetworkServer.Spawn(toy.gameObject);
+            // if (!(toy is PrimitiveObjectToy))
+                NetworkServer.Spawn(toy.gameObject);
 
             toy.UpdatePositionServer();
         }
@@ -310,6 +354,50 @@ namespace Mistaken.API.Toys
             return primitiveObjectToy;
         }
 
+        private static PrimitiveObjectToy InitializePrimitive(AdminToyBase toy, GameObject original, bool syncPosition, bool syncColor)
+        {
+            var primitiveObjectToy = toy.GetComponent<PrimitiveObjectToy>();
+
+            if (!original.TryGetComponent(out MeshRenderer renderer))
+                throw new ArgumentException($"Can not convert to primitive toy object without {nameof(MeshRenderer)}", nameof(original));
+
+            if (!original.TryGetComponent(out MeshFilter filter))
+                throw new ArgumentException($"Can not convert to primitive toy object without {nameof(MeshFilter)}", nameof(original));
+
+            var primitiveType = GetPrimitiveType(filter);
+            var hasCollision = original.TryGetComponent<Collider>(out _);
+
+            primitiveObjectToy.NetworkPrimitiveType = primitiveType;
+            primitiveObjectToy.NetworkMaterialColor = renderer.material.color;
+
+            toy.NetworkScale = new Vector3(
+                Math.Abs(toy.transform.lossyScale.x),
+                Math.Abs(toy.transform.lossyScale.y),
+                Math.Abs(toy.transform.lossyScale.z));
+            toy.NetworkScale *= hasCollision ? 1 : -1;
+
+            if (!hasCollision && toy.transform.localScale.x > 0 && (primitiveType == PrimitiveType.Plane || primitiveType == PrimitiveType.Quad))
+            {
+                toy.transform.eulerAngles += Vector3.right * 180;
+                Exiled.API.Features.Log.Info("Rotated 180° X to compensate for negative scale");
+            }
+
+            toy.transform.localScale = new Vector3(
+                Math.Abs(toy.transform.localScale.x),
+                Math.Abs(toy.transform.localScale.y),
+                Math.Abs(toy.transform.localScale.z));
+            toy.transform.localScale *= hasCollision ? 1 : -1;
+
+            var syncScript = primitiveObjectToy.gameObject.AddComponent<PrimitiveSynchronizerScript>();
+            syncScript.Toy = primitiveObjectToy;
+            syncScript.SyncPosition = syncScript.SyncRotation = syncScript.SyncScale = syncPosition;
+            syncScript.MeshRenderer = syncColor ? renderer : null;
+
+            (toy.GetComponentInParent<SynchronizerControllerScript>() ?? globalController).AddScript(syncScript);
+
+            return primitiveObjectToy;
+        }
+
         private static void PostRoundCleanup()
         {
             globalController = Server.Host.GameObject.AddComponent<GlobalSynchronizerControllerScript>();
@@ -330,46 +418,58 @@ namespace Mistaken.API.Toys
 
             while (Round.IsStarted)
             {
-                yield return Timing.WaitForSeconds(1f);
+                yield return Timing.WaitForSeconds(.1f);
 
                 foreach (var player in RealPlayers.List)
                 {
-                    var curRoom = player.GetCurrentRoom();
-
-                    if (lastRooms.TryGetValue(player, out var lastRoom) && lastRoom == curRoom)
-                        continue; // Skip, room didn't change since last update
-                    lastRooms[player] = curRoom;
-
-                    Exiled.API.Features.Log.Debug($"Room changed, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");
-
-                    var room = Utilities.Room.Get(curRoom);
-
-                    if (room == null)
+                    HashSet<SynchronizerControllerScript> toSync = null;
+                    try
                     {
-                        foreach (var item in Controllers.Values)
+                        var curRoom = player.GetCurrentRoom();
+
+                        if (lastRooms.TryGetValue(player, out var lastRoom) && lastRoom == curRoom)
+                            continue; // Skip, room didn't change since last update
+                        lastRooms[player] = curRoom;
+
+                        Exiled.API.Features.Log.Debug(
+                            $"Room changed, {lastRoom?.Type.ToString() ?? "NONE"} -> {curRoom?.Type.ToString() ?? "NONE"}");
+
+                        var room = Utilities.Room.Get(curRoom);
+
+                        if (room == null)
+                        {
+                            foreach (var item in Controllers.Values)
+                                item.RemoveSubscriber(player);
+
+                            continue;
+                        }
+
+                        toSync = NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Rent();
+
+                        if (Controllers.TryGetValue(room.ExiledRoom, out var script))
+                            toSync.Add(script);
+
+                        foreach (var item in room.FarNeighbors.Select(x => x.ExiledRoom))
+                        {
+                            if (Controllers.TryGetValue(item, out script))
+                                toSync.Add(script);
+                        }
+
+                        foreach (var item in Controllers.Values.Where(x => !toSync.Contains(x)))
                             item.RemoveSubscriber(player);
 
-                        continue;
+                        foreach (var item in toSync)
+                            item.AddSubscriber(player);
                     }
-
-                    HashSet<SynchronizerControllerScript> toSync = NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Rent();
-
-                    if (Controllers.TryGetValue(room.ExiledRoom, out var script))
-                        toSync.Add(script);
-
-                    foreach (var item in room.FarNeighbors.Select(x => x.ExiledRoom))
+                    catch (System.Exception ex)
                     {
-                        if (Controllers.TryGetValue(item, out script))
-                            toSync.Add(script);
+                        Exiled.API.Features.Log.Error(ex);
                     }
-
-                    foreach (var item in Controllers.Values.Where(x => !toSync.Contains(x)))
-                        item.RemoveSubscriber(player);
-
-                    foreach (var item in toSync)
-                        item.AddSubscriber(player);
-
-                    NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Return(toSync);
+                    finally
+                    {
+                        if (!(toSync is null))
+                            NorthwoodLib.Pools.HashSetPool<SynchronizerControllerScript>.Shared.Return(toSync);
+                    }
                 }
             }
         }
@@ -377,6 +477,11 @@ namespace Mistaken.API.Toys
         private static void Player_Verified(Exiled.Events.EventArgs.VerifiedEventArgs ev)
         {
             globalController.SyncFor(ev.Player);
+
+            foreach (var controller in Controllers.Values)
+            {
+                controller.RemoveSubscriber(ev.Player);
+            }
         }
     }
 }

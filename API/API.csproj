@@ -97,6 +97,7 @@
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
     <Compile Include="Toys\DisableLightSourceToyUpdatePatch.cs" />
+    <Compile Include="Toys\GlobalSynchronizerControllerScript.cs" />
     <Compile Include="Toys\ToysPositionSyncOptimizationPatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Vars\BypassPatch.cs" />

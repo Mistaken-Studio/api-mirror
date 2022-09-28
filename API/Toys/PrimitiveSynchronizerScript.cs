@@ -6,7 +6,6 @@
 
 using System;
 using AdminToys;
-using Exiled.API.Features;
 using Mirror;
 using UnityEngine;
 
@@ -51,13 +50,25 @@ namespace Mistaken.API.Toys
             });
         }
 
+        protected override void ResetState(State state)
+        {
+            base.ResetState(state);
+
+            if (!(state is PrimitiveState primitiveState))
+                throw new ArgumentException($"Expected {nameof(PrimitiveState)} but got {state.GetType().Name}", nameof(state));
+
+            if (!(this.Toy is PrimitiveObjectToy primitiveObjectToy))
+                throw new ArgumentException($"Expected {nameof(PrimitiveObjectToy)} but got {this.Toy.GetType().Name}", nameof(this.Toy));
+
+            primitiveState.Color = primitiveObjectToy.NetworkMaterialColor;
+        }
+
         protected class PrimitiveState : State
         {
             public override bool Equals(State other)
                 =>
                     base.Equals(other) &&
                     other is PrimitiveState primitive &&
-                    this.Visible == primitive.Visible &&
                     this.Color == primitive.Color;
 
             public override int GetHashCode()
@@ -65,7 +76,6 @@ namespace Mistaken.API.Toys
                 unchecked
                 {
                     var hashCode = base.GetHashCode();
-                    hashCode = (hashCode * 397) ^ this.Visible.GetHashCode();
                     hashCode = (hashCode * 397) ^ this.Color.GetHashCode();
                     return hashCode;
                 }
@@ -79,11 +89,7 @@ namespace Mistaken.API.Toys
                     throw new ArgumentException("Expected argument of type " + nameof(PrimitiveState), nameof(other));
 
                 primitive.Color = this.Color;
-                primitive.Visible = this.Visible;
             }
-
-            // ToDo - Add support for de-spawning objects
-            public bool Visible { get; set; }
 
             public Color Color { get; set; }
         }

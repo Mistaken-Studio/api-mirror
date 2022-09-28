@@ -88,6 +88,22 @@ namespace Mistaken.API.Toys
             });
         }
 
+        protected override void ResetState(State state)
+        {
+            base.ResetState(state);
+
+            if (!(state is LightState lightState))
+                throw new ArgumentException($"Expected {nameof(LightState)} but got {state.GetType().Name}", nameof(state));
+
+            if (!(this.Toy is LightSourceToy lightSourceToy))
+                throw new ArgumentException($"Expected {nameof(LightSourceToy)} but got {this.Toy.GetType().Name}", nameof(this.Toy));
+
+            lightState.Intensity = lightSourceToy.NetworkLightIntensity;
+            lightState.Range = lightSourceToy.NetworkLightRange;
+            lightState.Color = lightSourceToy.NetworkLightColor;
+            lightState.Shadows = lightSourceToy.NetworkLightShadows;
+        }
+
         protected class LightState : State
         {
             public float Intensity { get; set; } = 1f;
