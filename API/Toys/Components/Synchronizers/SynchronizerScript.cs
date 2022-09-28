@@ -11,6 +11,7 @@ using AdminToys;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
 using Mirror;
+using Mistaken.API.Extensions;
 using Mistaken.API.Toys.Components.Controllers;
 using UnityEngine;
 
@@ -127,6 +128,15 @@ namespace Mistaken.API.Toys.Components.Synchronizers
 
         protected void SendSync(NetworkConnection connection, Action<NetworkWriter> serializerAction)
         {
+            if (connection is null)
+            {
+                Log.Warn($"Called {nameof(this.SendSync)} with {nameof(connection)} == null");
+                return;
+            }
+
+            if (serializerAction is null)
+                throw new ArgumentNullException(nameof(serializerAction));
+
             var writer = NetworkWriterPool.GetWriter();
             var writer2 = NetworkWriterPool.GetWriter();
 

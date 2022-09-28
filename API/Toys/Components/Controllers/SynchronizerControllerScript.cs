@@ -40,7 +40,14 @@ namespace Mistaken.API.Toys.Components.Controllers
 
             foreach (var synchronizerScript in this.SynchronizerScripts.Where(x => !(x is PrimitiveSynchronizerScript)))
             {
-                synchronizerScript.UpdateSubscriber(player);
+                try
+                {
+                    synchronizerScript.UpdateSubscriber(player);
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error(ex);
+                }
             }
         }
 
@@ -49,10 +56,28 @@ namespace Mistaken.API.Toys.Components.Controllers
             this.subscribers.Remove(player);
 
             foreach (var primitiveSynchronizerScript in this.SynchronizerScripts.OfType<PrimitiveSynchronizerScript>())
-                primitiveSynchronizerScript.HideFor(player);
+            {
+                try
+                {
+                    primitiveSynchronizerScript.HideFor(player);
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
 
             foreach (var lightSynchronizerScript in this.SynchronizerScripts.OfType<LightSynchronizerScript>())
-                lightSynchronizerScript.DisableFor(player);
+            {
+                try
+                {
+                    lightSynchronizerScript.DisableFor(player);
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
         }
 
         public bool IsSubscriber(Player player)
