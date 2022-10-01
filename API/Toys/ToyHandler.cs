@@ -251,21 +251,7 @@ namespace Mistaken.API.Toys
 
         internal static readonly HashSet<AdminToyBase> ManagedToys = new HashSet<AdminToyBase>();
 
-        private static readonly Dictionary<Room, SynchronizerControllerScript> Controllers =
-            new Dictionary<Room, SynchronizerControllerScript>();
-
-        private static readonly Dictionary<Player, Room> LastRooms = new Dictionary<Player, Room>();
-
-        private static GlobalSynchronizerControllerScript globalController;
-
-        private static LightSourceToy primitiveBaseLight;
-        private static PrimitiveObjectToy primitiveBaseObject;
-
-        private static ShootingTarget shootingTargetObjectBinary;
-        private static ShootingTarget shootingTargetObjectSport;
-        private static ShootingTarget shootingTargetObjectDboy;
-
-        private static PrimitiveObjectToy PrimitiveBaseObject
+        internal static PrimitiveObjectToy PrimitiveBaseObject
         {
             get
             {
@@ -282,7 +268,7 @@ namespace Mistaken.API.Toys
             }
         }
 
-        private static LightSourceToy PrimitiveBaseLight
+        internal static LightSourceToy PrimitiveBaseLight
         {
             get
             {
@@ -298,6 +284,20 @@ namespace Mistaken.API.Toys
                 return primitiveBaseLight;
             }
         }
+
+        private static readonly Dictionary<Room, SynchronizerControllerScript> Controllers =
+            new Dictionary<Room, SynchronizerControllerScript>();
+
+        private static readonly Dictionary<Player, Room> LastRooms = new Dictionary<Player, Room>();
+
+        private static GlobalSynchronizerControllerScript globalController;
+
+        private static LightSourceToy primitiveBaseLight;
+        private static PrimitiveObjectToy primitiveBaseObject;
+
+        private static ShootingTarget shootingTargetObjectBinary;
+        private static ShootingTarget shootingTargetObjectSport;
+        private static ShootingTarget shootingTargetObjectDboy;
 
         private static ShootingTarget ShootingTargetObjectBinary
         {
@@ -352,7 +352,7 @@ namespace Mistaken.API.Toys
 
         private static AdminToyBase SpawnBase(AdminToyBase prefab, Transform parent, byte? movementSmoothing = null)
         {
-            var toy = UnityEngine.Object.Instantiate(prefab, parent);
+            var toy = Object.Instantiate(prefab, parent);
 
             if (!(movementSmoothing is null))
                 toy.MovementSmoothing = (byte)movementSmoothing;
@@ -368,7 +368,7 @@ namespace Mistaken.API.Toys
 
         private static AdminToyBase SpawnBase(AdminToyBase prefab, Vector3 position, Quaternion rotation, Vector3 scale, byte? movementSmoothing = null)
         {
-            var toy = UnityEngine.Object.Instantiate(prefab);
+            var toy = Object.Instantiate(prefab);
 
             if (!(movementSmoothing is null))
                 toy.MovementSmoothing = (byte)movementSmoothing;

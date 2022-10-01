@@ -165,14 +165,29 @@ namespace Mistaken.API
             bool hasCollision,
             bool syncPosition,
             byte? movementSmoothing = null)
-            =>
-                ToyHandler.SpawnPrimitive(type,
-                    parent,
-                    color,
-                    hasCollision,
-                    syncPosition,
-                    movementSmoothing,
-                    null);
+        {
+            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseObject, parent);
+            var primitiveObjectToy = toy.GetComponent<PrimitiveObjectToy>();
+            primitiveObjectToy.NetworkPrimitiveType = type;
+            primitiveObjectToy.NetworkMaterialColor = color;
+            if (!(movementSmoothing is null))
+                primitiveObjectToy.MovementSmoothing = movementSmoothing ?? 0;
+            primitiveObjectToy.transform.localPosition = Vector3.zero;
+            primitiveObjectToy.transform.localRotation = Quaternion.identity;
+            primitiveObjectToy.transform.localScale = Vector3.one;
+            primitiveObjectToy.NetworkScale = hasCollision ?
+                new Vector3(Math.Abs(primitiveObjectToy.transform.lossyScale.x), Math.Abs(primitiveObjectToy.transform.lossyScale.y), Math.Abs(primitiveObjectToy.transform.lossyScale.z)) :
+                new Vector3(-Math.Abs(primitiveObjectToy.transform.lossyScale.x), -Math.Abs(primitiveObjectToy.transform.lossyScale.y), -Math.Abs(primitiveObjectToy.transform.lossyScale.z));
+            NetworkServer.Spawn(toy.gameObject);
+
+            if (!syncPosition)
+            {
+                ToyHandler.ManagedToys.Add(primitiveObjectToy);
+                primitiveObjectToy.UpdatePositionServer();
+            }
+
+            return primitiveObjectToy;
+        }
 
         /// <inheritdoc cref="SpawnPrimitive(PrimitiveType, Transform, Color, bool, bool, byte?)"/>
         [Obsolete("Removed, use ToyHandler.SpawnPrimitive", true)]
@@ -190,15 +205,27 @@ namespace Mistaken.API
             Color color,
             bool syncPosition,
             byte? movementSmoothing = null)
-            =>
-                ToyHandler.SpawnPrimitive(type,
-                    position,
-                    rotation,
-                    scale,
-                    color,
-                    syncPosition,
-                    movementSmoothing,
-                    null);
+        {
+            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseObject);
+            var primitiveObjectToy = toy.GetComponent<PrimitiveObjectToy>();
+            primitiveObjectToy.NetworkPrimitiveType = type;
+            primitiveObjectToy.NetworkMaterialColor = color;
+            if (!(movementSmoothing is null))
+                primitiveObjectToy.MovementSmoothing = movementSmoothing ?? 0;
+            primitiveObjectToy.transform.position = position;
+            primitiveObjectToy.transform.rotation = rotation;
+            primitiveObjectToy.transform.localScale = scale;
+            primitiveObjectToy.NetworkScale = primitiveObjectToy.transform.lossyScale;
+            NetworkServer.Spawn(toy.gameObject);
+
+            if (!syncPosition)
+            {
+                ToyHandler.ManagedToys.Add(primitiveObjectToy);
+                primitiveObjectToy.UpdatePositionServer();
+            }
+
+            return primitiveObjectToy;
+        }
 
         /// <inheritdoc cref="ToyHandler.SpawnLight(Transform, Color, float, float, bool, bool, byte?)"/>
         [Obsolete("Moved to ToyHandler.SpawnLight", true)]
@@ -209,14 +236,29 @@ namespace Mistaken.API
             bool shadows,
             bool syncPosition,
             byte? movementSmoothing = null)
-            =>
-                ToyHandler.SpawnLight(parent,
-                    color,
-                    intensity,
-                    range,
-                    shadows,
-                    syncPosition,
-                    movementSmoothing);
+        {
+            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseLight, parent);
+            var lightSourceToy = toy.GetComponent<LightSourceToy>();
+            lightSourceToy.NetworkLightColor = color;
+            lightSourceToy.NetworkLightIntensity = intensity;
+            lightSourceToy.NetworkLightRange = range;
+            lightSourceToy.NetworkLightShadows = shadows;
+            if (!(movementSmoothing is null))
+                lightSourceToy.MovementSmoothing = movementSmoothing ?? 0;
+            lightSourceToy.transform.localPosition = Vector3.zero;
+            lightSourceToy.transform.localRotation = Quaternion.identity;
+            lightSourceToy.transform.localScale = Vector3.one;
+            lightSourceToy.NetworkScale = lightSourceToy.transform.localScale;
+            NetworkServer.Spawn(toy.gameObject);
+
+            if (!syncPosition)
+            {
+                ToyHandler.ManagedToys.Add(lightSourceToy);
+                lightSourceToy.UpdatePositionServer();
+            }
+
+            return lightSourceToy;
+        }
 
         /// <inheritdoc cref="ToyHandler.SpawnLight(Vector3, Quaternion, Vector3, Color, float, float, bool, bool, byte?)"/>
         [Obsolete("Moved to ToyHandler.SpawnLight", true)]
@@ -229,16 +271,29 @@ namespace Mistaken.API
             bool shadows,
             bool syncPosition,
             byte? movementSmoothing = null)
-            =>
-                ToyHandler.SpawnLight(position,
-                    rotation,
-                    scale,
-                    color,
-                    intensity,
-                    range,
-                    shadows,
-                    syncPosition,
-                    movementSmoothing);
+        {
+            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseLight);
+            var lightSourceToy = toy.GetComponent<LightSourceToy>();
+            lightSourceToy.NetworkLightColor = color;
+            lightSourceToy.NetworkLightIntensity = intensity;
+            lightSourceToy.NetworkLightRange = range;
+            lightSourceToy.NetworkLightShadows = shadows;
+            if (!(movementSmoothing is null))
+                lightSourceToy.MovementSmoothing = movementSmoothing ?? 0;
+            lightSourceToy.transform.position = position;
+            lightSourceToy.transform.rotation = rotation;
+            lightSourceToy.transform.localScale = scale;
+            lightSourceToy.NetworkScale = lightSourceToy.transform.localScale;
+            NetworkServer.Spawn(toy.gameObject);
+
+            if (!syncPosition)
+            {
+                ToyHandler.ManagedToys.Add(lightSourceToy);
+                lightSourceToy.UpdatePositionServer();
+            }
+
+            return lightSourceToy;
+        }
 
         /// <summary>
         /// Spawn's structures.
