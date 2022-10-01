@@ -19,16 +19,16 @@ namespace Mistaken.API.Diagnostics
     public abstract class Module
     {
         /// <summary>
-        /// Calls <see cref="MEC.Timing.CallDelayed(float, Action)"/> and adds try catch to action.
+        /// Calls <see cref="Timing.CallDelayed(float, Action)"/> and adds try catch to action.
         /// </summary>
         /// <param name="delay">Delay passed to called function.</param>
         /// <param name="action">Action passed to called function.</param>
         /// <param name="name">Function name.</param>
-        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
-        /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart)
+        /// <param name="terminateAfterRoundRestart">If job coroutine should be killed when round restarts.</param>
+        /// <returns>Coroutine handle returned by called function.</returns>
+        public static CoroutineHandle CallSafeDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart)
         {
-            var tor = MEC.Timing.CallDelayed(delay, () =>
+            var tor = Timing.CallDelayed(delay, () =>
             {
                 try
                 {
@@ -48,40 +48,40 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <inheritdoc cref="CallSafeDelayed(float, Action, string, bool)"/>
-        public static MEC.CoroutineHandle CallSafeDelayed(float delay, Action action, string name)
+        public static CoroutineHandle CallSafeDelayed(float delay, Action action, string name)
             => CallSafeDelayed(delay, action, name, false);
 
         /// <summary>
         /// Calls <see cref="MEC.Timing.RunCoroutine(IEnumerator{float})"/> and reroutes exceptions.
         /// </summary>
         /// <param name="courotine">Delay passed to called function.</param>
-        /// <param name="name">Courotine name.</param>
-        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
-        /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
+        /// <param name="name">Coroutine name.</param>
+        /// <param name="terminateAfterRoundRestart">If job coroutine should be killed when round restarts.</param>
+        /// <returns>Coroutine handle returned by called function.</returns>
+        public static CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
         {
             courotine = courotine.RerouteExceptions((ex) =>
             {
                 MasterHandler.LogError(ex, null, name);
                 Exiled.API.Features.Log.Error($"[Rouge: {name}] {ex}");
             });
-            var tor = MEC.Timing.RunCoroutine(courotine);
+            var tor = Timing.RunCoroutine(courotine);
             if (terminateAfterRoundRestart)
                 ToTerminateAfterRoundRestart.Add(tor);
             return tor;
         }
 
         /// <inheritdoc cref="RunSafeCoroutine(IEnumerator{float}, string, bool)"/>
-        public static MEC.CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name)
+        public static CoroutineHandle RunSafeCoroutine(IEnumerator<float> courotine, string name)
             => RunSafeCoroutine(courotine, name, false);
 
         /// <summary>
-        /// Creates courotine that calls <paramref name="innerLoop"/> through all of round.
+        /// Creates coroutine that calls <paramref name="innerLoop"/> through all of round.
         /// </summary>
-        /// <param name="innerLoop">Courotine executed in round. Has to contain own delay!.</param>
-        /// <param name="name">Courotine name.</param>
-        /// <returns>Courotine handle returned by called function.</returns>
-        public static MEC.CoroutineHandle CreateSafeRoundLoop(Func<IEnumerator<float>> innerLoop, string name)
+        /// <param name="innerLoop">Coroutine executed in round. Has to contain own delay!.</param>
+        /// <param name="name">Coroutine name.</param>
+        /// <returns>Coroutine handle returned by called function.</returns>
+        public static CoroutineHandle CreateSafeRoundLoop(Func<IEnumerator<float>> innerLoop, string name)
         {
             return RunSafeCoroutine(RoundLoop(innerLoop), name, true);
         }
@@ -124,7 +124,7 @@ namespace Mistaken.API.Diagnostics
                 try
                 {
                     item.OnDisable();
-                    MEC.Timing.KillCoroutines(item.coroutines.ToArray());
+                    Timing.KillCoroutines(item.coroutines.ToArray());
                 }
                 catch (Exception ex)
                 {
@@ -178,7 +178,7 @@ namespace Mistaken.API.Diagnostics
                     try
                     {
                         item.OnDisable();
-                        MEC.Timing.KillCoroutines(item.coroutines.ToArray());
+                        Timing.KillCoroutines(item.coroutines.ToArray());
                     }
                     catch (Exception ex)
                     {
@@ -188,26 +188,6 @@ namespace Mistaken.API.Diagnostics
                     Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
                 }
             }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Module"/> class.
-        /// Default Constructor.
-        /// </summary>
-        /// <param name="plugin">Plugin creating module.</param>
-        public Module(IPlugin<IConfig> plugin)
-        {
-            this.Plugin = plugin;
-            this.Log = new ModuleLogger(this);
-            if (!Modules.ContainsKey(plugin))
-            {
-                MasterHandler.CurrentStatus.LoadedPlugins++;
-                Modules.Add(plugin, new List<Module>());
-            }
-
-            Modules[plugin].RemoveAll(i => i.Name == this.Name);
-            Modules[plugin].Add(this);
-            MasterHandler.CurrentStatus.LoadedModules++;
         }
 
         /// <summary>
@@ -221,7 +201,7 @@ namespace Mistaken.API.Diagnostics
         public virtual bool Enabled { get; protected set; } = true;
 
         /// <summary>
-        /// Gets a value indicating whether if is requied for basic functions.
+        /// Gets a value indicating whether if is required for basic functions.
         /// </summary>
         public virtual bool IsBasic { get; } = false;
 
@@ -236,16 +216,16 @@ namespace Mistaken.API.Diagnostics
         public abstract void OnDisable();
 
         /// <summary>
-        /// Calls <see cref="MEC.Timing.CallDelayed(float, Action)"/> and adds try catch to action.
+        /// Calls <see cref="Timing.CallDelayed(float, Action)"/> and adds try catch to action.
         /// </summary>
         /// <param name="delay">Delay passed to called function.</param>
         /// <param name="action">Action passed to called function.</param>
         /// <param name="name">Function name.</param>
-        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
-        /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart)
+        /// <param name="terminateAfterRoundRestart">If job coroutine should be killed when round restarts.</param>
+        /// <returns>Coroutine handle returned by called function.</returns>
+        public CoroutineHandle CallDelayed(float delay, Action action, string name, bool terminateAfterRoundRestart)
         {
-            var tor = MEC.Timing.CallDelayed(delay, () =>
+            var tor = Timing.CallDelayed(delay, () =>
             {
                 try
                 {
@@ -266,24 +246,24 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <inheritdoc cref="CallDelayed(float, Action, string, bool)"/>
-        public MEC.CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed")
+        public CoroutineHandle CallDelayed(float delay, Action action, string name = "CallDelayed")
             => this.CallDelayed(delay, action, name, false);
 
         /// <summary>
-        /// Calls <see cref="MEC.Timing.RunCoroutine(IEnumerator{float})"/> and reroutes exceptions.
+        /// Calls <see cref="Timing.RunCoroutine(IEnumerator{float})"/> and reroutes exceptions.
         /// </summary>
         /// <param name="courotine">Delay passed to called function.</param>
-        /// <param name="name">Courotine name.</param>
-        /// <param name="terminateAfterRoundRestart">If job courutine should be killed when round restarts.</param>
-        /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
+        /// <param name="name">Coroutine name.</param>
+        /// <param name="terminateAfterRoundRestart">If job coroutine should be killed when round restarts.</param>
+        /// <returns>Coroutine handle returned by called function.</returns>
+        public CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name, bool terminateAfterRoundRestart)
         {
             courotine = courotine.RerouteExceptions((ex) =>
             {
                 MasterHandler.LogError(ex, this, name);
                 this.Log.Error($"[{this.Name}: {name}] {ex}");
             });
-            var tor = MEC.Timing.RunCoroutine(courotine);
+            var tor = Timing.RunCoroutine(courotine);
             this.coroutines.Add(tor);
             if (terminateAfterRoundRestart)
                 ToTerminateAfterRoundRestart.Add(tor);
@@ -291,16 +271,16 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <inheritdoc cref="RunCoroutine(IEnumerator{float}, string, bool)"/>
-        public MEC.CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine")
+        public CoroutineHandle RunCoroutine(IEnumerator<float> courotine, string name = "RunCoroutine")
             => this.RunCoroutine(courotine, name, false);
 
         /// <summary>
-        /// Creates courotine that calls <paramref name="innerLoop"/> through all of round.
+        /// Creates coroutine that calls <paramref name="innerLoop"/> through all of round.
         /// </summary>
-        /// <param name="innerLoop">Courotine executed in round. Has to contain own delay!.</param>
-        /// <param name="name">Courotine name.</param>
-        /// <returns>Courotine handle returned by called function.</returns>
-        public MEC.CoroutineHandle CreateRoundLoop(Func<IEnumerator<float>> innerLoop, string name = "RoundLoop")
+        /// <param name="innerLoop">Coroutine executed in round. Has to contain own delay!.</param>
+        /// <param name="name">Coroutine name.</param>
+        /// <returns>Coroutine handle returned by called function.</returns>
+        public CoroutineHandle CreateRoundLoop(Func<IEnumerator<float>> innerLoop, string name = "RoundLoop")
         {
             var tor = this.RunCoroutine(RoundLoop(innerLoop), name, true);
             this.coroutines.Add(tor);
@@ -309,9 +289,9 @@ namespace Mistaken.API.Diagnostics
 
         internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new Dictionary<IPlugin<IConfig>, List<Module>>();
 
-        internal static void Server_WaitingForPlayers()
+        internal static void TerminateAllCoroutines()
         {
-            MEC.Timing.KillCoroutines(ToTerminateAfterRoundRestart.ToArray());
+            Timing.KillCoroutines(ToTerminateAfterRoundRestart.ToArray());
             ToTerminateAfterRoundRestart.Clear();
         }
 
@@ -322,12 +302,32 @@ namespace Mistaken.API.Diagnostics
         protected internal IPlugin<IConfig> Plugin { get; }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Module"/> class.
+        /// Default Constructor.
+        /// </summary>
+        /// <param name="plugin">Plugin creating module.</param>
+        protected Module(IPlugin<IConfig> plugin)
+        {
+            this.Plugin = plugin;
+            this.Log = new ModuleLogger(this);
+            if (!Modules.ContainsKey(plugin))
+            {
+                MasterHandler.CurrentStatus.LoadedPlugins++;
+                Modules.Add(plugin, new List<Module>());
+            }
+
+            Modules[plugin].RemoveAll(i => i.Name == this.Name);
+            Modules[plugin].Add(this);
+            MasterHandler.CurrentStatus.LoadedModules++;
+        }
+
+        /// <summary>
         /// Gets used to use special logging method.
         /// </summary>
         [JsonIgnore]
         protected ModuleLogger Log { get; }
 
-        private static readonly List<MEC.CoroutineHandle> ToTerminateAfterRoundRestart = new List<MEC.CoroutineHandle>();
+        private static readonly List<CoroutineHandle> ToTerminateAfterRoundRestart = new List<CoroutineHandle>();
 
         private static IEnumerator<float> RoundLoop(Func<IEnumerator<float>> innerLoop)
         {
@@ -337,6 +337,6 @@ namespace Mistaken.API.Diagnostics
                 yield return innerLoop().WaitUntilDone();
         }
 
-        private readonly List<MEC.CoroutineHandle> coroutines = new List<CoroutineHandle>();
+        private readonly List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
     }
 }
