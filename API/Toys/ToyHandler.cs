@@ -43,7 +43,7 @@ namespace Mistaken.API.Toys
         {
             var toy = SpawnBase(PrimitiveBaseObject, parent, movementSmoothing);
 
-            var primitiveObjectToy = InitializePrimitive(toy, type, color, hasCollision, syncPosition, meshRenderer);
+            var primitiveObjectToy = InitializePrimitive(toy, type, color, parent.transform.localScale.x > 0 ? (bool?)hasCollision : null, syncPosition, meshRenderer);
 
             FinishSpawningToy(toy);
 
@@ -447,17 +447,17 @@ namespace Mistaken.API.Toys
 
             if (hasCollision.HasValue)
             {
-                toy.NetworkScale = new Vector3(
-                    Math.Abs(toy.transform.lossyScale.x),
-                    Math.Abs(toy.transform.lossyScale.y),
-                    Math.Abs(toy.transform.lossyScale.z));
-                toy.NetworkScale *= hasCollision.Value ? 1 : -1;
-
                 if (!hasCollision.Value && toy.transform.localScale.x > 0 && (type == PrimitiveType.Plane || type == PrimitiveType.Quad))
                 {
                     // Exiled.API.Features.Log.Info("Rotated 180° X to compensate for negative scale");
                     toy.transform.eulerAngles += Vector3.right * 180;
                 }
+
+                toy.NetworkScale = new Vector3(
+                    Math.Abs(toy.transform.lossyScale.x),
+                    Math.Abs(toy.transform.lossyScale.y),
+                    Math.Abs(toy.transform.lossyScale.z));
+                toy.NetworkScale *= hasCollision.Value ? 1 : -1;
 
                 toy.transform.localScale = new Vector3(
                     Math.Abs(toy.transform.localScale.x),
