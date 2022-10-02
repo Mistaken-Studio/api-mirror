@@ -66,7 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\AnnonymousEvents.cs" />
+    <Compile Include="AnnonymousEvents.cs" />
     <Compile Include="Handlers\BlockInventoryInteractionHandler.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Config.cs" />
@@ -93,13 +93,10 @@
     <Compile Include="Handlers\DoorPermissionsHandler.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
-    <Compile Include="Obsolete\AnnonymousEvents.cs" />
     <Compile Include="Obsolete\Handlers\BetterWarheadHandler.cs" />
     <Compile Include="Obsolete\Handlers\CustomInfoHandler.cs" />
     <Compile Include="Obsolete\Handlers\ExperimentalHandler.cs" />
     <Compile Include="Obsolete\Handlers\VanishHandler.cs" />
-    <Compile Include="Obsolete\PlayerPreferences.cs" />
-    <Compile Include="Obsolete\StructureType.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
@@ -110,7 +107,7 @@
     <Compile Include="Patches\Vars\NicknamePatch.cs" />
     <Compile Include="Patches\Vars\NoClipPatch.cs" />
     <Compile Include="Patches\Vars\OverwatchPatch.cs" />
-    <Compile Include="API\PlayerPreferences.cs" />
+    <Compile Include="PlayerPreferences.cs" />
     <Compile Include="PluginHandler.cs" />
     <Compile Include="Handlers\BetterWarheadHandler.cs" />
     <Compile Include="Handlers\CustomInfoHandler.cs" />
@@ -131,7 +128,7 @@
     <Compile Include="RoundPlus.cs" />
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield\Shield.cs" />
-    <Compile Include="API\StructureType.cs" />
+    <Compile Include="StructureType.cs" />
     <Compile Include="Obsolete\Toys\ToyHandler.cs" />
     <Compile Include="Utilities\Map.Blackout.cs" />
     <Compile Include="Utilities\Map.cs" />

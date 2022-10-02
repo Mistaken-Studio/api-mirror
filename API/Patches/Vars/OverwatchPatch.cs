@@ -17,7 +17,7 @@ namespace Mistaken.API.Patches.Vars
         // ReSharper disable once InconsistentNaming
         public static void Postfix(ServerRoles __instance, bool status)
         {
-            API.AnnonymousEvents.Call("OVERWATCH", (Player.Get(__instance.gameObject), status));
+            AnnonymousEvents.Call("OVERWATCH", (Player.Get(__instance.gameObject), status));
         }
     }
 }

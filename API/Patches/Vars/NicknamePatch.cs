@@ -17,7 +17,7 @@ namespace Mistaken.API.Patches.Vars
         // ReSharper disable once InconsistentNaming
         public static void Postfix(NicknameSync __instance, string value)
         {
-            API.AnnonymousEvents.Call("NICKNAME", (Player.Get(__instance.gameObject), value));
+            AnnonymousEvents.Call("NICKNAME", (Player.Get(__instance.gameObject), value));
         }
     }
 }

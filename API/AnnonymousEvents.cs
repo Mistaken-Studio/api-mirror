@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using Exiled.API.Features;
 
-namespace Mistaken.API.API
+namespace Mistaken.API
 {
     /// <summary>
     /// Announymous Events.

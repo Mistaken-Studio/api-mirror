@@ -44,14 +44,14 @@ namespace Mistaken.API.Handlers
                 Vanished.Add(player.Id, level);
                 player.SetSessionVariable(SessionVarType.VANISH, level);
                 if (!silent)
-                    API.AnnonymousEvents.Call("VANISH", (player, level));
+                    AnnonymousEvents.Call("VANISH", (player, level));
             }
             else
             {
                 if (Vanished.ContainsKey(player.Id))
                 {
                     if (!silent)
-                        API.AnnonymousEvents.Call("VANISH", (player, (byte)0));
+                        AnnonymousEvents.Call("VANISH", (player, (byte)0));
                 }
 
                 Vanished.Remove(player.Id);

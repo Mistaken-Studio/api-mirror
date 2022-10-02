@@ -4,17 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-// ReSharper disable UnusedMember.Global
-// ReSharper disable InconsistentNaming
-#pragma warning disable
+#pragma warning disable CS1591
 
-// ReSharper disable once CheckNamespace
+// ReSharper disable InconsistentNaming
 namespace Mistaken.API
 {
     /// <summary>
     /// Structure types.
     /// </summary>
-    [System.Obsolete("Moved to Mistaken.API.API", true)]
     public enum StructureType : byte
     {
         Scp018Pedestal,

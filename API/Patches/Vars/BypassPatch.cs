@@ -17,7 +17,7 @@ namespace Mistaken.API.Patches.Vars
         // ReSharper disable once InconsistentNaming
         public static void Postfix(Player __instance, bool value)
         {
-            API.AnnonymousEvents.Call("BYPASS", (__instance, value));
+            AnnonymousEvents.Call("BYPASS", (__instance, value));
         }
     }
 }

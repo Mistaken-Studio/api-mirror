@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 #pragma warning disable CS1591
 
-namespace Mistaken.API.API
+namespace Mistaken.API
 {
     /// <summary>
     /// Player preferences enum.
