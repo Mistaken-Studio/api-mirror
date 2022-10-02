@@ -7,20 +7,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AdminToys;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using Mirror;
-using Mistaken.API.Toys;
 using RemoteAdmin;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-#pragma warning disable SA1116 // Split parameters should start on line after declaration
-
+// ReSharper disable InconsistentNaming
 namespace Mistaken.API
 {
     /// <summary>
     /// Map Extensions but not as extension because <see cref="Map"/> is static.
     /// </summary>
+    [PublicAPI]
     public static class MapPlus
     {
         /// <summary>
@@ -40,7 +40,7 @@ namespace Mistaken.API
             get
             {
                 if (container == null)
-                    container = UnityEngine.Object.FindObjectOfType<LureSubjectContainer>();
+                    container = Object.FindObjectOfType<LureSubjectContainer>();
 
                 return container;
             }
@@ -58,15 +58,13 @@ namespace Mistaken.API
         /// <summary>
         /// Gets time to decontamination end.
         /// </summary>
-        public static float DecontaminationEndTime
-        {
-            get => LightContainmentZoneDecontamination.DecontaminationController.Singleton.DecontaminationPhases
+        public static float DecontaminationEndTime =>
+            LightContainmentZoneDecontamination.DecontaminationController.Singleton.DecontaminationPhases
                 .First(i => i.Function == LightContainmentZoneDecontamination.DecontaminationController.DecontaminationPhase.PhaseFunction.Final)
                 .TimeTrigger;
-        }
 
         /// <summary>
-        /// Gets a value indicating whether SCP079's recontainment is in proggres.
+        /// Gets a value indicating whether SCP079's recontainment is in progresses.
         /// </summary>
         public static bool IsSCP079ReadyForRecontainment => SCP079Recontainer._prevEngaged == 3;
 
@@ -83,7 +81,7 @@ namespace Mistaken.API
             get
             {
                 if (recontainer == null)
-                    recontainer = GameObject.FindObjectOfType<Recontainer079>();
+                    recontainer = Object.FindObjectOfType<Recontainer079>();
 
                 return recontainer;
             }
@@ -100,7 +98,7 @@ namespace Mistaken.API
         {
             if (flags == global::Broadcast.BroadcastFlags.AdminChat)
             {
-                string fullMessage = $"<color=orange>[<color=green>{tag}</color>]</color> {message}";
+                var fullMessage = $"<color=orange>[<color=green>{tag}</color>]</color> {message}";
                 foreach (var item in RealPlayers.List?.Where(p => p.Connection != null && PermissionsHandler.IsPermitted(p.ReferenceHub.serverRoles.Permissions, PlayerPermissions.AdminChat)) ?? new List<Player>())
                     item.ReferenceHub.queryProcessor.TargetReply(item.Connection, "@" + fullMessage, true, false, string.Empty);
             }
@@ -119,10 +117,14 @@ namespace Mistaken.API
         /// <returns>Dummy.</returns>
         public static GameObject SpawnDummy(RoleType role, Vector3 position, Quaternion rotation, Vector3 size, string name)
         {
-            GameObject obj = UnityEngine.Object.Instantiate(NetworkManager.singleton.spawnPrefabs.FirstOrDefault(p => p.gameObject.name == "Player"));
-            CharacterClassManager ccm = obj.GetComponent<CharacterClassManager>();
+            var obj = Object.Instantiate(NetworkManager.singleton.spawnPrefabs.FirstOrDefault(p => p.gameObject.name == "Player"));
+            var ccm = obj.GetComponent<CharacterClassManager>();
             if (ccm == null)
+            {
                 Log.Error("[SPAWN DUMMY] CCM is null");
+                return null;
+            }
+
             ccm.CurClass = role;
 
             // ccm.RefreshPlyModel(role);
@@ -157,144 +159,6 @@ namespace Mistaken.API
             return lczTime < minTimeLeft;
         }
 
-        /// <inheritdoc cref="ToyHandler.SpawnPrimitive(PrimitiveType, Transform, Color, bool, bool, byte?, MeshRenderer)"/>
-        [Obsolete("Moved to ToyHandler.SpawnPrimitive", true)]
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type,
-            Transform parent,
-            Color color,
-            bool hasCollision,
-            bool syncPosition,
-            byte? movementSmoothing = null)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseObject, parent);
-            var primitiveObjectToy = toy.GetComponent<PrimitiveObjectToy>();
-            primitiveObjectToy.NetworkPrimitiveType = type;
-            primitiveObjectToy.NetworkMaterialColor = color;
-            if (!(movementSmoothing is null))
-                primitiveObjectToy.MovementSmoothing = movementSmoothing ?? 0;
-            primitiveObjectToy.transform.localPosition = Vector3.zero;
-            primitiveObjectToy.transform.localRotation = Quaternion.identity;
-            primitiveObjectToy.transform.localScale = Vector3.one;
-            primitiveObjectToy.NetworkScale = hasCollision ?
-                new Vector3(Math.Abs(primitiveObjectToy.transform.lossyScale.x), Math.Abs(primitiveObjectToy.transform.lossyScale.y), Math.Abs(primitiveObjectToy.transform.lossyScale.z)) :
-                new Vector3(-Math.Abs(primitiveObjectToy.transform.lossyScale.x), -Math.Abs(primitiveObjectToy.transform.lossyScale.y), -Math.Abs(primitiveObjectToy.transform.lossyScale.z));
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (!syncPosition)
-            {
-                ToyHandler.ManagedToys.Add(primitiveObjectToy);
-                primitiveObjectToy.UpdatePositionServer();
-            }
-
-            return primitiveObjectToy;
-        }
-
-        /// <inheritdoc cref="SpawnPrimitive(PrimitiveType, Transform, Color, bool, bool, byte?)"/>
-        [Obsolete("Removed, use ToyHandler.SpawnPrimitive", true)]
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type, Transform parent, Color color, bool syncPosition, byte? movementSmoothing = null)
-        {
-            return SpawnPrimitive(type, parent, color, true, syncPosition, movementSmoothing);
-        }
-
-        /// <inheritdoc cref="ToyHandler.SpawnPrimitive(PrimitiveType, Vector3, Quaternion, Vector3, Color, bool, byte?, MeshRenderer)"/>
-        [Obsolete("Moved to ToyHandler.SpawnPrimitive", true)]
-        public static PrimitiveObjectToy SpawnPrimitive(PrimitiveType type,
-            Vector3 position,
-            Quaternion rotation,
-            Vector3 scale,
-            Color color,
-            bool syncPosition,
-            byte? movementSmoothing = null)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseObject);
-            var primitiveObjectToy = toy.GetComponent<PrimitiveObjectToy>();
-            primitiveObjectToy.NetworkPrimitiveType = type;
-            primitiveObjectToy.NetworkMaterialColor = color;
-            if (!(movementSmoothing is null))
-                primitiveObjectToy.MovementSmoothing = movementSmoothing ?? 0;
-            primitiveObjectToy.transform.position = position;
-            primitiveObjectToy.transform.rotation = rotation;
-            primitiveObjectToy.transform.localScale = scale;
-            primitiveObjectToy.NetworkScale = primitiveObjectToy.transform.lossyScale;
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (!syncPosition)
-            {
-                ToyHandler.ManagedToys.Add(primitiveObjectToy);
-                primitiveObjectToy.UpdatePositionServer();
-            }
-
-            return primitiveObjectToy;
-        }
-
-        /// <inheritdoc cref="ToyHandler.SpawnLight(Transform, Color, float, float, bool, bool, byte?)"/>
-        [Obsolete("Moved to ToyHandler.SpawnLight", true)]
-        public static LightSourceToy SpawnLight(Transform parent,
-            Color color,
-            float intensity,
-            float range,
-            bool shadows,
-            bool syncPosition,
-            byte? movementSmoothing = null)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseLight, parent);
-            var lightSourceToy = toy.GetComponent<LightSourceToy>();
-            lightSourceToy.NetworkLightColor = color;
-            lightSourceToy.NetworkLightIntensity = intensity;
-            lightSourceToy.NetworkLightRange = range;
-            lightSourceToy.NetworkLightShadows = shadows;
-            if (!(movementSmoothing is null))
-                lightSourceToy.MovementSmoothing = movementSmoothing ?? 0;
-            lightSourceToy.transform.localPosition = Vector3.zero;
-            lightSourceToy.transform.localRotation = Quaternion.identity;
-            lightSourceToy.transform.localScale = Vector3.one;
-            lightSourceToy.NetworkScale = lightSourceToy.transform.localScale;
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (!syncPosition)
-            {
-                ToyHandler.ManagedToys.Add(lightSourceToy);
-                lightSourceToy.UpdatePositionServer();
-            }
-
-            return lightSourceToy;
-        }
-
-        /// <inheritdoc cref="ToyHandler.SpawnLight(Vector3, Quaternion, Vector3, Color, float, float, bool, bool, byte?)"/>
-        [Obsolete("Moved to ToyHandler.SpawnLight", true)]
-        public static LightSourceToy SpawnLight(Vector3 position,
-            Quaternion rotation,
-            Vector3 scale,
-            Color color,
-            float intensity,
-            float range,
-            bool shadows,
-            bool syncPosition,
-            byte? movementSmoothing = null)
-        {
-            AdminToyBase toy = UnityEngine.Object.Instantiate(ToyHandler.PrimitiveBaseLight);
-            var lightSourceToy = toy.GetComponent<LightSourceToy>();
-            lightSourceToy.NetworkLightColor = color;
-            lightSourceToy.NetworkLightIntensity = intensity;
-            lightSourceToy.NetworkLightRange = range;
-            lightSourceToy.NetworkLightShadows = shadows;
-            if (!(movementSmoothing is null))
-                lightSourceToy.MovementSmoothing = movementSmoothing ?? 0;
-            lightSourceToy.transform.position = position;
-            lightSourceToy.transform.rotation = rotation;
-            lightSourceToy.transform.localScale = scale;
-            lightSourceToy.NetworkScale = lightSourceToy.transform.localScale;
-            NetworkServer.Spawn(toy.gameObject);
-
-            if (!syncPosition)
-            {
-                ToyHandler.ManagedToys.Add(lightSourceToy);
-                lightSourceToy.UpdatePositionServer();
-            }
-
-            return lightSourceToy;
-        }
-
         /// <summary>
         /// Spawn's structures.
         /// </summary>
@@ -302,12 +166,12 @@ namespace Mistaken.API
         /// <param name="position">Structure's position.</param>
         /// <param name="rotation">Structure's rotation.</param>
         /// <returns>Spawned structure.</returns>
-        public static GameObject SpawnStructure(StructureType type, Vector3 position, Quaternion rotation)
+        public static GameObject SpawnStructure(API.StructureType type, Vector3 position, Quaternion rotation)
         {
-            if (!NetworkClient.prefabs.TryGetValue(StructurePrefabs[type], out GameObject prefab))
+            if (!NetworkClient.prefabs.TryGetValue(StructurePrefabs[type], out var prefab))
                 return null;
 
-            GameObject obj = UnityEngine.Object.Instantiate(prefab, position, rotation);
+            var obj = Object.Instantiate(prefab, position, rotation);
             NetworkServer.Spawn(obj);
             return obj;
         }
@@ -318,12 +182,12 @@ namespace Mistaken.API
         /// <param name="type">Structure type.</param>
         /// <param name="parent">Structure's parent.</param>
         /// <returns>Spawned structure.</returns>
-        public static GameObject SpawnStructure(StructureType type, Transform parent)
+        public static GameObject SpawnStructure(API.StructureType type, Transform parent)
         {
-            if (!NetworkClient.prefabs.TryGetValue(StructurePrefabs[type], out GameObject prefab))
+            if (!NetworkClient.prefabs.TryGetValue(StructurePrefabs[type], out var prefab))
                 return null;
 
-            GameObject obj = UnityEngine.Object.Instantiate(prefab, parent.position, parent.rotation);
+            var obj = Object.Instantiate(prefab, parent.position, parent.rotation);
             obj.transform.SetParent(parent);
             NetworkServer.Spawn(obj);
             return obj;
@@ -335,22 +199,22 @@ namespace Mistaken.API
             recontainer = null;
         }
 
-        private static readonly Dictionary<StructureType, Guid> StructurePrefabs = new Dictionary<StructureType, Guid>()
+        private static readonly Dictionary<API.StructureType, Guid> StructurePrefabs = new()
         {
-            { StructureType.Scp018Pedestal, new Guid("a149d3eb-11bd-de24-f9dd-57187f5771ef") },
-            { StructureType.Scp207Pedestal, new Guid("17054030-9461-d104-5b92-9456c9eb0ab7") },
-            { StructureType.Scp244Pedestal, new Guid("fa602fdc-724c-d2a4-8b8c-1fb314b82746") },
-            { StructureType.Scp268Pedestal, new Guid("68f13209-e652-6024-2b89-0f75fb88a998") },
-            { StructureType.Scp500Pedestal, new Guid("f4149b66-c503-87a4-0b93-aabfe7c352da") },
-            { StructureType.Scp1853Pedestal, new Guid("4f36c701-ea0c-9064-2a58-2c89240e51ba") },
-            { StructureType.Scp2176Pedestal, new Guid("fff1c10c-a719-bea4-d95c-3e262ed03ab2") },
-            { StructureType.RegularMedkitLocker, new Guid("5b227bd2-1ed2-8fc4-2aa1-4856d7cb7472") },
-            { StructureType.AdrenalineMedkitLocker, new Guid("db602577-8d4f-97b4-890b-8c893bfcd553") },
-            { StructureType.RifleRackLocker, new Guid("850f84ad-e273-1824-8885-11ae5e01e2f4") },
-            { StructureType.MiscLocker, new Guid("d54bead1-286f-3004-facd-74482a872ad8") },
-            { StructureType.LargeGunLocker, new Guid("5ad5dc6d-7bc5-3154-8b1a-3598b96e0d5b") },
-            { StructureType.Generator, new Guid("daf3ccde-4392-c0e4-882d-b7002185c6b8") },
-            { StructureType.Workstation, new Guid("ad8a455f-062d-dea4-5b47-ac9217d4c58b") },
+            { API.StructureType.Scp018Pedestal, new("a149d3eb-11bd-de24-f9dd-57187f5771ef") },
+            { API.StructureType.Scp207Pedestal, new("17054030-9461-d104-5b92-9456c9eb0ab7") },
+            { API.StructureType.Scp244Pedestal, new("fa602fdc-724c-d2a4-8b8c-1fb314b82746") },
+            { API.StructureType.Scp268Pedestal, new("68f13209-e652-6024-2b89-0f75fb88a998") },
+            { API.StructureType.Scp500Pedestal, new("f4149b66-c503-87a4-0b93-aabfe7c352da") },
+            { API.StructureType.Scp1853Pedestal, new("4f36c701-ea0c-9064-2a58-2c89240e51ba") },
+            { API.StructureType.Scp2176Pedestal, new("fff1c10c-a719-bea4-d95c-3e262ed03ab2") },
+            { API.StructureType.RegularMedkitLocker, new("5b227bd2-1ed2-8fc4-2aa1-4856d7cb7472") },
+            { API.StructureType.AdrenalineMedkitLocker, new("db602577-8d4f-97b4-890b-8c893bfcd553") },
+            { API.StructureType.RifleRackLocker, new("850f84ad-e273-1824-8885-11ae5e01e2f4") },
+            { API.StructureType.MiscLocker, new("d54bead1-286f-3004-facd-74482a872ad8") },
+            { API.StructureType.LargeGunLocker, new("5ad5dc6d-7bc5-3154-8b1a-3598b96e0d5b") },
+            { API.StructureType.Generator, new("daf3ccde-4392-c0e4-882d-b7002185c6b8") },
+            { API.StructureType.Workstation, new("ad8a455f-062d-dea4-5b47-ac9217d4c58b") },
         };
 
         private static Recontainer079 recontainer;

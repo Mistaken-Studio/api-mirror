@@ -12,16 +12,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Exiled.API.Features;
-using MEC;
+using JetBrains.Annotations;
+using Mirror.LiteNetLib4Mirror;
 using UnityEngine;
 
-#pragma warning disable CS0162 // Wykryto nieosi¹galny kod
+// ReSharper disable HeuristicUnreachableCode
+#pragma warning disable CS0162
 
 namespace Mistaken.API.Diagnostics
 {
     /// <summary>
     /// Master module handler.
     /// </summary>
+    [PublicAPI]
     public static partial class MasterHandler
     {
         /// <summary>
@@ -70,7 +73,7 @@ namespace Mistaken.API.Diagnostics
         public static void LogTime(string moduleName, string name, DateTime start, DateTime end) =>
             LogTime(moduleName + ": " + name, (end - start).TotalMilliseconds);
 
-        internal static Status CurrentStatus { get; set; } = new Status();
+        internal static Status CurrentStatus { get; private set; } = new();
 
         internal static void LogError(System.Exception ex, string method)
         {
@@ -85,8 +88,13 @@ namespace Mistaken.API.Diagnostics
 
         internal static void LogJunk(string name)
         {
-            if (fileStream is null)
-                fileStream = File.OpenWrite(Path.Combine(Paths.Plugins, "Diagnostics", "Junk", Server.Port.ToString(), DateTime.Now.ToString("yyyy-MM-dd_HH:mm:ss") + ".log"));
+            fileStream ??= File.OpenWrite(
+                Path.Combine(
+                    Paths.Plugins,
+                    "Diagnostics",
+                    "Junk",
+                    Server.Port.ToString(),
+                    DateTime.Now.ToString("yyyy-MM-dd_HH:mm:ss") + ".log"));
 
             var tow = Encoding.UTF8.GetBytes($"[{DateTime.Now:HH:mm:ss.fff}] {name}\n");
             fileStream.Write(tow, 0, tow.Length);
@@ -104,7 +112,7 @@ namespace Mistaken.API.Diagnostics
 
         internal static void Ini()
         {
-            Log.Debug($"Called Ini", PluginHandler.Instance.Config.VerbouseOutput);
+            Log.Debug("Called Ini", PluginHandler.VerboseOutput);
             if (initiated)
                 return;
             if (PluginHandler.Instance.Config.GenerateRunResultFile)
@@ -114,21 +122,22 @@ namespace Mistaken.API.Diagnostics
             }
 
             if (DiagnosticsEnabled)
-                CustomNetworkManager.singleton.gameObject.AddComponent<DeltaTimeChecker>();
+                LiteNetLib4MirrorNetworkManager.singleton.gameObject.AddComponent<DeltaTimeChecker>();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.logMessageReceived += Application_logMessageReceived;
 
+            initiated = true;
+
             if (DiagnosticsEnabled && false)
                 _ = SaveLoop();
-            initiated = true;
         }
 
-        private static readonly object BacklogLockObj = new object();
-        private static readonly object ErrorBacklogLockObj = new object();
-        private static readonly List<Entry> Backlog = new List<Entry>();
-        private static readonly List<string> ErrorBacklog = new List<string>();
-        private static bool initiated = false;
+        private static readonly object BacklogLockObj = new();
+        private static readonly object ErrorBacklogLockObj = new();
+        private static readonly List<Entry> Backlog = new();
+        private static readonly List<string> ErrorBacklog = new();
+        private static bool initiated;
 
         private static FileStream fileStream;
 
@@ -162,16 +171,16 @@ namespace Mistaken.API.Diagnostics
 
         private static async Task SaveLoop()
         {
-            string path = Path.Combine(Paths.Plugins, "Diagnostics");
+            var path = Path.Combine(Paths.Plugins, "Diagnostics");
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
-                Log.Debug($"{path} Created", PluginHandler.Instance.Config.VerbouseOutput);
+                Log.Debug($"{path} Created", PluginHandler.VerboseOutput);
             }
             else
             {
-                Log.Debug($"{path} Exists", PluginHandler.Instance.Config.VerbouseOutput);
+                Log.Debug($"{path} Exists", PluginHandler.VerboseOutput);
             }
 
             path = Path.Combine(path, Server.Port.ToString());
@@ -179,21 +188,21 @@ namespace Mistaken.API.Diagnostics
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
-                Log.Debug($"{path} Created", PluginHandler.Instance.Config.VerbouseOutput);
+                Log.Debug($"{path} Created", PluginHandler.VerboseOutput);
             }
             else
             {
-                Log.Debug($"{path} Exists", PluginHandler.Instance.Config.VerbouseOutput);
+                Log.Debug($"{path} Exists", PluginHandler.VerboseOutput);
             }
 
-            DateTime now = DateTime.Now;
+            var now = DateTime.Now;
 
-            string lastDay = now.ToString("yyyy-MM-dd");
+            var lastDay = now.ToString("yyyy-MM-dd");
             string day;
             string internalPath;
 
-            Log.Debug($"Starting Loop", PluginHandler.Instance.Config.VerbouseOutput);
-            while (true)
+            Log.Debug($"Starting Loop", PluginHandler.VerboseOutput);
+            while (initiated)
             {
                 now = DateTime.Now;
                 internalPath = path;
@@ -206,17 +215,17 @@ namespace Mistaken.API.Diagnostics
                     if (!Directory.Exists(internalPath))
                     {
                         Directory.CreateDirectory(internalPath);
-                        Log.Debug($"Created {internalPath}", PluginHandler.Instance.Config.VerbouseOutput);
+                        Log.Debug($"Created {internalPath}", PluginHandler.VerboseOutput);
                     }
 
                     // Log.Debug($"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now.ToString("yyyy-MM-dd_HH")}.log");
-                    string filePath = Path.Combine(internalPath, $"{now:yyyy-MM-dd_HH}.log");
+                    var filePath = Path.Combine(internalPath, $"{now:yyyy-MM-dd_HH}.log");
                     if (!File.Exists(filePath))
                     {
                         if (now.Hour == 0)
-                            Analizer.AnalizeContent(Path.Combine(path, lastDay, $"{now.AddDays(-1):yyyy-MM-dd}_23.log"));
+                            Analyzer.AnalyzeContent(Path.Combine(path, lastDay, $"{now.AddDays(-1):yyyy-MM-dd}_23.log"));
                         else
-                            Analizer.AnalizeContent(Path.Combine(internalPath, $"{now.AddHours(-1):yyyy-MM-dd_HH}.log"));
+                            Analyzer.AnalyzeContent(Path.Combine(internalPath, $"{now.AddHours(-1):yyyy-MM-dd_HH}.log"));
                     }
 
                     if (lastDay != day)

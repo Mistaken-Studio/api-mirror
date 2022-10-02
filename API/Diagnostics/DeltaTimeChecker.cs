@@ -8,13 +8,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Mistaken.API.Diagnostics
 {
+    [PublicAPI]
     internal class DeltaTimeChecker : MonoBehaviour
     {
-        private List<double> deltaTimes = new List<double>();
+        private readonly List<double> deltaTimes = new();
 
         private void Start()
         {
@@ -23,7 +25,7 @@ namespace Mistaken.API.Diagnostics
 
         private IEnumerator SaveLoop()
         {
-            while (true)
+            while (this.enabled)
             {
                 yield return new WaitForSeconds(1);
 

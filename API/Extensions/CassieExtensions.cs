@@ -4,15 +4,16 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 
 namespace Mistaken.API.Extensions
 {
     /// <summary>
     /// Cassie extensions.
     /// </summary>
+    [PublicAPI]
     public static class CassieExtensions
     {
         /// <summary>
@@ -29,9 +30,9 @@ namespace Mistaken.API.Extensions
         {
             if (glitchChance > 0f || jamChance > 0f)
             {
-                string[] array = message.Split(' ');
+                var array = message.Split(' ');
                 List<string> newWords = NorthwoodLib.Pools.ListPool<string>.Shared.Rent();
-                for (int i = 0; i < array.Length; i++)
+                for (var i = 0; i < array.Length; i++)
                 {
                     newWords.Add(array[i]);
                     if (i < array.Length - 1)
@@ -45,7 +46,7 @@ namespace Mistaken.API.Extensions
                 }
 
                 message = string.Empty;
-                foreach (string newWord in newWords)
+                foreach (var newWord in newWords)
                     message += newWord + " ";
                 NorthwoodLib.Pools.ListPool<string>.Shared.Return(newWords);
             }

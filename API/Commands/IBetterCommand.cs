@@ -21,13 +21,14 @@ namespace Mistaken.API.Commands
     /// <summary>
     /// Command Handler.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public abstract class IBetterCommand : ICommand
     {
         /// <inheritdoc cref="ICommand.Command"/>
         public abstract string Command { get; }
 
         /// <inheritdoc cref="ICommand.Aliases"/>
-        public virtual string[] Aliases { get; } = new string[0];
+        public virtual string[] Aliases { get; } = Array.Empty<string>();
 
         /// <inheritdoc cref="ICommand.Description"/>
         public virtual string Description { get; } = string.Empty;
@@ -48,7 +49,7 @@ namespace Mistaken.API.Commands
         /// <inheritdoc cref="ICommand.Execute(ArraySegment{string}, ICommandSender, out string)"/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            DateTime start = DateTime.Now;
+            var start = DateTime.Now;
             if (sender.IsPlayer())
             {
                 if (this is IPermissionLocked && !sender.CheckPermission(this.FullPermission))
@@ -59,25 +60,25 @@ namespace Mistaken.API.Commands
                 }
             }
 
-            bool bc = false;
-            string argsString = string.Join(" ", arguments.Array);
-            int playerId = sender.IsPlayer() ? sender.GetPlayer().Id : 1;
+            var bc = false;
+            var argsString = string.Join(" ", arguments.Array!);
+            var playerId = sender.IsPlayer() ? sender.GetPlayer().Id : 1;
             if (argsString.Contains("@me"))
                 argsString = argsString.Replace("@me", playerId.ToString());
 
             List<string> args = NorthwoodLib.Pools.ListPool<string>.Shared.Rent(arguments.Array);
             foreach (var item in args.ToArray())
             {
-                if (item == "@-cbc")
-                {
-                    args.Remove(item);
-                    sender.GetPlayer().ClearBroadcasts();
-                }
+                args.Remove(item);
 
-                if (item == "@-bc")
+                switch (item)
                 {
-                    args.Remove(item);
-                    bc = true;
+                    case "@-cbc":
+                        sender.GetPlayer().ClearBroadcasts();
+                        break;
+                    case "@-bc":
+                        bc = true;
+                        break;
                 }
             }
 
@@ -85,7 +86,12 @@ namespace Mistaken.API.Commands
             if (!newQuery.StartsWith("@"))
             {
                 if (argsString.Contains("@!me"))
-                    newQuery = argsString.Replace("@!me", string.Join(".", RealPlayers.List.Where(p => p.Id != playerId).Select(p => p.Id)));
+                {
+                    newQuery = argsString.Replace(
+                        "@!me",
+                        string.Join(".", RealPlayers.List.Where(p => p.Id != playerId).Select(p => p.Id)));
+                }
+
                 if (argsString.Contains("@all"))
                     newQuery = argsString.Replace("@all", string.Join(".", RealPlayers.List.Select(p => p.Id)));
                 if (argsString.Contains("@team:"))
@@ -93,24 +99,14 @@ namespace Mistaken.API.Commands
                     foreach (var item in args.Where(arg => arg.StartsWith("@team:")))
                     {
                         var values = item.Split(':');
-                        if (values.Length > 0)
+                        if (values.Length <= 0)
+                            continue;
+                        var value = values[1];
+                        if (Enum.TryParse<Team>(value, true, out var teamType))
                         {
-                            var value = values[1];
-                            if (int.TryParse(value, out int teamId))
-                            {
-                                if (teamId > -1 && teamId < 7)
-                                {
-                                    newQuery = argsString.Replace("@team:" + value, string.Join(".", RealPlayers.Get((Team)teamId).Select(p => p.Id)));
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 7; i++)
-                                {
-                                    if (((Team)i).ToString().ToLower() == value.ToLower())
-                                        newQuery = argsString.Replace("@team:" + value, string.Join(".", RealPlayers.Get((Team)i).Select(p => p.Id)));
-                                }
-                            }
+                            newQuery = argsString.Replace(
+                                "@team:" + value,
+                                string.Join(".", RealPlayers.Get(teamType).Select(p => p.Id)));
                         }
                     }
                 }
@@ -120,24 +116,18 @@ namespace Mistaken.API.Commands
                     foreach (var item in args.Where(arg => arg.StartsWith("@!team:")))
                     {
                         var values = item.Split(':');
-                        if (values.Length > 0)
+                        if (values.Length <= 0)
+                            continue;
+                        var value = values[1];
+                        if (Enum.TryParse<Team>(value, true, out var teamType))
                         {
-                            var value = values[1];
-                            if (int.TryParse(value, out int teamId))
-                            {
-                                if (teamId > -1 && teamId < 7)
-                                {
-                                    newQuery = argsString.Replace("@!team:" + value, string.Join(".", RealPlayers.Get((Team)teamId).Select(p => p.Id)));
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 7; i++)
-                                {
-                                    if (((Team)i).ToString().ToLower() == value.ToLower())
-                                        newQuery = argsString.Replace("@!team:" + value, string.Join(".", RealPlayers.Get((Team)i).Select(p => p.Id)));
-                                }
-                            }
+                            newQuery = argsString.Replace(
+                                "@!team:" + value,
+                                string.Join(
+                                    ".",
+                                    RealPlayers.List
+                                        .Where(x => x.Role.Team != teamType)
+                                        .Select(p => p.Id)));
                         }
                     }
                 }
@@ -147,24 +137,14 @@ namespace Mistaken.API.Commands
                     foreach (var item in args.Where(arg => arg.StartsWith("@role:")))
                     {
                         var values = item.Split(':');
-                        if (values.Length > 0)
+                        if (values.Length <= 0)
+                            continue;
+                        var value = values[1];
+                        if (Enum.TryParse<RoleType>(value, true, out var roleType))
                         {
-                            var value = values[1];
-                            if (int.TryParse(value, out int roleId))
-                            {
-                                if (roleId > -1 && roleId < 18)
-                                {
-                                    newQuery = argsString.Replace("@role:" + value, string.Join(".", RealPlayers.Get((RoleType)roleId).Select(p => p.Id)));
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 18; i++)
-                                {
-                                    if (((RoleType)i).ToString().ToLower() == value.ToLower())
-                                        newQuery = argsString.Replace("@role:" + value, string.Join(".", RealPlayers.Get((RoleType)i).Select(p => p.Id)));
-                                }
-                            }
+                            newQuery = argsString.Replace(
+                                "@role:" + value,
+                                string.Join(".", RealPlayers.Get(roleType).Select(p => p.Id)));
                         }
                     }
                 }
@@ -174,24 +154,18 @@ namespace Mistaken.API.Commands
                     foreach (var item in args.Where(arg => arg.StartsWith("@!role:")))
                     {
                         var values = item.Split(':');
-                        if (values.Length > 0)
+                        if (values.Length <= 0)
+                            continue;
+                        var value = values[1];
+                        if (Enum.TryParse<RoleType>(value, true, out var roleType))
                         {
-                            var value = values[1];
-                            if (int.TryParse(value, out int roleId))
-                            {
-                                if (roleId > -1 && roleId < 18)
-                                {
-                                    newQuery = argsString.Replace("@!role:" + value, string.Join(".", RealPlayers.List.Where(p => p.Role != (RoleType)roleId).Select(p => p.Id)));
-                                }
-                            }
-                            else
-                            {
-                                for (int i = 0; i < 18; i++)
-                                {
-                                    if (((RoleType)i).ToString().ToLower() == value.ToLower())
-                                        newQuery = argsString.Replace("@!role:" + value, string.Join(".", RealPlayers.List.Where(p => p.Role != (RoleType)i).Select(p => p.Id)));
-                                }
-                            }
+                            newQuery = argsString.Replace(
+                                "@!role:" + value,
+                                string.Join(
+                                    ".",
+                                    RealPlayers.List
+                                        .Where(p => p.Role.Type != roleType)
+                                        .Select(p => p.Id)));
                         }
                     }
                 }
@@ -201,14 +175,18 @@ namespace Mistaken.API.Commands
                     foreach (var item in args.Where(arg => arg.StartsWith("@zone:")))
                     {
                         var values = item.Split(':');
-                        if (values.Length > 0)
+                        if (values.Length <= 0)
+                            continue;
+                        var value = values[1];
+                        if (Enum.TryParse<ZoneType>(value, true, out var zoneType))
                         {
-                            var value = values[1];
-                            for (int i = 0; i < 4; i++)
-                            {
-                                if (((ZoneType)i).ToString().ToLower() == value.ToLower())
-                                    newQuery = argsString.Replace("@zone:" + value, string.Join(".", RealPlayers.List.Where(p => p.CurrentRoom.Zone == (ZoneType)i).Select(p => p.Id)));
-                            }
+                            newQuery = argsString.Replace(
+                                "@zone:" + value,
+                                string.Join(
+                                    ".",
+                                    RealPlayers.List
+                                        .Where(x => x.CurrentRoom.Zone == zoneType)
+                                        .Select(p => p.Id)));
                         }
                     }
                 }
@@ -218,42 +196,56 @@ namespace Mistaken.API.Commands
                     foreach (var item in args.Where(arg => arg.StartsWith("@!zone:")))
                     {
                         var values = item.Split(':');
-                        if (values.Length > 0)
+                        if (values.Length <= 0)
+                            continue;
+                        var value = values[1];
+                        if (Enum.TryParse<ZoneType>(value, true, out var zoneType))
                         {
-                            var value = values[1];
-                            for (int i = 0; i < 4; i++)
-                            {
-                                if (((ZoneType)i).ToString().ToLower() == value.ToLower())
-                                    newQuery = argsString.Replace("@!zone:" + value, string.Join(".", RealPlayers.List.Where(p => p.CurrentRoom.Zone != (ZoneType)i).Select(p => p.Id)));
-                            }
+                            newQuery = argsString.Replace(
+                                "@!zone:" + value,
+                                string.Join(
+                                    ".",
+                                    RealPlayers.List
+                                        .Where(x => x.CurrentRoom.Zone != zoneType)
+                                        .Select(p => p.Id)));
                         }
                     }
                 }
 
-                newQuery = Regex.Replace(newQuery, RAUtils.PlayerNameRegex, new MatchEvaluator((match) =>
+                newQuery = Regex.Replace(newQuery, RAUtils.PlayerNameRegex, (match) =>
                 {
                     if (!match.Success)
                         return match.Value;
+
                     foreach (var player in RealPlayers.List)
                     {
-                        if (match.Value == player.Nickname || match.Value == player.DisplayNickname)
-                        {
-                            Log.Debug($"Replaced {match.Value} with {player.Id}", PluginHandler.Instance.Config.VerbouseOutput);
-                            return player.Id.ToString();
-                        }
+                        if (match.Value != player.Nickname && match.Value != player.DisplayNickname)
+                            continue;
+
+                        Log.Debug($"Replaced {match.Value} with {player.Id}", PluginHandler.VerboseOutput);
+                        return player.Id.ToString();
                     }
 
-                    Log.Debug($"No mach found for {match.Value}", PluginHandler.Instance.Config.VerbouseOutput);
+                    Log.Debug($"No mach found for {match.Value}", PluginHandler.VerboseOutput);
                     return match.Value;
-                }));
+                });
             }
 
-            response = string.Join("\n", this.Execute(sender, newQuery.Split(' ').Skip(1).ToArray(), out bool successfull));
+            response = string.Join(
+                "\n",
+                this.Execute(
+                    sender,
+                    newQuery
+                        .Split(' ')
+                        .Skip(1)
+                        .ToArray(),
+                    out var successful));
             if (bc)
                 sender.GetPlayer().Broadcast(this.Command, 10, string.Join("\n", response));
+
             NorthwoodLib.Pools.ListPool<string>.Shared.Return(args);
             Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
-            return successfull;
+            return successful;
         }
 
         /// <summary>
@@ -275,15 +267,15 @@ namespace Mistaken.API.Commands
         /// <returns><see cref="List{T}"/> of <see cref="Player"/>s.</returns>
         public List<Player> GetPlayers(string arg, bool allowPets = false)
         {
-            List<Player> tor = new List<Player>();
+            List<Player> tor = new();
             foreach (var item in arg.Split('.'))
             {
-                if (int.TryParse(item, out int pid))
-                {
-                    var p = allowPets ? Player.Get(pid) : RealPlayers.Get(pid);
-                    if (p != null)
-                        tor.Add(p);
-                }
+                if (!int.TryParse(item, out var pid))
+                    continue;
+
+                var p = allowPets ? Player.Get(pid) : RealPlayers.Get(pid);
+                if (p != null)
+                    tor.Add(p);
             }
 
             return tor;
@@ -314,20 +306,29 @@ namespace Mistaken.API.Commands
         /// <param name="toExecute">Func.</param>
         /// <param name="allowPets">If pets can be included.</param>
         /// <returns>Joined results of all <paramref name="toExecute"/>.</returns>
-        public string[] ForeachPlayer(string arg, out bool success, Func<Player, string[]> toExecute, bool allowPets = false)
+        public string[] ForeachPlayer(
+            string arg,
+            out bool success,
+            Func<Player, string[]> toExecute,
+            bool allowPets = false)
         {
             List<string> tor = NorthwoodLib.Pools.ListPool<string>.Shared.Rent();
             var players = this.GetPlayers(arg, allowPets).ToArray();
-            if (players.Length == 0)
-                success = false;
-            else
-                success = true;
+            success = players.Length != 0;
             foreach (var item in players)
-                tor.AddRange(toExecute?.Invoke(item).Select(i => $"{item.Nickname} | {i}"));
+            {
+                tor.AddRange(
+                    toExecute?
+                        .Invoke(item)
+                        .Select(i => $"{item.Nickname} | {i}")
+                    ?? Array.Empty<string>());
+            }
+
             var torArray = tor.ToArray();
-            NorthwoodLib.Pools.ListPool<string>.Shared.Rent(tor);
+            NorthwoodLib.Pools.ListPool<string>.Shared.Return(tor);
             return torArray;
         }
+
         #endregion
     }
 }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using MEC;
 
 namespace Mistaken.API.Utilities
@@ -15,7 +16,8 @@ namespace Mistaken.API.Utilities
     /// <summary>
     /// Map Utilities.
     /// </summary>
-    public static class Map
+    [PublicAPI]
+    public static partial class Map
     {
         /// <summary>
         /// Event called before tesla mode change.
@@ -23,9 +25,9 @@ namespace Mistaken.API.Utilities
         public static event Action<TeslaMode> OnTeslaModeChange;
 
         /// <summary>
-        /// Gets or sets a value indicating whether respawns should be locked or not.
+        /// Gets or sets a value indicating whether respawn should be locked or not.
         /// </summary>
-        public static bool RespawnLock { get; set; } = false;
+        public static bool RespawnLock { get; set; }
 
         /// <summary>
         /// Gets or sets tesla mode.
@@ -45,7 +47,7 @@ namespace Mistaken.API.Utilities
         /// </summary>
         /// <param name="loud">If <see langword="true"/> CASSIE message will be played.</param>
         public static void RestartTeslaGates(bool loud) =>
-            Diagnostics.Module.RunSafeCoroutine(IRestartTeslaGates(loud), "Utilities.API.Map.IRestartTeslaGates");
+            Diagnostics.Module.RunSafeCoroutine(RestartTeslaGatesMec(loud), "Utilities.API.Map.RestartTeslaGatesMec");
 
         /// <summary>
         /// Opens all doors.
@@ -69,409 +71,7 @@ namespace Mistaken.API.Utilities
         /// Closes all doors with CASSIE message.
         /// </summary>
         public static void RestartDoors() =>
-            Diagnostics.Module.RunSafeCoroutine(IRestartDoors(), "Utilities.API.Map.IRestartDoors");
-
-        /// <summary>
-        /// Blackout utilities.
-        /// </summary>
-        public static class Blackout
-        {
-            /// <summary>
-            /// Gets or sets a value indicating whether blackout is enabled or not.
-            /// </summary>
-            public static bool Enabled
-            {
-                get => enabled;
-                set
-                {
-                    enabled = value;
-                    if (value)
-                    {
-                        if (handle.HasValue)
-                            Timing.KillCoroutines(handle.Value);
-                        handle = Diagnostics.Module.RunSafeCoroutine(ExecuteBlackout(), "Utilities.API.Map.ExecuteBlackout");
-                    }
-                }
-            }
-
-            /// <summary>
-            /// Gets or sets how long is single blackout.
-            /// </summary>
-            public static float Length { get; set; } = 10;
-
-            /// <summary>
-            /// Gets or sets a delay between blackouts.
-            /// </summary>
-            public static float Delay { get; set; } = 10;
-
-            /// <summary>
-            /// Gets or sets a value indicating whether blackout is only in HCZ.
-            /// </summary>
-            public static bool OnlyHCZ { get; set; } = false;
-
-            internal static void Restart()
-            {
-                Enabled = false;
-                Length = 10;
-                Delay = 10;
-                OnlyHCZ = false;
-            }
-
-            private static CoroutineHandle? handle;
-            private static bool enabled = false;
-
-            private static IEnumerator<float> ExecuteBlackout()
-            {
-                while (Enabled)
-                {
-                    try
-                    {
-                        foreach (var item in Exiled.API.Features.Room.List)
-                        {
-                            if (!OnlyHCZ || item.Zone == Exiled.API.Enums.ZoneType.HeavyContainment)
-                                item.TurnOffLights(Length);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex.Message);
-                        Log.Error(ex.StackTrace);
-                    }
-
-                    yield return Timing.WaitForSeconds(Delay);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Overheat.
-        /// </summary>
-        public static class Overheat
-        {
-            /// <summary>
-            /// Gets a value indicating whether blackout should be locked for SCP-079.
-            /// </summary>
-            public static bool LockBlackout { get; internal set; } = false;
-
-            /// <summary>
-            /// Gets or sets current OverheatLevel.
-            /// </summary>
-            public static int OverheatLevel
-            {
-                get => ohLevel;
-                set
-                {
-                    ohLevel = value;
-                    if (handle.HasValue)
-                        Timing.KillCoroutines(handle.Value);
-                    if (ohLevel != -1)
-                        handle = Diagnostics.Module.RunSafeCoroutine(HandleOverheat(RoundPlus.RoundId, ohLevel, ohLevel), "Utilities.API.Map.HandleOverheat");
-                }
-            }
-
-            private static int ohLevel = -1;
-            private static CoroutineHandle? handle;
-
-            private static IEnumerator<float> HandleOverheat(int roundId, int proggressLevel, int startLevel)
-            {
-                if (RoundPlus.RoundId != roundId)
-                    yield break;
-                if (!Round.IsStarted)
-                    yield break;
-                ohLevel = proggressLevel;
-                switch (proggressLevel)
-                {
-                    case -1:
-                        yield break;
-                    case 0:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 30 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                0.15f,
-                                0.10f);
-                            yield return Timing.WaitForSeconds(300);
-                            break;
-                        }
-
-                    case 1:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            if (startLevel == proggressLevel)
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 25 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                    0.15f,
-                                    0.10f);
-                            }
-                            else
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 25 MINUTES",
-                                    0.20f,
-                                    0.15f);
-                            }
-
-                            yield return Timing.WaitForSeconds(300);
-                            break;
-                        }
-
-                    case 2:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            if (startLevel == proggressLevel)
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                        "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 20 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                        0.15f,
-                                        0.10f);
-                            }
-                            else
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 20 MINUTES",
-                                    0.20f,
-                                    0.15f);
-                            }
-
-                            yield return Timing.WaitForSeconds(300);
-                            break;
-                        }
-
-                    case 3:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            if (startLevel == proggressLevel)
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 15 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                    0.20f,
-                                    0.15f);
-                            }
-                            else
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 15 MINUTES",
-                                    0.20f,
-                                    0.15f);
-                            }
-
-                            yield return Timing.WaitForSeconds(300);
-                            break;
-                        }
-
-                    case 4:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            if (startLevel == proggressLevel)
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 10 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                    0.25f,
-                                    0.20f);
-                            }
-                            else
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 10 MINUTES",
-                                    0.25f,
-                                    0.20f);
-                            }
-
-                            yield return Timing.WaitForSeconds(300);
-                            break;
-                        }
-
-                    case 5:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            if (startLevel == proggressLevel)
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 5 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                    0.30f,
-                                    0.25f);
-                            }
-                            else
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 5 MINUTES",
-                                    0.30f,
-                                    0.25f);
-                            }
-
-                            yield return Timing.WaitForSeconds(120);
-                            break;
-                        }
-
-                    case 6:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            if (startLevel == proggressLevel)
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 3 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                    0.35f,
-                                    0.30f);
-                            }
-                            else
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 3 MINUTES",
-                                    0.35f,
-                                    0.30f);
-                            }
-
-                            RespawnLock = true;
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
-                                0.35f,
-                                0.30f);
-                            foreach (var item in Exiled.API.Features.Room.List)
-                                item.TurnOffLights(3000);
-                            LockBlackout = true;
-                            yield return Timing.WaitForSeconds(90);
-                            break;
-                        }
-
-                    case 7:
-                        {
-                            while (Cassie.IsSpeaking)
-                                yield return Timing.WaitForOneFrame;
-                            if (startLevel == proggressLevel)
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 90 SECONDS . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
-                                    0.40f,
-                                    0.35f);
-                                RespawnLock = true;
-                                while (Cassie.IsSpeaking)
-                                    yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
-                                    false,
-                                    false);
-                                foreach (var item in Exiled.API.Features.Room.List)
-                                    item.TurnOffLights(3000);
-                                LockBlackout = true;
-                            }
-                            else
-                            {
-                                NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
-                                    "DANGER . REACTOR OVERHEAT STATUS .  REACTOR WILL OVERHEAT IN T MINUS 90 SECONDS . STARTING COUNTDOWN",
-                                    0.40f,
-                                    0.35f);
-                            }
-
-                            yield return Timing.WaitForSeconds(30);
-                            break;
-                        }
-
-                    case 8:
-                        {
-                            if (startLevel == proggressLevel)
-                                yield break;
-                            else
-                            {
-                                while (Cassie.IsSpeaking)
-                                    yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "T MINUS 60 SECONDS",
-                                    false,
-                                    false);
-                            }
-
-                            yield return Timing.WaitForSeconds(30);
-                            break;
-                        }
-
-                    case 9:
-                        {
-                            if (startLevel == proggressLevel)
-                                yield break;
-                            else
-                            {
-                                while (Cassie.IsSpeaking)
-                                    yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "T MINUS 30 SECONDS",
-                                    false,
-                                    false);
-                            }
-
-                            yield return Timing.WaitForSeconds(20);
-                            break;
-                        }
-
-                    case 10:
-                        {
-                            if (startLevel == proggressLevel)
-                                yield break;
-                            else
-                            {
-                                while (Cassie.IsSpeaking)
-                                    yield return Timing.WaitForOneFrame;
-                                Cassie.Message(
-                                    "10 SECONDS 9 . 8 . 7 . 6 . 5 . 4 . 3 . 2 . 1",
-                                    false,
-                                    false);
-                            }
-
-                            yield return Timing.WaitForSeconds(5);
-                            break;
-                        }
-
-                    case 11:
-                    case 12:
-                    case 13:
-                    case 14:
-                    case 15:
-                        {
-                            if (startLevel == proggressLevel)
-                                yield break;
-                            else
-                                Warhead.Shake();
-                            yield return Timing.WaitForSeconds(1);
-                            break;
-                        }
-
-                    case 16:
-                        {
-                            AlphaWarheadController.Host.InstantPrepare();
-                            AlphaWarheadController.Host.StartDetonation();
-                            AlphaWarheadController.Host.NetworktimeToDetonation = 0.1f;
-                            RespawnLock = false;
-                            foreach (var player in RealPlayers.List)
-                            {
-                                player.ReferenceHub.playerStats.TargetReceiveSpecificDeathReason(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
-                                player.Role.Type = RoleType.Spectator;
-                            }
-
-                            Round.IsLocked = false;
-                            LockBlackout = false;
-                            UnityEngine.Object.FindObjectOfType<Recontainer079>().BeginOvercharge();
-                            break;
-                        }
-
-                    default:
-                        {
-                            handle = null;
-                            yield break;
-                        }
-                }
-
-                handle = Diagnostics.Module.RunSafeCoroutine(HandleOverheat(roundId, proggressLevel + 1, startLevel), "Utilities.API.Map.HandleOverheat");
-            }
-        }
+            Diagnostics.Module.RunSafeCoroutine(RestartDoorsMec(), "Utilities.API.Map.RestartDoorsMec");
 
         internal static void Restart()
         {
@@ -485,7 +85,7 @@ namespace Mistaken.API.Utilities
 
         private static TeslaMode teslaMode;
 
-        private static IEnumerator<float> IRestartTeslaGates(bool loud)
+        private static IEnumerator<float> RestartTeslaGatesMec(bool loud)
         {
             if (loud)
             {
@@ -495,19 +95,22 @@ namespace Mistaken.API.Utilities
                 yield return Timing.WaitForSeconds(8);
             }
 
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 Exiled.API.Features.TeslaGate.List.ToList().ForEach(tesla => tesla.ForceTrigger());
                 yield return Timing.WaitForSeconds(0.5f);
             }
         }
 
-        private static IEnumerator<float> IRestartDoors()
+        private static IEnumerator<float> RestartDoorsMec()
         {
             while (Cassie.IsSpeaking)
                 yield return Timing.WaitForOneFrame;
-            Cassie.Message("FACILITY DOOR SYSTEM REACTIVATION IN 3 . 2 . 1 . . . . . PROCEDURE SUCCESSFUL", false, true);
+
+            Cassie.Message("FACILITY DOOR SYSTEM REACTIVATION IN 3 . 2 . 1 . . . . . PROCEDURE SUCCESSFUL");
+
             yield return Timing.WaitForSeconds(8);
+
             CloseAllDoors();
         }
     }

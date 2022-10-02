@@ -7,6 +7,8 @@
 using System.ComponentModel;
 using Mistaken.Updater.Config;
 
+#pragma warning disable CS0618
+
 namespace Mistaken.API
 {
     /// <inheritdoc/>
@@ -29,7 +31,7 @@ namespace Mistaken.API
 
         /// <inheritdoc/>
         [Description("Auto Update Settings")]
-        public System.Collections.Generic.Dictionary<string, string> AutoUpdateConfig { get; set; } = new System.Collections.Generic.Dictionary<string, string>
+        public System.Collections.Generic.Dictionary<string, string> AutoUpdateConfig { get; set; } = new()
         {
             { "Url", "https://git.mistaken.pl/api/v4/projects/9" },
             { "Token", string.Empty },

@@ -10,12 +10,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using MEC;
 using Mistaken.API.Diagnostics;
 
-namespace Mistaken.API
+namespace Mistaken.API.Handlers
 {
     /// <inheritdoc/>
+    [PublicAPI]
     public class CustomInfoHandler : Module
     {
         /// <summary>
@@ -27,10 +29,10 @@ namespace Mistaken.API
         public static void Set(Player player, string key, string value)
         {
             if (!CustomInfo.ContainsKey(player))
-                CustomInfo[player] = new Dictionary<string, string>();
+                CustomInfo[player] = new();
             if (string.IsNullOrWhiteSpace(value))
                 CustomInfo[player].Remove(key);
-            else if (!CustomInfo[player].TryGetValue(key, out string oldValue) || oldValue != value)
+            else if (!CustomInfo[player].TryGetValue(key, out var oldValue) || oldValue != value)
                 CustomInfo[player][key] = value;
             else
                 return;
@@ -50,15 +52,15 @@ namespace Mistaken.API
             if (players.Length == 0)
                 return;
             if (!CustomInfoTargeted.ContainsKey(player))
-                CustomInfoTargeted[player] = new Dictionary<Player, Dictionary<string, string>>();
-            bool changedAny = false;
+                CustomInfoTargeted[player] = new();
+            var changedAny = false;
             foreach (var target in players)
             {
                 if (!CustomInfoTargeted[player].ContainsKey(target))
-                    CustomInfoTargeted[player][target] = new Dictionary<string, string>();
+                    CustomInfoTargeted[player][target] = new();
                 if (string.IsNullOrWhiteSpace(value))
                     CustomInfoTargeted[player][target].Remove(key);
-                else if (!CustomInfoTargeted[player][target].TryGetValue(key, out string oldValue) || oldValue != value)
+                else if (!CustomInfoTargeted[player][target].TryGetValue(key, out var oldValue) || oldValue != value)
                     CustomInfoTargeted[player][target][key] = value;
                 else
                     continue;
@@ -79,12 +81,12 @@ namespace Mistaken.API
         public static void SetTarget(Player player, string key, string value, Player target)
         {
             if (!CustomInfoTargeted.ContainsKey(player))
-                CustomInfoTargeted[player] = new Dictionary<Player, Dictionary<string, string>>();
+                CustomInfoTargeted[player] = new();
             if (!CustomInfoTargeted[player].ContainsKey(target))
-                CustomInfoTargeted[player][target] = new Dictionary<string, string>();
+                CustomInfoTargeted[player][target] = new();
             if (string.IsNullOrWhiteSpace(value))
                 CustomInfoTargeted[player][target].Remove(key);
-            else if (!CustomInfoTargeted[player][target].TryGetValue(key, out string oldValue) || oldValue != value)
+            else if (!CustomInfoTargeted[player][target].TryGetValue(key, out var oldValue) || oldValue != value)
                 CustomInfoTargeted[player][target][key] = value;
             else
                 return;
@@ -117,9 +119,9 @@ namespace Mistaken.API
             Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
         }
 
-        private static readonly Dictionary<Player, Dictionary<string, string>> CustomInfo = new Dictionary<Player, Dictionary<string, string>>();
-        private static readonly Dictionary<Player, Dictionary<Player, Dictionary<string, string>>> CustomInfoTargeted = new Dictionary<Player, Dictionary<Player, Dictionary<string, string>>>();
-        private static readonly List<Player> ToUpdate = new List<Player>();
+        private static readonly Dictionary<Player, Dictionary<string, string>> CustomInfo = new();
+        private static readonly Dictionary<Player, Dictionary<Player, Dictionary<string, string>>> CustomInfoTargeted = new();
+        private static readonly List<Player> ToUpdate = new();
 
         private void Server_RestartingRound()
         {
@@ -164,8 +166,8 @@ namespace Mistaken.API
             if (!CustomInfoTargeted.ContainsKey(player))
                 CustomInfoTargeted[player] = new Dictionary<Player, Dictionary<string, string>>();
 
-            string for_players = string.Join("\n", CustomInfo[player].Values);
-            if (!string.IsNullOrWhiteSpace(for_players))
+            var forPlayers = string.Join("\n", CustomInfo[player].Values);
+            if (!string.IsNullOrWhiteSpace(forPlayers))
             {
                 // for_players = Regex.Replace(for_players, $"<color=[^{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]>", string.Empty);
                 // Log.Debug(for_players.Replace('<', '[').Replace('>', ']'), true);
@@ -175,56 +177,58 @@ namespace Mistaken.API
                 for_players = Regex.Replace(for_players, "<|>", string.Empty);*/
                 // for_players = for_players.Replace('<', '[').Replace('>', ']');
                 // Log.Debug(for_players, true);
-                for_players = Regex.Replace(for_players, "<[.^\\w\\/=#%]*>", string.Empty);
+                forPlayers = Regex.Replace(forPlayers, "<[.^\\w\\/=#%]*>", string.Empty);
 
                 // for_players = for_players.Substring(0, Math.Min(400, for_players.Length));
-                player.CustomInfo = for_players;
+                player.CustomInfo = forPlayers;
             }
             else
                 player.CustomInfo = null;
 
-            if (CustomInfoTargeted[player].Count > 0)
-            {
-                if (!(player?.IsConnected ?? false))
-                    return;
-                if (player?.Connection?.identity == null)
-                    return;
-                foreach (var item in CustomInfoTargeted[player])
-                {
-                    if (item.Value.Count == 0)
-                        continue;
-                    if (!(item.Key?.IsConnected ?? false))
-                        continue;
-                    if (item.Key?.Connection?.identity == null)
-                        continue;
-                    var tmp = item.Value.Values.ToList();
-                    tmp.AddRange(CustomInfo[player].Values);
-                    this.CallDelayed(
-                        1,
-                        () =>
-                        {
-                            if (!(item.Key?.IsConnected ?? false))
-                                return;
-                            if (item.Key?.Connection?.identity == null)
-                                return;
-                            var toSet = string.Join("\n", tmp);
+            if (CustomInfoTargeted[player].Count == 0)
+                return;
 
-                            // toSet = Regex.Replace(toSet, $"<color=[^{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
-                            // Log.Debug(toSet.Replace("<", "[").Replace(">", "]").Replace("\n", "|_n"), true);
-                            // toSet = Regex.Replace(toSet, "<color=.*>", $"<color={Misc.AllowedColors[Misc.PlayerInfoColorTypes.Yellow]}>");
-                            /*toSet = Regex.Replace(toSet, "(<color=.*>)|(</color>)", string.Empty);
+            if (!player.IsConnected)
+                return;
+
+            if (player.Connection?.identity == null)
+                return;
+
+            foreach (var item in CustomInfoTargeted[player])
+            {
+                if (item.Value.Count == 0)
+                    continue;
+                if (!(item.Key?.IsConnected ?? false))
+                    continue;
+                if (item.Key?.Connection?.identity == null)
+                    continue;
+                var tmp = item.Value.Values.ToList();
+                tmp.AddRange(CustomInfo[player].Values);
+                this.CallDelayed(
+                    1,
+                    () =>
+                    {
+                        if (!(item.Key?.IsConnected ?? false))
+                            return;
+                        if (item.Key?.Connection?.identity == null)
+                            return;
+                        var toSet = string.Join("\n", tmp);
+
+                        // toSet = Regex.Replace(toSet, $"<color=[^{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
+                        // Log.Debug(toSet.Replace("<", "[").Replace(">", "]").Replace("\n", "|_n"), true);
+                        // toSet = Regex.Replace(toSet, "<color=.*>", $"<color={Misc.AllowedColors[Misc.PlayerInfoColorTypes.Yellow]}>");
+                        /*toSet = Regex.Replace(toSet, "(<color=.*>)|(</color>)", string.Empty);
                             toSet = Regex.Replace(toSet, "(<b>)|(</b>)", string.Empty);
                             toSet = Regex.Replace(toSet, "(<i>)|(</i>)", string.Empty);
                             toSet = Regex.Replace(toSet, "<|>", string.Empty);*/
 
-                            // Log.Debug(toSet, true);
-                            toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
+                        // Log.Debug(toSet, true);
+                        toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
 
-                            // toSet = toSet.Substring(0, Math.Min(400, toSet.Length));
-                            item.Key.SetPlayerInfoForTargetOnly(player, toSet);
-                        },
-                        "Update");
-                }
+                        // toSet = toSet.Substring(0, Math.Min(400, toSet.Length));
+                        item.Key.SetPlayerInfoForTargetOnly(player, toSet);
+                    },
+                    "Update");
             }
         }
     }

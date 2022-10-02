@@ -4,13 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej...
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
+#pragma warning disable
 
+// ReSharper disable once CheckNamespace
 namespace Mistaken.API
 {
     /// <summary>
     /// Structure types.
     /// </summary>
+    [System.Obsolete("Moved to Mistaken.API.API", true)]
     public enum StructureType : byte
     {
         Scp018Pedestal,

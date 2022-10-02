@@ -10,6 +10,7 @@
     <RootNamespace>Mistaken.API</RootNamespace>
     <AssemblyName>0Mistaken.API</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <LangVersion>9.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -43,6 +44,9 @@
     <Reference Include="Exiled.CustomRoles" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomRoles.dll" />
     <Reference Include="Exiled.CustomItems" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomItems.dll" />
     <Reference Include="0Harmony" HintPath="$(MISTAKEN_REFERENCES)\0Harmony.dll" />
+    <Reference Include="Mistaken.Toy.API">
+      <HintPath>..\..\..\..\MistakenReferences\Mistaken.Toy.API.dll</HintPath>
+    </Reference>
     <Reference Include="Mistaken.Updater" HintPath="$(MISTAKEN_REFERENCES)\Mistaken.Updater.dll" />
     <Reference Include="Newtonsoft.Json" HintPath="$(MISTAKEN_REFERENCES)\Newtonsoft.Json.dll" />
     <Reference Include="Assembly-CSharp-firstpass" HintPath="$(MISTAKEN_REFERENCES)\Assembly-CSharp-firstpass.dll" />
@@ -64,15 +68,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnnonymousEvents.cs" />
-    <Compile Include="BlockInventoryInteractionHandler.cs" />
+    <Compile Include="API\AnnonymousEvents.cs" />
+    <Compile Include="Handlers\BlockInventoryInteractionHandler.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="Events\Patches\PostInitializationEventPatch.cs" />
     <Compile Include="Events\Patches\PreWaitingForPlayersPatch.cs" />
-    <Compile Include="ExperimentalHandler.cs" />
-    <Compile Include="Diagnostics\Analizer.cs" />
+    <Compile Include="Handlers\ExperimentalHandler.cs" />
+    <Compile Include="Diagnostics\Analyzer.cs" />
     <Compile Include="Diagnostics\DeltaTimeChecker.cs" />
     <Compile Include="Diagnostics\MasterHandler.Entry.cs" />
     <Compile Include="Diagnostics\Patches\GenericInvokeSafelyPatch.cs" />
@@ -81,35 +85,37 @@
     <Compile Include="Extensions\CassieExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\DamageExtensions.cs" />
-    <Compile Include="Extensions\DntExtensions.cs" />
     <Compile Include="Extensions\PermissionsExtensions.cs" />
     <Compile Include="Extensions\PlayerExtensions.cs" />
     <Compile Include="Extensions\ProjectileExtensions.cs" />
     <Compile Include="Extensions\RoomExtensions.cs" />
     <Compile Include="Extensions\SessionVariableExtensions.cs" />
-    <Compile Include="Extensions\SyncVar.cs" />
     <Compile Include="Extensions\SyncVarExtensions.cs" />
-    <Compile Include="InfiniteAmmoHandler.cs" />
-    <Compile Include="DoorPermissionsHandler.cs" />
+    <Compile Include="Handlers\InfiniteAmmoHandler.cs" />
+    <Compile Include="Handlers\DoorPermissionsHandler.cs" />
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
+    <Compile Include="Obsolete\AnnonymousEvents.cs" />
+    <Compile Include="Obsolete\Handlers\BetterWarheadHandler.cs" />
+    <Compile Include="Obsolete\Handlers\CustomInfoHandler.cs" />
+    <Compile Include="Obsolete\Handlers\ExperimentalHandler.cs" />
+    <Compile Include="Obsolete\Handlers\VanishHandler.cs" />
+    <Compile Include="Obsolete\PlayerPreferences.cs" />
+    <Compile Include="Obsolete\StructureType.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Extensions\PseudoGUIExtensions.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
-    <Compile Include="Toys\Patch\DisableLightSourceToyUpdatePatch.cs" />
-    <Compile Include="Toys\Components\Controllers\GlobalSynchronizerControllerScript.cs" />
-    <Compile Include="Toys\Patch\ToysPositionSyncOptimizationPatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Vars\BypassPatch.cs" />
-    <Compile Include="Patches\Vars\EnableVarPatchs.cs" />
+    <Compile Include="Patches\Vars\EnableVarPatch.cs" />
     <Compile Include="Patches\Vars\GodModePatch.cs" />
     <Compile Include="Patches\Vars\NicknamePatch.cs" />
     <Compile Include="Patches\Vars\NoClipPatch.cs" />
     <Compile Include="Patches\Vars\OverwatchPatch.cs" />
-    <Compile Include="PlayerPreferences.cs" />
+    <Compile Include="API\PlayerPreferences.cs" />
     <Compile Include="PluginHandler.cs" />
-    <Compile Include="BetterWarheadHandler.cs" />
-    <Compile Include="CustomInfoHandler.cs" />
+    <Compile Include="Handlers\BetterWarheadHandler.cs" />
+    <Compile Include="Handlers\CustomInfoHandler.cs" />
     <Compile Include="Diagnostics\Exception.cs" />
     <Compile Include="Diagnostics\MasterHandler.cs" />
     <Compile Include="Diagnostics\ModuleLogger.cs" />
@@ -119,7 +125,6 @@
     <Compile Include="Extensions\DoorUtils.cs" />
     <Compile Include="Commands\IBetterCommand.cs" />
     <Compile Include="Commands\IPermissionLocked.cs" />
-    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Components\InRange.cs" />
     <Compile Include="Components\InRangeBall.cs" />
     <Compile Include="MapPlus.cs" />
@@ -127,19 +132,17 @@
     <Compile Include="RealPlayers.cs" />
     <Compile Include="RoundPlus.cs" />
     <Compile Include="SessionVarType.cs" />
-    <Compile Include="Shield.cs" />
-    <Compile Include="StructureType.cs" />
-    <Compile Include="Toys\ToyHandler.cs" />
-    <Compile Include="Toys\Components\Synchronizers\LightSynchronizerScript.cs" />
-    <Compile Include="Toys\Components\Synchronizers\PrimitiveSynchronizerScript.cs" />
-    <Compile Include="Toys\Components\Controllers\SynchronizerControllerScript.cs" />
-    <Compile Include="Toys\Components\Synchronizers\SynchronizerScript.cs" />
+    <Compile Include="Shield\Shield.cs" />
+    <Compile Include="API\StructureType.cs" />
+    <Compile Include="Obsolete\Toys\ToyHandler.cs" />
+    <Compile Include="Utilities\Map.Blackout.cs" />
     <Compile Include="Utilities\Map.cs" />
+    <Compile Include="Utilities\Map.Overheat.cs" />
     <Compile Include="Utilities\OverheatLevel.cs" />
     <Compile Include="Utilities\Room.cs" />
     <Compile Include="Utilities\TeslaMode.cs" />
     <Compile Include="Utilities\UtilitiesHandler.cs" />
-    <Compile Include="VanishHandler.cs" />
+    <Compile Include="Handlers\VanishHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />

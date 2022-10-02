@@ -7,8 +7,8 @@
 using System;
 using System.Collections.Generic;
 using Exiled.API.Features;
-using Interactables.Interobjects;
 using Interactables.Interobjects.DoorUtils;
+using JetBrains.Annotations;
 using MapGeneration;
 using Mirror;
 using UnityEngine;
@@ -18,6 +18,7 @@ namespace Mistaken.API.Extensions
     /// <summary>
     /// Door Utils.
     /// </summary>
+    [PublicAPI]
     public static class DoorUtils
     {
         /// <summary>
@@ -48,30 +49,28 @@ namespace Mistaken.API.Extensions
         /// <returns>Prefab.</returns>
         public static DoorVariant GetPrefab(DoorType type)
         {
-            switch (type)
+            return type switch
             {
-                case DoorType.EZ_BREAKABLE:
-                case DoorType.HCZ_BREAKABLE:
-                case DoorType.LCZ_BREAKABLE:
-                    return Prefabs[type];
-                default:
-                    return null;
-            }
+                DoorType.EZ_BREAKABLE => Prefabs[type],
+                DoorType.HCZ_BREAKABLE => Prefabs[type],
+                DoorType.LCZ_BREAKABLE => Prefabs[type],
+                _ => null
+            };
         }
 
         /// <summary>
         /// Spawns Door.
         /// </summary>
         /// <param name="type">Door Type.</param>
-        /// <param name="position">Door Position, if <see cref="Vector3.y"/> is smaller than 900 then door are automaticly locked to prevent crash.</param>
+        /// <param name="position">Door Position, if <see cref="Vector3.y"/> is smaller than 900 then door are locked to prevent crash.</param>
         /// <param name="rotation">Door Rotation.</param>
         /// <param name="size">Door Size.</param>
         /// <param name="shouldSpawn">Should door be spawned on clients.</param>
         /// <param name="name">Door name or <see langword="null"/> if there should be no name.</param>
-        /// <returns>Rerurns spawned <see cref="DoorVariant"/>.</returns>
+        /// <returns>Returns spawned <see cref="DoorVariant"/>.</returns>
         public static DoorVariant SpawnDoor(DoorType type, Vector3 position, Vector3 rotation, Vector3 size, bool shouldSpawn = true, string name = null)
         {
-            DoorVariant doorVariant = UnityEngine.Object.Instantiate(GetPrefab(type), position, Quaternion.Euler(rotation));
+            var doorVariant = UnityEngine.Object.Instantiate(GetPrefab(type), position, Quaternion.Euler(rotation));
             UnityEngine.Object.Destroy(doorVariant.GetComponent<DoorEventOpenerExtension>());
             if (doorVariant.TryGetComponent<Scp079Interactable>(out var scp079Interactable))
                 UnityEngine.Object.Destroy(scp079Interactable);
@@ -106,11 +105,11 @@ namespace Mistaken.API.Extensions
         /// </summary>
         public enum DoorType
         {
-#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+#pragma warning disable CS1591
             EZ_BREAKABLE,
             HCZ_BREAKABLE,
             LCZ_BREAKABLE,
-#pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+#pragma warning restore CS1591
         }
 
         /// <summary>
@@ -119,15 +118,15 @@ namespace Mistaken.API.Extensions
         [Flags]
         public enum PluginDoorLockReason : ushort
         {
-#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+#pragma warning disable CS1591
             COOLDOWN = 512,
             BLOCKED_BY_SOMETHING = 1024,
             REQUIREMENTS_NOT_MET = 2048,
-#pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
+#pragma warning restore CS1591
         }
 
-        private static readonly Dictionary<DoorType, DoorVariant> Prefabs = new Dictionary<DoorType, DoorVariant>();
-        private static bool initiated = false;
+        private static readonly Dictionary<DoorType, DoorVariant> Prefabs = new();
+        private static bool initiated;
 
         private static void Map_Generated()
         {

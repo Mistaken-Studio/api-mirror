@@ -7,26 +7,28 @@
 using System;
 using System.Collections.Generic;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using MEC;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
 
-namespace Mistaken.API
+namespace Mistaken.API.Handlers
 {
     /// <inheritdoc/>
+    [PublicAPI]
     public class VanishHandler : Module
     {
         /// <summary>
         /// Gets list of players with active ghostmode and their levels.
         /// </summary>
-        public static Dictionary<int, int> Vanished { get; } = new Dictionary<int, int>();
+        public static Dictionary<int, int> Vanished { get; } = new();
 
         /// <summary>
         /// Sets GhostMode status for <paramref name="player"/>.
         ///     <list type="table">
         ///         <item>Level 1 -> All admins</item>
         ///         <item>Level 2 -> <see cref="RoleType.Tutorial"/> and <see cref="RoleType.Spectator"/> admins only</item>
-        ///         <item>Level 3 -> Greather or equal <see cref="UserGroup.KickPower"/> admins only</item>
+        ///         <item>Level 3 -> Greater or equal <see cref="UserGroup.KickPower"/> admins only</item>
         ///     </list>
         /// </summary>
         /// <param name="player">Target player.</param>
@@ -42,14 +44,14 @@ namespace Mistaken.API
                 Vanished.Add(player.Id, level);
                 player.SetSessionVariable(SessionVarType.VANISH, level);
                 if (!silent)
-                    AnnonymousEvents.Call("VANISH", (player, level));
+                    API.AnnonymousEvents.Call("VANISH", (player, level));
             }
             else
             {
                 if (Vanished.ContainsKey(player.Id))
                 {
                     if (!silent)
-                        AnnonymousEvents.Call("VANISH", (player, (byte)0));
+                        API.AnnonymousEvents.Call("VANISH", (player, (byte)0));
                 }
 
                 Vanished.Remove(player.Id);
@@ -95,7 +97,7 @@ namespace Mistaken.API
 
         private void Server_RoundStarted()
         {
-            this.RunCoroutine(this.IRoundStarted(), "IRoundStarted");
+            this.RunCoroutine(this.RoundStarted(), "RoundStarted");
         }
 
         private void Server_RestartingRound()
@@ -123,7 +125,7 @@ namespace Mistaken.API
             }
         }
 
-        private IEnumerator<float> IRoundStarted()
+        private IEnumerator<float> RoundStarted()
         {
             yield return Timing.WaitForSeconds(1);
             while (Round.IsStarted)
@@ -139,27 +141,35 @@ namespace Mistaken.API
                             continue;
                         if (seenPlayer == player)
                             continue;
-                        if (!Vanished.TryGetValue(seenPlayer.Id, out int level))
+                        if (!Vanished.TryGetValue(seenPlayer.Id, out var level))
                             continue;
-                        if (level == 1)
+                        switch (level)
                         {
-                            if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions))
-                                Hide(player, seenPlayer.Id);
-                        }
-                        else if (level == 2)
-                        {
-                            if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || !(player.Role.Team == Team.TUT || player.Role.Team == Team.RIP))
-                                Hide(player, seenPlayer.Id);
-                        }
-                        else if (level == 3)
-                        {
-                            if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || player.ReferenceHub.serverRoles.KickPower < seenPlayer.ReferenceHub.serverRoles.KickPower)
-                                Hide(player, seenPlayer.Id);
+                            case 1:
+                            {
+                                if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions))
+                                    Hide(player, seenPlayer.Id);
+                                break;
+                            }
+
+                            case 2:
+                            {
+                                if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || !(player.Role.Team == Team.TUT || player.Role.Team == Team.RIP))
+                                    Hide(player, seenPlayer.Id);
+                                break;
+                            }
+
+                            case 3:
+                            {
+                                if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || player.ReferenceHub.serverRoles.KickPower < seenPlayer.ReferenceHub.serverRoles.KickPower)
+                                    Hide(player, seenPlayer.Id);
+                                break;
+                            }
                         }
                     }
                 }
 
-                MasterHandler.LogTime("VanisHandler", "IRoundStarted", start, DateTime.Now);
+                MasterHandler.LogTime("VanisHandler", "RoundStarted", start, DateTime.Now);
             }
         }
     }

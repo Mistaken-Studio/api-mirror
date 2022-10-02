@@ -4,17 +4,21 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using JetBrains.Annotations;
+
+// ReSharper disable InconsistentNaming
+#pragma warning disable CS1591
+
 namespace Mistaken.API.GUI
 {
     /// <summary>
     /// Content position.
     /// </summary>
+    [PublicAPI]
     public enum PseudoGUIPosition
     {
-#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
         TOP,
         MIDDLE,
         BOTTOM,
-#pragma warning restore CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej
     }
 }

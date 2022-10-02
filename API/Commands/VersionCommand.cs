@@ -6,24 +6,22 @@
 
 using System.Collections.Generic;
 using CommandSystem;
-using Mistaken.API;
-using Mistaken.API.Commands;
 
-namespace Mistaken.CommandsExtender.Commands
+namespace Mistaken.API.Commands
 {
-    [CommandSystem.CommandHandler(typeof(CommandSystem.ClientCommandHandler))]
+    [CommandHandler(typeof(ClientCommandHandler))]
     internal class VersionCommand : IBetterCommand
     {
         public override string Command => "version";
 
         public override string[] Execute(ICommandSender sender, string[] args, out bool success)
         {
-            List<string> tor = new List<string>()
+            List<string> tor = new()
             {
                 "Mistaken Studio's plugin versions list:",
             };
 
-            tor.AddRange(ExperimentalHandler.GetPluginVersionsList());
+            tor.AddRange(Handlers.ExperimentalHandler.GetPluginVersionsList());
 
             success = true;
             return tor.ToArray();
