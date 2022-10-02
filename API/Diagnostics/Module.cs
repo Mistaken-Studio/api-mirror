@@ -191,6 +191,17 @@ namespace Mistaken.API.Diagnostics
         }
 
         /// <summary>
+        /// Registers handler by creating it's instance.
+        /// </summary>
+        /// <param name="plugin">Plugin.</param>
+        /// <typeparam name="T">Type of handler.</typeparam>
+        public static void RegisterHandler<T>(IPlugin<IConfig> plugin)
+            where T : Module
+        {
+            Activator.CreateInstance(typeof(T), plugin);
+        }
+
+        /// <summary>
         /// Gets module Name.
         /// </summary>
         public abstract string Name { get; }
