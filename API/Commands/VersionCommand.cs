@@ -23,7 +23,7 @@ namespace Mistaken.CommandsExtender.Commands
                 "Mistaken Studio's plugin versions list:",
             };
 
-            tor.AddRange(ExperimentalHandler.GetPluginVersionsList());
+            tor.AddRange(ExperimentalHandler.GetPluginVersionsList(true));
 
             success = true;
             return tor.ToArray();
