@@ -31,7 +31,7 @@ namespace Mistaken.API
                 if (item.Value.Author != "Mistaken Devs")
                     continue;
 
-                tor.Add($"[{item.Value.Author}.{item.Value.Name}] {att.InformationalVersion}{(att.InformationalVersion.EndsWith("0") ? " <color=red>DEVELOPMENT BUILD</color>" : string.Empty)} {(showEnableStatus ? $" - [{(item.Value.Config.IsEnabled ? "<color=green>ENABLED</color>" : "<color=red>DISABLED</color>")}]</color>" : string.Empty)}");
+                tor.Add($"[{item.Value.Author}.{item.Value.Name}] {att.InformationalVersion}{(att.InformationalVersion.EndsWith("0") ? " <color=red>DEVELOPMENT BUILD</color>" : string.Empty)} {(showEnableStatus ? $"[{(item.Value.Config.IsEnabled ? "<color=green>ENABLED</color>" : "<color=red>DISABLED</color>")}]" : string.Empty)}");
             }
 
             return tor.ToArray();
