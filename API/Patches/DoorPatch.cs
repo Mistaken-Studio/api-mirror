@@ -13,23 +13,29 @@ using CommandSystem;
 using CommandSystem.Commands.RemoteAdmin.Doors;
 using HarmonyLib;
 using Interactables.Interobjects.DoorUtils;
+using JetBrains.Annotations;
 
+// ReSharper disable UnusedMember.Local
+// ReSharper disable RedundantAssignment
+// ReSharper disable InconsistentNaming
 namespace Mistaken.API.Patches
 {
     /// <summary>
-    /// Patch used to block some door from beeing opened by RA.
+    /// Patch used to block some door from being opened by RA.
     /// </summary>
+    [PublicAPI]
     public static class DoorPatch
     {
         /// <summary>
         /// HashSet of door to be ignored by RA.
         /// </summary>
-        public static readonly HashSet<DoorVariant> IgnoredDoor = new HashSet<DoorVariant>();
+        public static readonly HashSet<DoorVariant> IgnoredDoor = new();
 
+        [UsedImplicitly]
         [HarmonyPatch(typeof(CloseDoorCommand), nameof(CloseDoorCommand.Execute))]
         private static class CloseDoor
         {
-            private static bool Prefix(CloseDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            internal static bool Prefix(CloseDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
             {
                 if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
                 {
@@ -39,7 +45,7 @@ namespace Mistaken.API.Patches
 
                 if (arguments.Count < 1)
                 {
-                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array![0] + " " + __instance.DisplayCommandUsage();
                     __result = false;
                     return false;
                 }
@@ -51,10 +57,10 @@ namespace Mistaken.API.Patches
                     return false;
                 }
 
-                bool flag = false;
-                string text = arguments.At(0).ToUpper();
+                var flag = false;
+                var text = arguments.At(0).ToUpper();
                 DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
-                foreach (DoorVariant doorVariant in array)
+                foreach (var doorVariant in array)
                 {
                     if (IgnoredDoor.Contains(doorVariant))
                         continue;
@@ -85,7 +91,7 @@ namespace Mistaken.API.Patches
                     flag = true;
                 }
 
-                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                var flag2 = arguments.Array![0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
                 if (flag)
                 {
                     ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
@@ -97,10 +103,11 @@ namespace Mistaken.API.Patches
             }
         }
 
+        [UsedImplicitly]
         [HarmonyPatch(typeof(OpenDoorCommand), nameof(OpenDoorCommand.Execute))]
         private static class OpenDoor
         {
-            private static bool Prefix(OpenDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            internal static bool Prefix(OpenDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
             {
                 if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
                 {
@@ -110,7 +117,7 @@ namespace Mistaken.API.Patches
 
                 if (arguments.Count < 1)
                 {
-                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array![0] + " " + __instance.DisplayCommandUsage();
                     __result = false;
                     return false;
                 }
@@ -122,10 +129,10 @@ namespace Mistaken.API.Patches
                     return false;
                 }
 
-                bool flag = false;
-                string text = arguments.At(0).ToUpper();
+                var flag = false;
+                var text = arguments.At(0).ToUpper();
                 DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
-                foreach (DoorVariant doorVariant in array)
+                foreach (var doorVariant in array)
                 {
                     if (IgnoredDoor.Contains(doorVariant))
                         continue;
@@ -156,7 +163,7 @@ namespace Mistaken.API.Patches
                     flag = true;
                 }
 
-                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                var flag2 = arguments.Array![0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
                 if (flag)
                 {
                     ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
@@ -169,10 +176,11 @@ namespace Mistaken.API.Patches
             }
         }
 
+        [UsedImplicitly]
         [HarmonyPatch(typeof(DestroyDoorCommand), nameof(DestroyDoorCommand.Execute))]
         private static class DestroyDoor
         {
-            private static bool Prefix(DestroyDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            internal static bool Prefix(DestroyDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
             {
                 if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
                 {
@@ -182,7 +190,7 @@ namespace Mistaken.API.Patches
 
                 if (arguments.Count < 1)
                 {
-                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array![0] + " " + __instance.DisplayCommandUsage();
                     __result = false;
                     return false;
                 }
@@ -194,10 +202,10 @@ namespace Mistaken.API.Patches
                     return false;
                 }
 
-                bool flag = false;
-                string text = arguments.At(0).ToUpper();
+                var flag = false;
+                var text = arguments.At(0).ToUpper();
                 DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
-                foreach (DoorVariant doorVariant in array)
+                foreach (var doorVariant in array)
                 {
                     if (IgnoredDoor.Contains(doorVariant))
                         continue;
@@ -226,7 +234,7 @@ namespace Mistaken.API.Patches
                     flag = true;
                 }
 
-                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                var flag2 = arguments.Array![0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
                 if (flag)
                 {
                     ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
@@ -238,10 +246,11 @@ namespace Mistaken.API.Patches
             }
         }
 
+        [UsedImplicitly]
         [HarmonyPatch(typeof(LockDoorCommand), nameof(LockDoorCommand.Execute))]
         private static class LockDoor
         {
-            private static bool Prefix(LockDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            internal static bool Prefix(LockDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
             {
                 if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
                 {
@@ -251,7 +260,7 @@ namespace Mistaken.API.Patches
 
                 if (arguments.Count < 1)
                 {
-                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array![0] + " " + __instance.DisplayCommandUsage();
                     __result = false;
                     return false;
                 }
@@ -263,10 +272,10 @@ namespace Mistaken.API.Patches
                     return false;
                 }
 
-                bool flag = false;
-                string text = arguments.At(0).ToUpper();
+                var flag = false;
+                var text = arguments.At(0).ToUpper();
                 DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
-                foreach (DoorVariant doorVariant in array)
+                foreach (var doorVariant in array)
                 {
                     if (IgnoredDoor.Contains(doorVariant))
                         continue;
@@ -297,7 +306,7 @@ namespace Mistaken.API.Patches
                     flag = true;
                 }
 
-                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                var flag2 = arguments.Array![0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
                 if (flag)
                 {
                     ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);
@@ -309,10 +318,11 @@ namespace Mistaken.API.Patches
             }
         }
 
+        [UsedImplicitly]
         [HarmonyPatch(typeof(UnlockDoorCommand), nameof(UnlockDoorCommand.Execute))]
         private static class UnlockDoor
         {
-            private static bool Prefix(UnlockDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
+            internal static bool Prefix(UnlockDoorCommand __instance, ref bool __result, ArraySegment<string> arguments, ICommandSender sender, ref string response)
             {
                 if (!sender.CheckPermission(PlayerPermissions.FacilityManagement, out response))
                 {
@@ -322,7 +332,7 @@ namespace Mistaken.API.Patches
 
                 if (arguments.Count < 1)
                 {
-                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array[0] + " " + __instance.DisplayCommandUsage();
+                    response = "To execute this command provide at least 1 argument!\nUsage: " + arguments.Array![0] + " " + __instance.DisplayCommandUsage();
                     __result = false;
                     return false;
                 }
@@ -334,10 +344,10 @@ namespace Mistaken.API.Patches
                     return false;
                 }
 
-                bool flag = false;
-                string text = arguments.At(0).ToUpper();
+                var flag = false;
+                var text = arguments.At(0).ToUpper();
                 DoorVariant[] array = UnityEngine.Object.FindObjectsOfType<DoorVariant>();
-                foreach (DoorVariant doorVariant in array)
+                foreach (var doorVariant in array)
                 {
                     if (text != "**")
                     {
@@ -365,7 +375,7 @@ namespace Mistaken.API.Patches
                     flag = true;
                 }
 
-                bool flag2 = arguments.Array[0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
+                var flag2 = arguments.Array![0].EndsWith("e", StringComparison.OrdinalIgnoreCase);
                 if (flag)
                 {
                     ServerLogs.AddLog(ServerLogs.Modules.Administrative, sender.LogName + arguments.Array[0].ToLower() + (flag2 ? "d" : "ed") + " door " + text + ".", ServerLogs.ServerLogType.RemoteAdminActivity_GameChanging);

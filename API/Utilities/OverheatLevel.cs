@@ -4,14 +4,19 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using JetBrains.Annotations;
+
+// ReSharper disable InconsistentNaming
+#pragma warning disable CS1591
+
 namespace Mistaken.API.Utilities
 {
     /// <summary>
     /// Overheat Level.
     /// </summary>
+    [PublicAPI]
     public enum OverheatLevel
     {
-#pragma warning disable CS1591
         NONE = -1,
         T_MINUS_30_MINUTES = 0,
         T_MINUS_25_MINUTES = 1,
@@ -30,6 +35,5 @@ namespace Mistaken.API.Utilities
         T_MINUS_2_SECONDS = 14,
         T_MINUS_1_SECONDS = 15,
         T_MINUS_0_SECONDS = 16,
-#pragma warning restore CS1591
     }
 }

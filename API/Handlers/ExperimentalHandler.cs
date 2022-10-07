@@ -6,11 +6,13 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using JetBrains.Annotations;
 using Module = Mistaken.API.Diagnostics.Module;
 
-namespace Mistaken.API
+namespace Mistaken.API.Handlers
 {
     /// <inheritdoc/>
+    [PublicAPI]
     public class ExperimentalHandler : Module
     {
         /// <summary>
@@ -19,8 +21,9 @@ namespace Mistaken.API
         /// <returns>List of plugin versions.</returns>
         public static string[] GetPluginVersionsList()
         {
-            List<string> tor = new List<string>();
+            List<string> tor = new();
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var item in Exiled.Loader.Loader.PluginAssemblies)
             {
                 var att = item.Key.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
@@ -50,7 +53,7 @@ namespace Mistaken.API
         public override string Name => "ExperimentalHandler";
 
         /// <inheritdoc/>
-        public override bool Enabled => PluginHandler.Instance.Config.VerbouseOutput;
+        public override bool Enabled => PluginHandler.VerboseOutput;
 
         /// <inheritdoc/>
         public override void OnDisable()
@@ -64,7 +67,7 @@ namespace Mistaken.API
             Exiled.Events.Handlers.Server.WaitingForPlayers += this.Server_WaitingForPlayers;
         }
 
-        private bool first = false;
+        private bool first;
 
         private void Server_WaitingForPlayers()
         {
@@ -73,9 +76,9 @@ namespace Mistaken.API
 
             this.first = true;
 
-            this.Log.Debug($"Mistaken Studio's plugin versions:", PluginHandler.Instance.Config.VerbouseOutput);
+            this.Log.Debug($"Mistaken Studio's plugin versions:", PluginHandler.VerboseOutput);
             foreach (var item in GetPluginVersionsList())
-                this.Log.Debug(item, PluginHandler.Instance.Config.VerbouseOutput);
+                this.Log.Debug(item, PluginHandler.VerboseOutput);
         }
     }
 }

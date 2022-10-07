@@ -60,23 +60,22 @@ namespace Mistaken.API.Extensions
         {
             if (me == null)
                 return false;
-            switch (me.Split('@')[0])
+            return me.Split('@')[0] switch
             {
                 // WW
-                case "76561198134629649":
-                case "356174382655209483":
-                // Barwa
-                case "76561198035545880":
-                case "373551302292013069":
-                case "barwa":
-                // Xname
-                case "76561198123437513":
-                case "373911388575236096":
-                    return true;
+                "76561198134629649" => true,
+                "356174382655209483" => true,
 
-                default:
-                    return false;
-            }
+                // Barwa
+                "76561198035545880" => true,
+                "373551302292013069" => true,
+                "barwa" => true,
+
+                // Xname
+                "76561198123437513" => true,
+                "373911388575236096" => true,
+                _ => false
+            };
         }
 
         /// <summary>
@@ -122,9 +121,10 @@ namespace Mistaken.API.Extensions
         /// <returns>String version of player.</returns>
         public static string ToString(this Player me, bool userId)
         {
-            if (!userId)
-                return $"({me.Id}) {me.GetDisplayName()}";
-            return $"({me.Id}) {me.GetDisplayName()} | {me.UserId}";
+            return userId ?
+                $"({me.Id}) {me.GetDisplayName()} | {me.UserId}"
+                :
+                $"({me.Id}) {me.GetDisplayName()}";
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player.</param>
         /// <returns>True if player is connected. Otherwise false.</returns>
         public static bool IsConnected(this Player player)
-            => (player?.IsConnected ?? false) && !(player.Connection is null);
+            => (player?.IsConnected ?? false) && player.Connection is not null;
 
         /// <summary>
         /// Gets player's current room.
@@ -150,25 +150,19 @@ namespace Mistaken.API.Extensions
         /// <returns>Player's current room.</returns>
         public static Room GetCurrentRoom(this Player player)
         {
-            switch (player.Role)
+            return player.Role switch
             {
-                case Scp079Role role079:
-                    return Map.FindParentRoom(role079.Camera.GameObject);
-                case SpectatorRole roleSpec:
-                    return roleSpec.SpectatedPlayer?.GetCurrentRoom();
-            }
-
-            return Physics.RaycastNonAlloc(
-                       new Ray(
-                           player.GameObject.transform.position,
-                           Vector3.down),
-                       CachedFindParentRoomRaycast,
-                       25f,
-                       1,
-                       QueryTriggerInteraction.Ignore) == 1
-                ? CachedFindParentRoomRaycast[0]
-                    .collider.gameObject.GetComponentInParent<Room>()
-                : null;
+                Scp079Role role079 => Map.FindParentRoom(role079.Camera.GameObject),
+                SpectatorRole roleSpec => roleSpec.SpectatedPlayer?.GetCurrentRoom(),
+                _ => Physics.RaycastNonAlloc(
+                    new Ray(player.GameObject.transform.position, Vector3.down),
+                    CachedFindParentRoomRaycast,
+                    25f,
+                    1,
+                    QueryTriggerInteraction.Ignore) == 1
+                    ? CachedFindParentRoomRaycast[0].collider.gameObject.GetComponentInParent<Room>()
+                    : null
+            };
         }
 
         private static readonly RaycastHit[] CachedFindParentRoomRaycast = new RaycastHit[1];

@@ -6,37 +6,40 @@
 
 using System;
 using HarmonyLib;
+using JetBrains.Annotations;
 
 namespace Mistaken.API.Diagnostics.Patches
 {
+    [PublicAPI]
     [HarmonyPatch(typeof(Exiled.Events.Extensions.Event), nameof(Exiled.Events.Extensions.Event.InvokeSafely), typeof(Exiled.Events.Events.CustomEventHandler))]
     internal static class InvokeSafelyPatch
     {
-        private static bool Prefix(Exiled.Events.Events.CustomEventHandler ev)
+        internal static bool Prefix(Exiled.Events.Events.CustomEventHandler ev)
         {
             if (ev == null)
                 return false;
 
-            DateTime fullStartTime = DateTime.UtcNow;
-            DateTime startTime;
+            var fullStartTime = DateTime.UtcNow;
             double time;
-            string fullName = ev.GetType().FullName;
-            string lastName = "ERROR";
+            var fullName = ev.GetType().FullName;
+            var lastName = "ERROR";
+
+            // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
             foreach (Exiled.Events.Events.CustomEventHandler customEventHandler in ev.GetInvocationList())
             {
                 try
                 {
-                    startTime = DateTime.UtcNow;
+                    var startTime = DateTime.UtcNow;
                     customEventHandler();
                     time = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
-                    Extensions.Utilities.LogTime(customEventHandler.Method, time);
+                    Utilities.LogTime(customEventHandler.Method, time);
                     if (customEventHandler.Method.Name != "Invoke")
                         lastName = customEventHandler.Method.Name;
                 }
                 catch (Exception ex)
                 {
-                    Extensions.Utilities.LogException(ex, customEventHandler.Method, fullName);
+                    Utilities.LogException(ex, customEventHandler.Method, fullName);
                 }
             }
 

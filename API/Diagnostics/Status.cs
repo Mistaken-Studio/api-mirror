@@ -23,7 +23,7 @@ namespace Mistaken.API.Diagnostics
             /// <summary>
             /// Gets or sets run Exceptions.
             /// </summary>
-            public List<Exception> Exceptions { get; set; } = new List<Exception>();
+            public List<Exception> Exceptions { get; set; } = new();
 
             /// <summary>
             /// Gets or sets loaded Modules.

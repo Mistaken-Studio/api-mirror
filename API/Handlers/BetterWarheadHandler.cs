@@ -5,17 +5,19 @@
 // -----------------------------------------------------------------------
 
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using Mistaken.API.Diagnostics;
 
-namespace Mistaken.API
+namespace Mistaken.API.Handlers
 {
     /// <inheritdoc/>
+    [PublicAPI]
     public class BetterWarheadHandler : Module
     {
         /// <summary>
         /// Gets <see cref="WarheadStatus"/> instance.
         /// </summary>
-        public static WarheadStatus Warhead { get; } = new WarheadStatus();
+        public static WarheadStatus Warhead { get; } = new();
 
         /// <inheritdoc cref="Module(Exiled.API.Interfaces.IPlugin{Exiled.API.Interfaces.IConfig})"/>
         public BetterWarheadHandler(PluginHandler p)
@@ -51,6 +53,7 @@ namespace Mistaken.API
         /// <summary>
         /// Warhead status.
         /// </summary>
+        [PublicAPI]
         public class WarheadStatus
         {
             /// <inheritdoc cref="Warhead.IsInProgress"/>
@@ -72,22 +75,22 @@ namespace Mistaken.API
             /// <summary>
             /// Gets or sets a value indicating whether lever should be locked or not.
             /// </summary>
-            public bool LeverLock { get; set; } = false;
+            public bool LeverLock { get; set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether warhead can be stopped using button or not.
             /// </summary>
-            public bool StopLock { get; set; } = false;
+            public bool StopLock { get; set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether warhead can be started using button or not.
             /// </summary>
-            public bool StartLock { get; set; } = false;
+            public bool StartLock { get; set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether surface button can be unlocked or not.
             /// </summary>
-            public bool ButtonLock { get; set; } = false;
+            public bool ButtonLock { get; set; }
 
             /// <inheritdoc cref="Warhead.IsKeycardActivated"/>
             public bool ButtonOpen
@@ -109,12 +112,12 @@ namespace Mistaken.API
             /// <summary>
             /// Gets last user that used started warhead.
             /// </summary>
-            public Player LastStartUser { get; internal set; } = null;
+            public Player LastStartUser { get; internal set; }
 
             /// <summary>
-            /// Gets last user that used stoped warhead.
+            /// Gets last user that used stopped warhead.
             /// </summary>
-            public Player LastStopUser { get; internal set; } = null;
+            public Player LastStopUser { get; internal set; }
         }
 
         private void Server_WaitingForPlayers()
