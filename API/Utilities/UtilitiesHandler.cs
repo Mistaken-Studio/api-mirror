@@ -4,7 +4,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Linq;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
 

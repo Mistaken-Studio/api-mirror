@@ -6,26 +6,27 @@
 
 using HarmonyLib;
 using Interactables.Interobjects.DoorUtils;
+using JetBrains.Annotations;
+
+// ReSharper disable InconsistentNaming
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
 namespace Mistaken.API.Patches
 {
     /// <summary>
     /// Patch used to allow for custom door locks.
     /// </summary>
+    [UsedImplicitly]
     [HarmonyPatch(typeof(DoorLockUtils), nameof(DoorLockUtils.GetMode))]
     public static class DoorLockPatch
     {
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
-        private static bool Prefix(DoorLockReason reason, ref DoorLockMode __result)
-#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
+        internal static bool Prefix(DoorLockReason reason, ref DoorLockMode __result)
         {
-            if (reason > DoorLockReason.Lockdown2176)
-            {
-                __result = DoorLockMode.FullLock;
-                return false;
-            }
+            if (reason <= DoorLockReason.Lockdown2176)
+                return true;
 
-            return true;
+            __result = DoorLockMode.FullLock;
+            return false;
         }
     }
 }

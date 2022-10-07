@@ -5,16 +5,16 @@
 // -----------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Emit;
 using HarmonyLib;
+using JetBrains.Annotations;
 using NorthwoodLib.Pools;
 
 #pragma warning disable SA1118
-#pragma warning disable SA1115
 
 namespace Mistaken.API.Events.Patches
 {
+    [PublicAPI]
     [HarmonyPatch(typeof(ServerConsole), nameof(ServerConsole.CheckRoot))]
     internal static class PostInitializationEventPatch
     {
@@ -27,7 +27,7 @@ namespace Mistaken.API.Events.Patches
                 0,
                 new CodeInstruction[]
                 {
-                    new CodeInstruction(
+                    new(
                         OpCodes.Call,
                         AccessTools.Method(typeof(Events), nameof(Events.OnPostInitialization))),
                 });

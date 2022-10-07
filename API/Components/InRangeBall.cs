@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using Mistaken.API.Extensions;
 using UnityEngine;
 
@@ -15,15 +16,16 @@ namespace Mistaken.API.Components
     /// <summary>
     /// Component used to detect players.
     /// </summary>
+    [PublicAPI]
     public class InRangeBall : MonoBehaviour
     {
         /// <summary>
-        /// Spawnes <see cref="InRangeBall"/>.
+        /// Spawns <see cref="InRangeBall"/>.
         /// </summary>
         /// <param name="pos">Position of trigger.</param>
-        /// <param name="radius">Radious of trigger.</param>
+        /// <param name="radius">Radius of trigger.</param>
         /// <param name="height">Height of trigger.</param>
-        /// <param name="onEnter">Action called when someone enteres trigger.</param>
+        /// <param name="onEnter">Action called when someone enters trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRangeBall"/>.</returns>
         public static InRangeBall Spawn(Vector3 pos, float radius, float height, Action<Player> onEnter = null, Action<Player> onExit = null)
@@ -49,20 +51,20 @@ namespace Mistaken.API.Components
         }
 
         /// <summary>
-        /// Spawnes <see cref="InRangeBall"/>.
+        /// Spawns <see cref="InRangeBall"/>.
         /// </summary>
-        /// <param name="parrent">Parrent transform.</param>
-        /// <param name="offset">Offset from parrent.</param>
-        /// <param name="radius">Radious of trigger.</param>
+        /// <param name="parent">Parent transform.</param>
+        /// <param name="offset">Offset from parent.</param>
+        /// <param name="radius">Radius of trigger.</param>
         /// <param name="height">Height of trigger.</param>
-        /// <param name="onEnter">Action called when someone enteres trigger.</param>
+        /// <param name="onEnter">Action called when someone enters trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRangeBall"/>.</returns>
-        public static InRangeBall Spawn(Transform parrent, Vector3 offset, float radius, float height, Action<Player> onEnter = null, Action<Player> onExit = null)
+        public static InRangeBall Spawn(Transform parent, Vector3 offset, float radius, float height, Action<Player> onEnter = null, Action<Player> onExit = null)
         {
             try
             {
-                var obj = Instantiate(Prefab, parrent);
+                var obj = Instantiate(Prefab, parent);
                 obj.transform.localPosition = offset;
                 obj.transform.rotation = Quaternion.identity;
                 var component = obj.GetComponent<InRangeBall>();
@@ -85,12 +87,13 @@ namespace Mistaken.API.Components
         /// <summary>
         /// Gets hashSet of gameObjects inside trigger.
         /// </summary>
-        public HashSet<GameObject> ColliderInArea { get; } = new HashSet<GameObject>();
+        public HashSet<GameObject> ColliderInArea { get; } = new();
 
         /// <summary>
         /// Gets or sets a value indicating whether trigger should detect NPCs.
         /// </summary>
-        public bool AllowNPCs { get; set; } = false;
+        // ReSharper disable once InconsistentNaming
+        public bool AllowNPCs { get; set; }
 
         private static readonly int Layer = LayerMask.GetMask("TransparentFX", "Ignore Raycast");
         private static GameObject prefab;
@@ -101,7 +104,7 @@ namespace Mistaken.API.Components
             {
                 if (prefab == null)
                 {
-                    prefab = new GameObject(nameof(InRangeBall), typeof(InRangeBall), typeof(CapsuleCollider))
+                    prefab = new(nameof(InRangeBall), typeof(InRangeBall), typeof(CapsuleCollider))
                     {
                         layer = Layer,
                     };
@@ -136,11 +139,14 @@ namespace Mistaken.API.Components
         {
             if (!other.GetComponent<CharacterClassManager>())
                 return;
+
             var player = Player.Get(other.gameObject);
             if (player?.IsDead ?? true)
                 return;
+
             if (player.GetSessionVariable<bool>("IsNPC") && !this.AllowNPCs)
                 return;
+
             this.ColliderInArea.Add(other.gameObject);
             this.onEnter?.Invoke(player);
         }
@@ -149,6 +155,7 @@ namespace Mistaken.API.Components
         {
             if (!this.ColliderInArea.Contains(other.gameObject))
                 return;
+
             this.ColliderInArea.Remove(other.gameObject);
             var player = Player.Get(other.gameObject);
             this.onExit?.Invoke(player);

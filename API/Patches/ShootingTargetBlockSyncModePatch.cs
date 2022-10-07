@@ -4,19 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
+using JetBrains.Annotations;
 
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
 namespace Mistaken.API.Patches
 {
+    [UsedImplicitly]
     [HarmonyPatch(typeof(AdminToys.ShootingTarget), nameof(AdminToys.ShootingTarget.ServerInteract))]
     internal static class ShootingTargetBlockSyncModePatch
     {
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             var label = generator.DefineLabel();
 
@@ -26,18 +27,16 @@ namespace Mistaken.API.Patches
 
             newInstructions.InsertRange(0, new CodeInstruction[]
             {
-                new CodeInstruction(OpCodes.Ldarg_2),
-                new CodeInstruction(OpCodes.Ldc_I4_5),
-                new CodeInstruction(OpCodes.Beq_S, label),
-                new CodeInstruction(OpCodes.Ret),
+                new(OpCodes.Ldarg_2),
+                new(OpCodes.Ldc_I4_5),
+                new(OpCodes.Beq_S, label),
+                new(OpCodes.Ret),
             });
 
-            for (int i = 0; i < newInstructions.Count; i++)
-                yield return newInstructions[i];
+            foreach (var t in newInstructions)
+                yield return t;
 
             NorthwoodLib.Pools.ListPool<CodeInstruction>.Shared.Return(newInstructions);
-
-            yield break;
         }
     }
 }

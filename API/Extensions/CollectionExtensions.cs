@@ -20,15 +20,13 @@ namespace Mistaken.API.Extensions
         /// <param name="list">List to randomize.</param>
         public static void Shuffle<T>(this IList<T> list)
         {
-            System.Random random = new System.Random();
-            int i = list.Count;
+            System.Random random = new();
+            var i = list.Count;
             while (i > 1)
             {
                 i--;
-                int index = random.Next(i + 1);
-                T value = list[index];
-                list[index] = list[i];
-                list[i] = value;
+                var index = random.Next(i + 1);
+                (list[index], list[i]) = (list[i], list[index]);
             }
         }
 
@@ -40,15 +38,13 @@ namespace Mistaken.API.Extensions
         /// <param name="seed">Seed used to randomize.</param>
         public static void Shuffle<T>(this IList<T> list, int seed)
         {
-            System.Random random = new System.Random(seed);
-            int i = list.Count;
+            System.Random random = new(seed);
+            var i = list.Count;
             while (i > 1)
             {
                 i--;
-                int index = random.Next(i + 1);
-                T value = list[index];
-                list[index] = list[i];
-                list[i] = value;
+                var index = random.Next(i + 1);
+                (list[index], list[i]) = (list[i], list[index]);
             }
         }
 
@@ -59,15 +55,13 @@ namespace Mistaken.API.Extensions
         /// <param name="list">Array to randomize.</param>
         public static T[] Shuffle<T>(this T[] list)
         {
-            System.Random random = new System.Random();
-            int i = list.Length;
+            System.Random random = new();
+            var i = list.Length;
             while (i > 1)
             {
                 i--;
-                int index = random.Next(i + 1);
-                T value = list[index];
-                list[index] = list[i];
-                list[i] = value;
+                var index = random.Next(i + 1);
+                (list[index], list[i]) = (list[i], list[index]);
             }
 
             return list;
@@ -81,15 +75,13 @@ namespace Mistaken.API.Extensions
         /// <param name="seed">Seed used to randomize.</param>
         public static T[] Shuffle<T>(this T[] list, int seed)
         {
-            System.Random random = new System.Random(seed);
-            int i = list.Length;
+            System.Random random = new(seed);
+            var i = list.Length;
             while (i > 1)
             {
                 i--;
-                int index = random.Next(i + 1);
-                T value = list[index];
-                list[index] = list[i];
-                list[i] = value;
+                var index = random.Next(i + 1);
+                (list[index], list[i]) = (list[i], list[index]);
             }
 
             return list;

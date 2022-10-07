@@ -22,7 +22,7 @@ namespace Mistaken.API.Extensions
         /// <param name="cs">Player.</param>
         /// <param name="permission">Permission.</param>
         /// <returns>If has permisison.</returns>
-        [System.Obsolete("Use Exiled.Permissions.Extensions.Permissions.CheckPermission", true)]
+        [Obsolete("Use Exiled.Permissions.Extensions.Permissions.CheckPermission", true)]
         public static bool CheckPermission(this CommandSender cs, string permission) => Exiled.Permissions.Extensions.Permissions.CheckPermission(cs, permission); // CheckPermission(cs.GetPlayer(), permission);
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player.</param>
         /// <param name="permission">Permission.</param>
         /// <returns>If has permisison.</returns>
-        [System.Obsolete("Use Exiled.Permissions.Extensions.Permissions.CheckPermission", true)]
+        [Obsolete("Use Exiled.Permissions.Extensions.Permissions.CheckPermission", true)]
         public static bool CheckPermission(this Player player, string permission)
         {
             if (player.IsDev())
@@ -41,7 +41,7 @@ namespace Mistaken.API.Extensions
                 try
                 {
                     var perms = new List<string>();
-                    string group = player.GroupName;
+                    var group = player.GroupName;
 
                     while (!string.IsNullOrWhiteSpace(group))
                     {

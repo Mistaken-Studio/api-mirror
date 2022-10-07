@@ -5,13 +5,16 @@
 // -----------------------------------------------------------------------
 
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using Mistaken.API.GUI;
 
+// ReSharper disable InconsistentNaming
 namespace Mistaken.API.Extensions
 {
     /// <summary>
     /// Extensions.
     /// </summary>
+    [PublicAPI]
     public static class PseudoGUIExtensions
     {
         /// <summary>

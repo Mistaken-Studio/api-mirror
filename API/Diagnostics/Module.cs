@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Exiled.API.Interfaces;
 using MEC;
 using Newtonsoft.Json;
@@ -96,7 +97,7 @@ namespace Mistaken.API.Diagnostics
 
             foreach (var item in Modules[plugin].Where(i => i.Enabled))
             {
-                Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
                 try
                 {
                     item.OnEnable();
@@ -106,7 +107,7 @@ namespace Mistaken.API.Diagnostics
                     MasterHandler.LogError(ex, item, "OnEnable");
                 }
 
-                Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
             }
         }
 
@@ -120,7 +121,7 @@ namespace Mistaken.API.Diagnostics
 
             foreach (var item in Modules[plugin].Where(i => i.Enabled))
             {
-                Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
                 try
                 {
                     item.OnDisable();
@@ -131,7 +132,7 @@ namespace Mistaken.API.Diagnostics
                     MasterHandler.LogError(ex, item, "OnDisable");
                 }
 
-                Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
             }
         }
 
@@ -147,7 +148,7 @@ namespace Mistaken.API.Diagnostics
             {
                 foreach (var item in module.Value.Where(i => i.Enabled && !i.IsBasic))
                 {
-                    Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                    Exiled.API.Features.Log.Debug($"Enabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
                     try
                     {
                         item.OnEnable();
@@ -157,7 +158,7 @@ namespace Mistaken.API.Diagnostics
                         MasterHandler.LogError(ex, item, "OnEnable");
                     }
 
-                    Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                    Exiled.API.Features.Log.Debug($"Enabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
                 }
             }
         }
@@ -174,7 +175,7 @@ namespace Mistaken.API.Diagnostics
             {
                 foreach (var item in module.Value.Where(i => i.Enabled && !i.IsBasic))
                 {
-                    Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                    Exiled.API.Features.Log.Debug($"Disabling {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
                     try
                     {
                         item.OnDisable();
@@ -185,7 +186,7 @@ namespace Mistaken.API.Diagnostics
                         MasterHandler.LogError(ex, item, "OnDisable");
                     }
 
-                    Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.Instance.Config.VerbouseOutput);
+                    Exiled.API.Features.Log.Debug($"Disabled {item.Name} from {plugin.Author}.{plugin.Name}", PluginHandler.VerboseOutput);
                 }
             }
         }
@@ -198,7 +199,25 @@ namespace Mistaken.API.Diagnostics
         public static void RegisterHandler<T>(IPlugin<IConfig> plugin)
             where T : Module
         {
-            Activator.CreateInstance(typeof(T), plugin);
+            foreach (var ctor in typeof(T).GetConstructors(
+                         BindingFlags.Public |
+                         BindingFlags.NonPublic |
+                         BindingFlags.Instance))
+            {
+                if (ctor.DeclaringType?.IsAbstract ?? true)
+                    continue;
+
+                if (!typeof(IPlugin<IConfig>)
+                        .IsAssignableFrom(ctor.GetParameters().SingleOrDefault()?.ParameterType))
+                    continue;
+
+                ctor.Invoke(new object[] { plugin });
+                return;
+            }
+
+            throw new ArgumentException(
+                $"Missing constructor with {nameof(IPlugin<IConfig>)} as only param",
+                nameof(plugin));
         }
 
         /// <summary>
@@ -298,7 +317,7 @@ namespace Mistaken.API.Diagnostics
             return tor;
         }
 
-        internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new Dictionary<IPlugin<IConfig>, List<Module>>();
+        internal static readonly Dictionary<IPlugin<IConfig>, List<Module>> Modules = new();
 
         internal static void TerminateAllCoroutines()
         {
@@ -320,11 +339,11 @@ namespace Mistaken.API.Diagnostics
         protected Module(IPlugin<IConfig> plugin)
         {
             this.Plugin = plugin;
-            this.Log = new ModuleLogger(this);
+            this.Log = new(this);
             if (!Modules.ContainsKey(plugin))
             {
                 MasterHandler.CurrentStatus.LoadedPlugins++;
-                Modules.Add(plugin, new List<Module>());
+                Modules.Add(plugin, new());
             }
 
             Modules[plugin].RemoveAll(i => i.Name == this.Name);
@@ -338,7 +357,7 @@ namespace Mistaken.API.Diagnostics
         [JsonIgnore]
         protected ModuleLogger Log { get; }
 
-        private static readonly List<CoroutineHandle> ToTerminateAfterRoundRestart = new List<CoroutineHandle>();
+        private static readonly List<CoroutineHandle> ToTerminateAfterRoundRestart = new();
 
         private static IEnumerator<float> RoundLoop(Func<IEnumerator<float>> innerLoop)
         {
@@ -348,6 +367,6 @@ namespace Mistaken.API.Diagnostics
                 yield return innerLoop().WaitUntilDone();
         }
 
-        private readonly List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
+        private readonly List<CoroutineHandle> coroutines = new();
     }
 }

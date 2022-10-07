@@ -7,11 +7,13 @@
 using Exiled.API.Enums;
 using Exiled.API.Features.Items;
 using Exiled.API.Interfaces;
+using JetBrains.Annotations;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
 
-namespace Mistaken.API
+namespace Mistaken.API.Handlers
 {
+    [UsedImplicitly]
     internal class DoorPermissionsHandler : Module
     {
         public DoorPermissionsHandler(IPlugin<IConfig> plugin)
@@ -46,7 +48,7 @@ namespace Mistaken.API
             if (!ev.Player.TryGetSessionVariable<KeycardPermissions>(SessionVarType.BUILTIN_DOOR_ACCESS, out var value))
                 return;
 
-            KeycardPermissions basePermissions = (ev.Player.CurrentItem as Keycard)?.Permissions ?? KeycardPermissions.None;
+            var basePermissions = (ev.Player.CurrentItem as Keycard)?.Permissions ?? KeycardPermissions.None;
 
             if ((basePermissions & ev.Generator.KeycardPermissions) != 0)
                 return; // Keycard gives access, but still ev.IsAllowed = false, so maybe plugin denied it?
@@ -66,7 +68,7 @@ namespace Mistaken.API
             if (!ev.Player.TryGetSessionVariable<KeycardPermissions>(SessionVarType.BUILTIN_DOOR_ACCESS, out var value))
                 return;
 
-            KeycardPermissions basePermissions = (ev.Player.CurrentItem as Keycard)?.Permissions ?? KeycardPermissions.None;
+            var basePermissions = (ev.Player.CurrentItem as Keycard)?.Permissions ?? KeycardPermissions.None;
 
             if ((basePermissions & (KeycardPermissions)ev.Chamber.RequiredPermissions) != 0)
                 return; // Keycard gives access, but still ev.IsAllowed = false, so maybe plugin denied it?
@@ -89,7 +91,7 @@ namespace Mistaken.API
             if (!ev.Player.TryGetSessionVariable<KeycardPermissions>(SessionVarType.BUILTIN_DOOR_ACCESS, out var value))
                 return;
 
-            KeycardPermissions basePermissions = (ev.Player.CurrentItem as Keycard)?.Permissions ?? KeycardPermissions.None;
+            var basePermissions = (ev.Player.CurrentItem as Keycard)?.Permissions ?? KeycardPermissions.None;
 
             if ((basePermissions & (KeycardPermissions)ev.Door.RequiredPermissions.RequiredPermissions) != 0)
                 return; // Keycard gives access, but still ev.IsAllowed = false, so maybe plugin denied it?

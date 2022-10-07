@@ -6,9 +6,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using Mistaken.API.Extensions;
 using UnityEngine;
 
@@ -17,14 +17,15 @@ namespace Mistaken.API.Components
     /// <summary>
     /// Component used to detect players.
     /// </summary>
+    [PublicAPI]
     public class InRange : MonoBehaviour
     {
         /// <summary>
-        /// Spawnes <see cref="InRange"/>.
+        /// Spawns <see cref="InRange"/>.
         /// </summary>
         /// <param name="pos">Position of trigger.</param>
         /// <param name="size">Size of trigger.</param>
-        /// <param name="onEnter">Action called when someone enteres trigger.</param>
+        /// <param name="onEnter">Action called when someone enters trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRange"/>.</returns>
         public static InRange Spawn(Vector3 pos, Vector3 size, Action<Player> onEnter = null, Action<Player> onExit = null)
@@ -48,19 +49,19 @@ namespace Mistaken.API.Components
         }
 
         /// <summary>
-        /// Spawnes <see cref="InRange"/>.
+        /// Spawns <see cref="InRange"/>.
         /// </summary>
-        /// <param name="parrent">Parrent transform.</param>
-        /// <param name="offset">Offset from parrent.</param>
+        /// <param name="parent">Parent transform.</param>
+        /// <param name="offset">Offset from parent.</param>
         /// <param name="size">Size of trigger.</param>
-        /// <param name="onEnter">Action called when someone enteres trigger.</param>
+        /// <param name="onEnter">Action called when someone entrees trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRange"/>.</returns>
-        public static InRange Spawn(Transform parrent, Vector3 offset, Vector3 size, Action<Player> onEnter = null, Action<Player> onExit = null)
+        public static InRange Spawn(Transform parent, Vector3 offset, Vector3 size, Action<Player> onEnter = null, Action<Player> onExit = null)
         {
             try
             {
-                var obj = Instantiate(Prefab, parrent);
+                var obj = Instantiate(Prefab, parent);
                 obj.transform.localPosition = offset;
                 obj.transform.localRotation = Quaternion.identity;
                 var component = obj.GetComponent<InRange>();
@@ -81,14 +82,14 @@ namespace Mistaken.API.Components
         /// <summary>
         /// Gets hashSet of gameObjects inside trigger.
         /// </summary>
-        public HashSet<GameObject> ColliderInArea { get; } = new HashSet<GameObject>();
+        public HashSet<GameObject> ColliderInArea { get; } = new();
 
         /// <summary>
         /// Gets or sets a value indicating whether trigger should detect NPCs.
         /// </summary>
-        public bool AllowNPCs { get; set; } = false;
+        // ReSharper disable once InconsistentNaming
+        public bool AllowNPCs { get; set; }
 
-        private const bool DEBUG = false;
         private static readonly int Layer = LayerMask.GetMask("TransparentFX", "Ignore Raycast");
         private static GameObject prefab;
 
@@ -96,21 +97,21 @@ namespace Mistaken.API.Components
         {
             get
             {
-                if (prefab == null)
+                if (prefab != null)
+                    return prefab;
+
+                prefab = new GameObject(nameof(InRange), typeof(InRange), typeof(BoxCollider))
                 {
-                    prefab = new GameObject(nameof(InRange), typeof(InRange), typeof(BoxCollider))
-                    {
-                        layer = Layer,
-                    };
-                    var collider = prefab.GetComponent<BoxCollider>();
-                    collider.isTrigger = true;
-                }
+                    layer = Layer,
+                };
+                var collider = prefab.GetComponent<BoxCollider>();
+                collider.isTrigger = true;
 
                 return prefab;
             }
         }
 
-        private readonly HashSet<GameObject> safetyCheck = new HashSet<GameObject>();
+        private readonly HashSet<GameObject> safetyCheck = new();
 
         private Action<Player> onEnter;
         private Action<Player> onExit;
@@ -166,73 +167,46 @@ namespace Mistaken.API.Components
 
         private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
         {
-            Log.Debug("CR_0", DEBUG);
             if (ev.Lite)
-            {
-                Log.Debug("CR_1", DEBUG);
                 return;
-            }
 
             if (!this.ColliderInArea.Contains(ev.Player.GameObject))
-            {
-                Log.Debug("CR_2", DEBUG);
                 return;
-            }
 
-            Log.Debug("CR_3", DEBUG);
             this.onExit?.Invoke(ev.Player);
             this.ColliderInArea.Remove(ev.Player.GameObject);
         }
 
         private void Player_Died(Exiled.Events.EventArgs.DiedEventArgs ev)
         {
-            Log.Debug("D_0", DEBUG);
-            if (this.ColliderInArea.Contains(ev.Target.GameObject))
-            {
-                Log.Debug("D_1", DEBUG);
-                this.onExit?.Invoke(ev.Target);
-                this.ColliderInArea.Remove(ev.Target.GameObject);
-                Log.Debug("D_2", DEBUG);
-            }
+            if (!this.ColliderInArea.Contains(ev.Target.GameObject))
+                return;
 
-            Log.Debug("D_3", DEBUG);
+            this.onExit?.Invoke(ev.Target);
+            this.ColliderInArea.Remove(ev.Target.GameObject);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            try
-            {
-                Log.Debug($"Trigger enter: {other.gameObject.name}", DEBUG);
-            }
-            catch
-            {
-                // Ignored
-            }
-
             if (!other.GetComponent<CharacterClassManager>())
                 return;
+
             var player = Player.Get(other.gameObject);
             if (player?.IsDead ?? true)
                 return;
+
             if (player.GetSessionVariable<bool>("IsNPC") && !this.AllowNPCs)
                 return;
+
             this.ColliderInArea.Add(other.gameObject);
             this.onEnter?.Invoke(player);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            try
-            {
-                Log.Debug($"Trigger exit: {other.gameObject.name}", DEBUG);
-            }
-            catch
-            {
-                // Ignored
-            }
-
             if (!this.ColliderInArea.Contains(other.gameObject))
                 return;
+
             this.ColliderInArea.Remove(other.gameObject);
             var player = Player.Get(other.gameObject);
             this.onExit?.Invoke(player);

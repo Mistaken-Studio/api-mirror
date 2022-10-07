@@ -4,15 +4,17 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Timers;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using UnityEngine;
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
 namespace Mistaken.API.Shield
 {
     /// <summary>
-    /// Scritp used to handle shield for players.
+    /// Script used to handle shield for players.
     /// </summary>
+    [PublicAPI]
     public abstract class Shield : MonoBehaviour
     {
         /// <summary>
@@ -24,7 +26,7 @@ namespace Mistaken.API.Shield
         public static T Ini<T>(Player player)
             where T : Shield, new()
         {
-            T instance = player.GameObject.AddComponent<T>();
+            var instance = player.GameObject.AddComponent<T>();
             instance.Player = player;
 
             return instance;
@@ -46,7 +48,7 @@ namespace Mistaken.API.Shield
         protected abstract float MaxShield { get; }
 
         /// <summary>
-        /// Gets shield's recharage rate per second.
+        /// Gets shield's recharge rate per second.
         /// </summary>
         protected abstract float ShieldRechargeRate { get; }
 
@@ -56,7 +58,7 @@ namespace Mistaken.API.Shield
         protected abstract float ShieldEffectivnes { get; }
 
         /// <summary>
-        /// Gets time that has to pass since last damage to start regerenrating shield.
+        /// Gets time that has to pass since last damage to start regenerating shield.
         /// </summary>
         protected abstract float TimeUntilShieldRecharge { get; }
 
@@ -66,7 +68,7 @@ namespace Mistaken.API.Shield
         protected virtual float ShieldDropRateOnOverflow { get; } = 5f;
 
         /// <summary>
-        /// Gets or sets time left untill shield recharge is possible.
+        /// Gets or sets time left until shield recharge is possible.
         /// </summary>
         protected float InternalTimeUntilShieldRecharge { get; set; }
 
@@ -85,7 +87,7 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void Start()
         {
-            Log.Debug("Created " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
+            Log.Debug("Created " + this.GetType().Name, PluginHandler.VerboseOutput);
             this.Process = ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerAddProcess(0f, this.MaxShield, -this.ShieldRechargeRate, this.ShieldEffectivnes, 0, true);
 
             Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
@@ -101,7 +103,7 @@ namespace Mistaken.API.Shield
 
             Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
             Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
-            Log.Debug("Destoryed " + this.GetType().Name, PluginHandler.Instance.Config.VerbouseOutput);
+            Log.Debug("Destroyed " + this.GetType().Name, PluginHandler.VerboseOutput);
         }
 
         /// <summary>
@@ -109,10 +111,8 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void FixedUpdate()
         {
-            if (this.Process.Limit != this.MaxShield)
-                this.Process.Limit = this.MaxShield;
-            if (this.Process.Efficacy != this.ShieldEffectivnes)
-                this.Process.Efficacy = this.ShieldEffectivnes;
+            this.Process.Limit = this.MaxShield;
+            this.Process.Efficacy = this.ShieldEffectivnes;
 
             if (this.TimeUntilShieldRecharge != 0f)
             {

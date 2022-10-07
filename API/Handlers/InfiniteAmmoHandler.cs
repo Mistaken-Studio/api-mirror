@@ -5,11 +5,13 @@
 // -----------------------------------------------------------------------
 
 using Exiled.API.Interfaces;
+using JetBrains.Annotations;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
 
-namespace Mistaken.API
+namespace Mistaken.API.Handlers
 {
+    [UsedImplicitly]
     internal class InfiniteAmmoHandler : Module
     {
         public InfiniteAmmoHandler(IPlugin<IConfig> plugin)

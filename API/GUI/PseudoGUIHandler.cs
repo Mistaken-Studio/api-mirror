@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 using MEC;
 using Mistaken.API.Extensions;
 using UnityEngine;
@@ -19,6 +20,8 @@ namespace Mistaken.API.GUI
     /// <summary>
     /// PseudGUIHandler component.
     /// </summary>
+    // ReSharper disable InconsistentNaming
+    [PublicAPI]
     public class PseudoGUIHandler : MonoBehaviour
     {
         /// <summary>
@@ -84,7 +87,7 @@ namespace Mistaken.API.GUI
             else
             {
                 if (!CustomInfo.ContainsKey(player))
-                    CustomInfo[player] = new Dictionary<string, (string Content, PseudoGUIPosition Type)>();
+                    CustomInfo[player] = new();
                 else if (CustomInfo[player].TryGetValue(key, out (string Conetent, PseudoGUIPosition Type) value) && value.Conetent == content)
                     return;
                 CustomInfo[player][key] = (content, type);
@@ -94,14 +97,13 @@ namespace Mistaken.API.GUI
                 ToUpdate.Add(player);
         }
 
-        private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>>();
-        private static readonly object ToUpdateLock = new object();
-        private static readonly HashSet<Player> ToUpdate = new HashSet<Player>();
-        private static readonly object ToIgnoreLock = new object();
-        private static readonly HashSet<Player> ToIgnore = new HashSet<Player>();
-        private readonly ConcurrentDictionary<Player, string> constructedStrings = new ConcurrentDictionary<Player, string>();
-        private int frames = 0;
-        private Task guiCalculationThread;
+        private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new();
+        private static readonly object ToUpdateLock = new();
+        private static readonly HashSet<Player> ToUpdate = new();
+        private static readonly object ToIgnoreLock = new();
+        private static readonly HashSet<Player> ToIgnore = new();
+        private readonly ConcurrentDictionary<Player, string> constructedStrings = new();
+        private int frames;
         private bool active = true;
 
         private void Start()
@@ -110,7 +112,7 @@ namespace Mistaken.API.GUI
             Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
 
             this.active = true;
-            this.guiCalculationThread = Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 while (this.active)
                 {
@@ -219,7 +221,7 @@ namespace Mistaken.API.GUI
                                 continue;
                         }
 
-                        this.UpdateGUI(item);
+                        this.UpdateGui(item);
                     }
                 }
                 catch (Exception ex)
@@ -233,20 +235,20 @@ namespace Mistaken.API.GUI
         private void ConstructString(Player player)
         {
             if (!CustomInfo.ContainsKey(player))
-                CustomInfo[player] = new Dictionary<string, (string Content, PseudoGUIPosition Type)>();
+                CustomInfo[player] = new();
 
-            string topContent = string.Empty;
-            int topLines = 0;
+            var topContent = string.Empty;
+            var topLines = 0;
 
-            string middleContent = string.Empty;
-            int middleLines = 0;
+            var middleContent = string.Empty;
+            var middleLines = 0;
 
-            string bottomContent = string.Empty;
-            int bottomLines = 0;
+            var bottomContent = string.Empty;
+            var bottomLines = 0;
 
             foreach (var item in CustomInfo[player].Values)
             {
-                int lines = item.Content.Split(new string[] { "<br>" }, StringSplitOptions.None).Length;
+                var lines = item.Content.Split(new[] { "<br>" }, StringSplitOptions.None).Length;
                 switch (item.Type)
                 {
                     case PseudoGUIPosition.TOP: // 18
@@ -279,26 +281,28 @@ namespace Mistaken.API.GUI
                         bottomContent = item.Content + bottomContent;
                         bottomLines += lines;
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
-            string toWrite = string.Empty;
+            var toWrite = string.Empty;
             toWrite += topContent;
-            int linesToAddTop = 18 - topLines - ((middleLines - (middleLines % 2)) / 2);
-            for (int i = 0; i < linesToAddTop; i++)
+            var linesToAddTop = 18 - topLines - ((middleLines - (middleLines % 2)) / 2);
+            for (var i = 0; i < linesToAddTop; i++)
                 toWrite += "<br>";
             toWrite += middleContent;
-            int linesToAddBottom = 15 - bottomLines - ((middleLines - (middleLines % 2)) / 2);
-            for (int i = 0; i < linesToAddBottom; i++)
+            var linesToAddBottom = 15 - bottomLines - ((middleLines - (middleLines % 2)) / 2);
+            for (var i = 0; i < linesToAddBottom; i++)
                 toWrite += "<br>";
             toWrite += bottomContent;
 
-            this.constructedStrings[player] = $"<size=75%><color=#FFFFFFFF>{toWrite}</color><br><br><br><br><br><br><br><br><br><br></size>";
+            this.constructedStrings[player] = $"<size=75%><color=#FFFF>{toWrite}</color><br><br><br><br><br><br><br><br><br><br></size>";
         }
 
-        private void UpdateGUI(Player player)
+        private void UpdateGui(Player player)
         {
-            if (!this.constructedStrings.TryGetValue(player, out string text))
+            if (!this.constructedStrings.TryGetValue(player, out var text))
                 return;
 
             try

@@ -4,7 +4,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
 

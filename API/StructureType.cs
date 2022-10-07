@@ -4,8 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-#pragma warning disable CS1591 // Brak komentarza XML dla widocznego publicznie typu lub składowej...
+#pragma warning disable CS1591
 
+// ReSharper disable InconsistentNaming
 namespace Mistaken.API
 {
     /// <summary>

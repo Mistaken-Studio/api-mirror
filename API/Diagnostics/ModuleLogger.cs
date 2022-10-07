@@ -5,12 +5,7 @@
 // -----------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
 using Exiled.API.Features;
-using Exiled.API.Interfaces;
-using Newtonsoft.Json;
 
 namespace Mistaken.API.Diagnostics
 {

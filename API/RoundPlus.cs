@@ -14,7 +14,7 @@ namespace Mistaken.API
         /// <summary>
         /// Gets round Id.
         /// </summary>
-        public static int RoundId { get; private set; } = 0;
+        public static int RoundId { get; private set; }
 
         /// <summary>
         /// Increments Round Id.
