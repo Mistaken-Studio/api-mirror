@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="VersionCommand.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
@@ -21,7 +21,7 @@ namespace Mistaken.API.Commands
                 "Mistaken Studio's plugin versions list:",
             };
 
-            tor.AddRange(Handlers.ExperimentalHandler.GetPluginVersionsList());
+            tor.AddRange(Handlers.ExperimentalHandler.GetPluginVersionsList(true));
 
             success = true;
             return tor.ToArray();

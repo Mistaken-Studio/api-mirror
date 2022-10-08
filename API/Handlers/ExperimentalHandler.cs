@@ -19,7 +19,7 @@ namespace Mistaken.API.Handlers
         /// Gets plugin versions list.
         /// </summary>
         /// <returns>List of plugin versions.</returns>
-        public static string[] GetPluginVersionsList()
+        public static string[] GetPluginVersionsList(bool showEnableStatus = false)
         {
             List<string> tor = new();
 
@@ -34,7 +34,7 @@ namespace Mistaken.API.Handlers
                 if (item.Value.Author != "Mistaken Devs")
                     continue;
 
-                tor.Add($"[{item.Value.Author}.{item.Value.Name}] {att.InformationalVersion}{(att.InformationalVersion.EndsWith("0") ? " <color=red>DEVELOPMENT BUILD</color>" : string.Empty)}");
+                tor.Add($"[{item.Value.Author}.{item.Value.Name}] {att.InformationalVersion}{(att.InformationalVersion.EndsWith("0") ? " <color=red>DEVELOPMENT BUILD</color>" : string.Empty)} {(showEnableStatus ? $"[{(item.Value.Config.IsEnabled ? "<color=green>ENABLED</color>" : "<color=red>DISABLED</color>")}]" : string.Empty)}");
             }
 
             return tor.ToArray();
