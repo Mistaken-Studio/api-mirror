@@ -44,7 +44,6 @@
     <Reference Include="Exiled.CustomRoles" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomRoles.dll" />
     <Reference Include="Exiled.CustomItems" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomItems.dll" />
     <Reference Include="0Harmony" HintPath="$(MISTAKEN_REFERENCES)\0Harmony.dll" />
-    <Reference Include="Mistaken.Toy.API" HintPath="$(MISTAKEN_REFERENCES)\Mistaken.Toy.API.dll" />
     <Reference Include="Mistaken.Updater" HintPath="$(MISTAKEN_REFERENCES)\Mistaken.Updater.dll" />
     <Reference Include="Newtonsoft.Json" HintPath="$(MISTAKEN_REFERENCES)\Newtonsoft.Json.dll" />
     <Reference Include="Assembly-CSharp-firstpass" HintPath="$(MISTAKEN_REFERENCES)\Assembly-CSharp-firstpass.dll" />
@@ -129,7 +128,6 @@
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield\Shield.cs" />
     <Compile Include="StructureType.cs" />
-    <Compile Include="Obsolete\Toys\ToyHandler.cs" />
     <Compile Include="Utilities\Map.Blackout.cs" />
     <Compile Include="Utilities\Map.cs" />
     <Compile Include="Utilities\Map.Overheat.cs" />
