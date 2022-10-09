@@ -141,7 +141,7 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player.</param>
         /// <returns>True if player is connected. Otherwise false.</returns>
         public static bool IsConnected(this Player player)
-            => (player?.IsConnected ?? false) && player.Connection is not null;
+            => player?.GameObject != null && player.Connection is not null;
 
         /// <summary>
         /// Gets player's current room.
