@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Exiled.API.Features;
 using InventorySystem.Items.Pickups;
 using InventorySystem.Items.ThrowableProjectiles;
 using Mirror;
+using PluginAPI.Core;
 using UnityEngine;
 
 namespace Mistaken.API.Extensions
@@ -32,18 +32,16 @@ namespace Mistaken.API.Extensions
             grenade._alreadyFired = true;
 
             var thrownProjectile = Object.Instantiate(grenade.Projectile, position, Quaternion.Euler(direction));
-            var pickupSyncInfo = default(PickupSyncInfo);
-            pickupSyncInfo.ItemId = grenade.ItemTypeId;
-            pickupSyncInfo.Locked = !grenade._repickupable;
-            pickupSyncInfo.Serial = grenade.ItemSerial;
-            pickupSyncInfo.Weight = grenade.Weight;
-            pickupSyncInfo.Position = thrownProjectile.transform.position;
-            pickupSyncInfo.Rotation = new(thrownProjectile.transform.rotation);
-            var newInfo = thrownProjectile.NetworkInfo = pickupSyncInfo;
-            thrownProjectile.PreviousOwner = new(Server.Host.ReferenceHub);
+            var pickupSyncInfo = new PickupSyncInfo(grenade.ItemTypeId, thrownProjectile.transform.position, thrownProjectile.transform.rotation, grenade.Weight, grenade.ItemSerial)
+            {
+                Locked = !grenade._repickupable,
+            };
+
+            thrownProjectile.NetworkInfo = pickupSyncInfo;
+            thrownProjectile.PreviousOwner = new(Server.Instance.ReferenceHub);
             NetworkServer.Spawn(thrownProjectile.gameObject);
-            pickupSyncInfo = default;
-            thrownProjectile.InfoReceived(pickupSyncInfo, newInfo);
+            thrownProjectile.InfoReceived(default, pickupSyncInfo);
+
             if (thrownProjectile.TryGetComponent(out Rigidbody component))
                 grenade.PropelBody(component, direction, Vector3.zero, force, upWardFactor);
 

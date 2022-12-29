@@ -13,6 +13,7 @@ using Exiled.API.Features;
 using JetBrains.Annotations;
 using MEC;
 using Mistaken.API.Extensions;
+using PluginAPI.Core;
 using UnityEngine;
 
 namespace Mistaken.API.GUI
@@ -22,7 +23,7 @@ namespace Mistaken.API.GUI
     /// </summary>
     // ReSharper disable InconsistentNaming
     [PublicAPI]
-    public class PseudoGUIHandler : MonoBehaviour
+    public sealed class PseudoGUIHandler : MonoBehaviour
     {
         /// <summary>
         /// Gets instance of <see cref="PseudoGUIHandler"/>.
@@ -30,19 +31,19 @@ namespace Mistaken.API.GUI
         public static PseudoGUIHandler Instance { get; private set; }
 
         /// <summary>
-        /// Adds <see cref="PseudoGUIHandler"/> to <see cref="Server.Host"/>'s gameObject.
+        /// Adds <see cref="PseudoGUIHandler"/> to <see cref="Server.Instance"/>'s gameObject.
         /// </summary>
         public static void Ini()
         {
             if (Instance is null)
-                Server.Host.GameObject.AddComponent<PseudoGUIHandler>();
+                Server.Instance.GameObject.AddComponent<PseudoGUIHandler>();
         }
 
         /// <summary>
         /// Stops updating GUI.
         /// </summary>
         /// <param name="p">player to ignore.</param>
-        public static void Ignore(Player p)
+        public static void Ignore(MPlayer p)
         {
             lock (ToIgnoreLock)
                 ToIgnore.Add(p);
@@ -55,7 +56,7 @@ namespace Mistaken.API.GUI
         /// Starts updating GUI.
         /// </summary>
         /// <param name="p">player to stop ignoring.</param>
-        public static void StopIgnore(Player p)
+        public static void StopIgnore(MPlayer p)
         {
             lock (ToIgnoreLock)
                 ToIgnore.Remove(p);
@@ -63,18 +64,18 @@ namespace Mistaken.API.GUI
                 ToUpdate.Add(p);
         }
 
-        internal static void Set(Player player, string key, PseudoGUIPosition type, string content, float duration)
+        internal static void Set(MPlayer player, string key, PseudoGUIPosition type, string content, float duration)
         {
             Set(player, key, type, content);
             Timing.CallDelayed(duration, () => Set(player, key, type, null));
         }
 
-        internal static void Set(Player player, string key, PseudoGUIPosition type, string content)
+        internal static void Set(MPlayer player, string key, PseudoGUIPosition type, string content)
         {
             if (player == null)
             {
-                Log.Warn("Tried to set GUI for null player");
-                Log.Warn(Environment.StackTrace);
+                Log.Warning("Tried to set GUI for null player");
+                Log.Warning(Environment.StackTrace);
                 return;
             }
 
@@ -82,6 +83,7 @@ namespace Mistaken.API.GUI
             {
                 if (!CustomInfo.TryGetValue(player, out Dictionary<string, (string, PseudoGUIPosition)> value) || !value.ContainsKey(key))
                     return;
+
                 value.Remove(key);
             }
             else
@@ -90,6 +92,7 @@ namespace Mistaken.API.GUI
                     CustomInfo[player] = new();
                 else if (CustomInfo[player].TryGetValue(key, out (string Conetent, PseudoGUIPosition Type) value) && value.Conetent == content)
                     return;
+
                 CustomInfo[player][key] = (content, type);
             }
 
@@ -125,7 +128,7 @@ namespace Mistaken.API.GUI
                         // 10s
                         if (this.frames > 99)
                         {
-                            foreach (var item in RealPlayers.List)
+                            foreach (var item in Player.GetPlayers<MPlayer>())
                             {
                                 try
                                 {

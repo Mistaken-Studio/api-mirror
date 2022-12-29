@@ -5,8 +5,12 @@
 // -----------------------------------------------------------------------
 
 using CommandSystem;
-using Exiled.API.Features;
-using Exiled.API.Features.Roles;
+using NorthwoodLib.Pools;
+using PlayerRoles.Spectating;
+using PluginAPI.Core;
+using RemoteAdmin;
+using Respawning;
+using System.Text;
 using UnityEngine;
 
 namespace Mistaken.API.Extensions
@@ -16,11 +20,11 @@ namespace Mistaken.API.Extensions
     /// </summary>
     public static class PlayerExtensions
     {
-        /// <inheritdoc cref="MapPlus.Broadcast(string, ushort, string, global::Broadcast.BroadcastFlags)"/>
-        public static void Broadcast(this Player me, string tag, ushort duration, string message, Broadcast.BroadcastFlags flags = global::Broadcast.BroadcastFlags.Normal)
+        /*/// <inheritdoc cref="MapPlus.Broadcast(string, ushort, string, global::Broadcast.BroadcastFlags)"/>
+        public static void Broadcast(this Player player, string tag, ushort duration, string message, Broadcast.BroadcastFlags flags = global::Broadcast.BroadcastFlags.Normal)
         {
-            me.Broadcast(duration, $"<color=orange>[<color=green>{tag}</color>]</color> {message}", flags);
-        }
+            player.Broadcast(duration, $"<color=orange>[<color=green>{tag}</color>]</color> {message}", flags);
+        }*/
 
         /// <summary>
         /// Get's spectated player.
@@ -28,39 +32,39 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Spectator.</param>
         /// <returns>Spectated player or null if not spectating anyone.</returns>
         public static Player GetSpectatedPlayer(this Player player)
-            => player.Role is SpectatorRole role ? role.SpectatedPlayer : null;
+            => player.ReferenceHub.roleManager.CurrentRole is SpectatorRole spectator ? Player.Get(spectator.SyncedSpectatedNetId) : null;
 
         /// <summary>
         /// Checks if player has base game permission.
         /// </summary>
-        /// <param name="me">Player.</param>
+        /// <param name="player">Player.</param>
         /// <param name="perms">Permission.</param>
         /// <returns>If has permission.</returns>
-        public static bool CheckPermissions(this Player me, PlayerPermissions perms)
+        public static bool CheckPermissions(this Player player, PlayerPermissions perms)
         {
-            return PermissionsHandler.IsPermitted(me.ReferenceHub.serverRoles.Permissions, perms);
+            return PermissionsHandler.IsPermitted(player.ReferenceHub.serverRoles.Permissions, perms);
         }
 
         /// <summary>
         /// If player is Dev.
         /// </summary>
-        /// <param name="me">Player.</param>
+        /// <param name="player">Player.</param>
         /// <returns>Is Dev.</returns>
-        public static bool IsDev(this Player me)
+        public static bool IsDev(this Player player)
         {
-            return me?.UserId.IsDevUserId() ?? false;
+            return player?.UserId.IsDevUserId() ?? false;
         }
 
         /// <summary>
         /// Returns if UserId is Dev's userId.
         /// </summary>
-        /// <param name="me">UserId.</param>
+        /// <param name="player">UserId.</param>
         /// <returns>If belongs to dev.</returns>
-        public static bool IsDevUserId(this string me)
+        public static bool IsDevUserId(this string player)
         {
-            if (me == null)
+            if (player == null)
                 return false;
-            return me.Split('@')[0] switch
+            return player.Split('@')[0] switch
             {
                 // WW
                 "76561198134629649" => true,
@@ -81,30 +85,30 @@ namespace Mistaken.API.Extensions
         /// <summary>
         /// Returns player.
         /// </summary>
-        /// <param name="me">Potently player.</param>
+        /// <param name="sender">Potently player.</param>
         /// <returns>Player.</returns>
-        public static Player GetPlayer(this CommandSender me) => Player.Get(me.SenderId);
+        public static Player GetPlayer(this CommandSender sender) => sender is PlayerCommandSender player ? Player.Get(player.ReferenceHub) : null;
 
         /// <summary>
         /// Returns player.
         /// </summary>
-        /// <param name="me">Potently player.</param>
+        /// <param name="sender">Potently player.</param>
         /// <returns>Player.</returns>
-        public static Player GetPlayer(this ICommandSender me) => Player.Get(((CommandSender)me).SenderId);
+        public static Player GetPlayer(this ICommandSender sender) => sender is PlayerCommandSender player ? Player.Get(player.ReferenceHub) : null;
 
         /// <summary>
-        /// Returns if <paramref name="me"/> is Player or Server.
+        /// Returns true if <paramref name="sender"/> is Player.
         /// </summary>
-        /// <param name="me">To Check.</param>
+        /// <param name="sender">To Check.</param>
         /// <returns>Result.</returns>
-        public static bool IsPlayer(this CommandSender me) => GetPlayer(me) != null;
+        public static bool IsPlayer(this CommandSender sender) => sender is PlayerCommandSender;
 
         /// <summary>
-        /// Returns if <paramref name="me"/> is Player or Server.
+        /// Returns true if <paramref name="sender"/> is Player.
         /// </summary>
-        /// <param name="me">To Check.</param>
+        /// <param name="sender">To Check.</param>
         /// <returns>Result.</returns>
-        public static bool IsPlayer(this ICommandSender me) => GetPlayer(me) != null;
+        public static bool IsPlayer(this ICommandSender sender) => sender is PlayerCommandSender;
 
         /// <summary>
         /// Returns <see cref="Player.DisplayNickname"/> or <see cref="Player.Nickname"/> if first is null or "NULL" if player is null.
@@ -116,24 +120,24 @@ namespace Mistaken.API.Extensions
         /// <summary>
         /// Converts player to string.
         /// </summary>
-        /// <param name="me">Player.</param>
+        /// <param name="player">Player.</param>
         /// <param name="userId">If userId should be shown.</param>
         /// <returns>String version of player.</returns>
-        public static string ToString(this Player me, bool userId)
+        public static string ToString(this Player player, bool userId)
         {
             return userId ?
-                $"({me.Id}) {me.GetDisplayName()} | {me.UserId}"
+                $"({player.PlayerId}) {player.GetDisplayName()} | {player.UserId}"
                 :
-                $"({me.Id}) {me.GetDisplayName()}";
+                $"({player.PlayerId}) {player.GetDisplayName()}";
         }
 
         /// <summary>
         /// Returns if player is real, ready player.
         /// </summary>
-        /// <param name="me">Player to check.</param>
+        /// <param name="player">Player to check.</param>
         /// <returns>If player is ready, real player.</returns>
-        public static bool IsReadyPlayer(this Player me)
-            => me.IsConnected() && me.IsVerified && me.UserId != null && me.ReferenceHub.Ready;
+        public static bool IsReadyPlayer(this Player player)
+            => player.IsConnected() && player.IsVerified && player.UserId != null && player.ReferenceHub.Ready;
 
         /// <summary>
         /// Checks if player is really connected to the server.
@@ -143,7 +147,7 @@ namespace Mistaken.API.Extensions
         public static bool IsConnected(this Player player)
             => player?.GameObject != null && player.Connection is not null;
 
-        /// <summary>
+        /*/// <summary>
         /// Gets player's current room.
         /// </summary>
         /// <param name="player">Player to get room from.</param>
@@ -165,6 +169,6 @@ namespace Mistaken.API.Extensions
             };
         }
 
-        private static readonly RaycastHit[] CachedFindParentRoomRaycast = new RaycastHit[1];
+        private static readonly RaycastHit[] CachedFindParentRoomRaycast = new RaycastHit[1];*/
     }
 }

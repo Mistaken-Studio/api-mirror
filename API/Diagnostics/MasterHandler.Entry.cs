@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
+/*using System;
 
 namespace Mistaken.API.Diagnostics
 {
@@ -27,4 +27,4 @@ namespace Mistaken.API.Diagnostics
                 => $"{this.Time.Ticks}|{this.Name}|{this.TimeTook}";
         }
     }
-}
+}*/

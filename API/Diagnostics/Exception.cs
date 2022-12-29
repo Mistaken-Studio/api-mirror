@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace Mistaken.API.Diagnostics
+/*namespace Mistaken.API.Diagnostics
 {
     public static partial class MasterHandler
     {
@@ -29,4 +29,4 @@ namespace Mistaken.API.Diagnostics
             public string Name;
         }
     }
-}
+}*/

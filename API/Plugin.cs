@@ -1,40 +1,53 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PluginHandler.cs" company="Mistaken">
+// <copyright file="Plugin.cs" company="Mistaken">
 // Copyright (c) Mistaken. All rights reserved.
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Exiled.API.Enums;
-using Exiled.API.Features;
+using JetBrains.Annotations;
 using Mirror;
-using Mistaken.API.Diagnostics;
 using Mistaken.API.Handlers;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
 using RoundRestarting;
 
 namespace Mistaken.API
 {
-    /// <inheritdoc/>
-    public class PluginHandler : Plugin<Config>
+    internal sealed class Plugin
     {
-        /// <inheritdoc/>
-        public override string Author => "Mistaken Devs";
+        internal static Plugin Instance { get; private set; }
 
-        /// <inheritdoc/>
-        public override string Name => "Mistaken API";
+        internal static bool VerboseOutput => Instance.Config.VerbouseOutput;
 
-        /// <inheritdoc/>
-        public override string Prefix => "MAPI";
+        internal HarmonyLib.Harmony Harmony { get; private set; }
 
-        /// <inheritdoc/>
-        public override PluginPriority Priority => PluginPriority.Highest - 1;
+        private static void Server_WaitingForPlayers()
+        {
+            GUI.PseudoGUIHandler.Ini();
+            RoundPlus.IncRoundId();
+            Utilities.Room.Reload();
+        }
 
-        /// <inheritdoc/>
-        public override System.Version RequiredExiledVersion => new(5, 0, 0);
+        private static void Server_RestartingRound()
+        {
+            MapPlus.PostRoundCleanup();
 
-        /// <inheritdoc/>
-        public override void OnEnabled()
+            if (ServerStatic.StopNextRound != ServerStatic.NextRoundAction.Restart)
+                return;
+
+            NetworkServer.SendToAll(new RoundRestartMessage(RoundRestartType.FullRestart, GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true, true));
+            IdleMode.PauseIdleMode = true;
+            MEC.Timing.CallDelayed(1, Server.Restart);
+        }
+
+        [UsedImplicitly]
+        [PluginPriority(LoadPriority.Highest)]
+        [PluginEntryPoint("Mistaken API", "1.0.0", "Mistaken API", "Mistaken Devs")]
+        private void Load()
         {
             Instance = this;
+            FactoryManager.RegisterPlayerFactory(this, new MPlayerFactory());
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += Server_WaitingForPlayers;
             Exiled.Events.Handlers.Server.WaitingForPlayers += Module.TerminateAllCoroutines;
@@ -60,12 +73,11 @@ namespace Mistaken.API
             Extensions.DoorUtils.Ini();
 
             Module.OnEnable(this);
-
-            base.OnEnabled();
         }
 
-        /// <inheritdoc/>
-        public override void OnDisabled()
+        [UsedImplicitly]
+        [PluginUnload]
+        private void Unload()
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= Server_WaitingForPlayers;
             Exiled.Events.Handlers.Server.WaitingForPlayers -= Module.TerminateAllCoroutines;
@@ -77,33 +89,6 @@ namespace Mistaken.API
             Extensions.DoorUtils.DeIni();
 
             Module.OnDisable(this);
-
-            base.OnDisabled();
-        }
-
-        internal static PluginHandler Instance { get; private set; }
-
-        internal static bool VerboseOutput => Instance.Config.VerbouseOutput;
-
-        internal HarmonyLib.Harmony Harmony { get; private set; }
-
-        private static void Server_WaitingForPlayers()
-        {
-            GUI.PseudoGUIHandler.Ini();
-            RoundPlus.IncRoundId();
-            Utilities.Room.Reload();
-        }
-
-        private static void Server_RestartingRound()
-        {
-            MapPlus.PostRoundCleanup();
-
-            if (ServerStatic.StopNextRound != ServerStatic.NextRoundAction.Restart)
-                return;
-
-            NetworkServer.SendToAll(new RoundRestartMessage(RoundRestartType.FullRestart, GameCore.ConfigFile.ServerConfig.GetInt("full_restart_rejoin_time", 25), 0, true, true));
-            IdleMode.PauseIdleMode = true;
-            MEC.Timing.CallDelayed(1, Server.Restart);
         }
     }
 }

@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
+/*using System;
 using Exiled.API.Features;
 
 namespace Mistaken.API.Diagnostics
@@ -22,7 +22,7 @@ namespace Mistaken.API.Diagnostics
             => this.module = module;
 
         /// <inheritdoc cref="Log.Debug(object, bool)"/>
-        public void Debug(object message, bool canBeSent/* = true*/)
+        public void Debug(object message, bool canBeSent = true)
         {
             if (canBeSent)
                 Log.Send($"[{this.module.Plugin}.{this.module.Name}] {message}", Discord.LogLevel.Debug, ConsoleColor.Green);
@@ -42,4 +42,4 @@ namespace Mistaken.API.Diagnostics
 
         private readonly Module module;
     }
-}
+}*/

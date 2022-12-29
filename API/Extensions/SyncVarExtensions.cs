@@ -4,8 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Exiled.API.Extensions;
-using Exiled.API.Features;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
+using Mirror;
+using PlayerRoles;
+using PluginAPI.Core;
 
 namespace Mistaken.API.Extensions
 {
@@ -14,7 +20,7 @@ namespace Mistaken.API.Extensions
     /// </summary>
     public static class SyncVarExtensions
     {
-        /// <summary>
+        /*/// <summary>
         /// Changes <paramref name="player"/> role for <paramref name="target"/>.
         /// </summary>
         /// <param name="player">Player to change rank for.</param>
@@ -23,8 +29,8 @@ namespace Mistaken.API.Extensions
         /// <param name="color">Color.</param>
         public static void TargetSetBadge(this Player player, Player target, string name, string color)
         {
-            MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myText), name);
-            MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myColor), color);
+            SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myText), name);
+            SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myColor), color);
         }
 
         /// <summary>
@@ -34,7 +40,7 @@ namespace Mistaken.API.Extensions
         /// <param name="target">Player that will see change.</param>
         /// <param name="nickname">Nickname.</param>
         public static void TargetSetNickname(this Player player, Player target, string nickname)
-            => MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(NicknameSync), nameof(NicknameSync.Network_displayName), nickname);
+            => SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(NicknameSync), nameof(NicknameSync.Network_displayName), nickname);
 
         /// <summary>
         /// Changes Appeareance.
@@ -42,7 +48,7 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player to change role for.</param>
         /// <param name="target">Player that will see change.</param>
         /// <param name="type">Role.</param>
-        public static void ChangeAppearance(this Player player, Player target, RoleType type)
-            => MirrorExtensions.SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(CharacterClassManager), nameof(CharacterClassManager.NetworkCurClass), (sbyte)type);
+        public static void ChangeAppearance(this Player player, Player target, RoleTypeId type)
+            => SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(CharacterClassManager), nameof(CharacterClassManager.NetworkCurClass), (sbyte)type);*/
     }
 }

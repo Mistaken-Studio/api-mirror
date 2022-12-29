@@ -9,12 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommandSystem;
-using Exiled.API.Enums;
-using Exiled.API.Features;
 using Mistaken.API.Extensions;
 using Utils;
-
-using static Exiled.Permissions.Extensions.Permissions;
 
 namespace Mistaken.API.Commands
 {
@@ -55,14 +51,15 @@ namespace Mistaken.API.Commands
                 if (this is IPermissionLocked && !sender.CheckPermission(this.FullPermission))
                 {
                     response = $"<b>Access Denied</b>\nMissing {this.FullPermission}";
-                    Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
+
+                    // Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
                     return false;
                 }
             }
 
             var bc = false;
             var argsString = string.Join(" ", arguments.Array!);
-            var playerId = sender.IsPlayer() ? sender.GetPlayer().Id : 1;
+            var playerId = sender.IsPlayer() ? sender.GetPlayer().PlayerId : 1;
             if (argsString.Contains("@me"))
                 argsString = argsString.Replace("@me", playerId.ToString());
 

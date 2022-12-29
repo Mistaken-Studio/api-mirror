@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
+/*using System;
 using HarmonyLib;
 using JetBrains.Annotations;
 
@@ -50,3 +50,4 @@ namespace Mistaken.API.Diagnostics.Patches
         }
     }
 }
+*/

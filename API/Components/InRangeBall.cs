@@ -6,9 +6,13 @@
 
 using System;
 using System.Collections.Generic;
-using Exiled.API.Features;
 using JetBrains.Annotations;
 using Mistaken.API.Extensions;
+using PlayerStatsSystem;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI.Events;
 using UnityEngine;
 
 namespace Mistaken.API.Components
@@ -17,7 +21,7 @@ namespace Mistaken.API.Components
     /// Component used to detect players.
     /// </summary>
     [PublicAPI]
-    public class InRangeBall : MonoBehaviour
+    public sealed class InRangeBall : MonoBehaviour
     {
         /// <summary>
         /// Spawns <see cref="InRangeBall"/>.
@@ -28,7 +32,7 @@ namespace Mistaken.API.Components
         /// <param name="onEnter">Action called when someone enters trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRangeBall"/>.</returns>
-        public static InRangeBall Spawn(Vector3 pos, float radius, float height, Action<Player> onEnter = null, Action<Player> onExit = null)
+        public static InRangeBall Spawn(Vector3 pos, float radius, float height, Action<MPlayer> onEnter = null, Action<MPlayer> onExit = null)
         {
             try
             {
@@ -60,7 +64,7 @@ namespace Mistaken.API.Components
         /// <param name="onEnter">Action called when someone enters trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRangeBall"/>.</returns>
-        public static InRangeBall Spawn(Transform parent, Vector3 offset, float radius, float height, Action<Player> onEnter = null, Action<Player> onExit = null)
+        public static InRangeBall Spawn(Transform parent, Vector3 offset, float radius, float height, Action<MPlayer> onEnter = null, Action<MPlayer> onExit = null)
         {
             try
             {
@@ -116,23 +120,28 @@ namespace Mistaken.API.Components
             }
         }
 
-        private Action<Player> onEnter;
-        private Action<Player> onExit;
+        private Action<MPlayer> onEnter;
+        private Action<MPlayer> onExit;
 
         private void Start()
         {
-            Exiled.Events.Handlers.Player.Died += this.Player_Died;
+            EventManager.RegisterEvents(this);
         }
 
         private void OnDestroy()
         {
-            Exiled.Events.Handlers.Player.Died -= this.Player_Died;
+            EventManager.UnregisterEvents(this);
         }
 
-        private void Player_Died(Exiled.Events.EventArgs.DiedEventArgs ev)
+        [UsedImplicitly]
+        [PluginEvent(ServerEventType.PlayerDeath)]
+        private void OnPlayerDeath(MPlayer player, MPlayer attacker, DamageHandlerBase damageHandler)
         {
-            this.onExit?.Invoke(ev.Target);
-            this.ColliderInArea.Remove(ev.Target.GameObject);
+            if (player is null)
+                return;
+
+            this.onExit?.Invoke(player);
+            this.ColliderInArea.Remove(player.GameObject);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -140,8 +149,9 @@ namespace Mistaken.API.Components
             if (!other.GetComponent<CharacterClassManager>())
                 return;
 
-            var player = Player.Get(other.gameObject);
-            if (player?.IsDead ?? true)
+            var player = Player.Get<MPlayer>(other.gameObject);
+
+            if (!player?.IsAlive ?? true)
                 return;
 
             if (player.GetSessionVariable<bool>("IsNPC") && !this.AllowNPCs)
@@ -157,7 +167,7 @@ namespace Mistaken.API.Components
                 return;
 
             this.ColliderInArea.Remove(other.gameObject);
-            var player = Player.Get(other.gameObject);
+            var player = Player.Get<MPlayer>(other.gameObject);
             this.onExit?.Invoke(player);
         }
     }

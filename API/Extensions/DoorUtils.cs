@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using Exiled.API.Features;
 using Interactables.Interobjects.DoorUtils;
 using JetBrains.Annotations;
 using MapGeneration;

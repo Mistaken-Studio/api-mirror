@@ -4,7 +4,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Exiled.API.Features;
 using JetBrains.Annotations;
 using Mistaken.API.GUI;
 
@@ -25,7 +24,7 @@ namespace Mistaken.API.Extensions
         /// <param name="type">position.</param>
         /// <param name="content">content.</param>
         /// <param name="duration">duration.</param>
-        public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content, float duration) =>
+        public static void SetGUI(this MPlayer player, string key, PseudoGUIPosition type, string content, float duration) =>
             PseudoGUIHandler.Set(player, key, type, content, duration);
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace Mistaken.API.Extensions
         /// <param name="key">key.</param>
         /// <param name="type">position.</param>
         /// <param name="content">content.</param>
-        public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content) =>
+        public static void SetGUI(this MPlayer player, string key, PseudoGUIPosition type, string content) =>
             PseudoGUIHandler.Set(player, key, type, content);
     }
 }

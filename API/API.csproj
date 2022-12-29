@@ -9,8 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mistaken.API</RootNamespace>
     <AssemblyName>0Mistaken.API</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <LangVersion>9.0</LangVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>11.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -34,17 +34,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Release\0Mistaken.API.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Exiled.Loader" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Loader.dll" />
-    <Reference Include="Exiled.API" HintPath="$(MISTAKEN_REFERENCES)\Exiled.API.dll" />
-    <Reference Include="Exiled.Events" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Events.dll" />
-    <Reference Include="Exiled.Permissions" HintPath="$(MISTAKEN_REFERENCES)\Exiled.Permissions.dll" />
-    <Reference Include="Exiled.CustomRoles" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomRoles.dll" />
-    <Reference Include="Exiled.CustomItems" HintPath="$(MISTAKEN_REFERENCES)\Exiled.CustomItems.dll" />
+    <Reference Include="PluginAPI" HintPath="$(MISTAKEN_REFERENCES)\PluginAPI.dll" />
     <Reference Include="0Harmony" HintPath="$(MISTAKEN_REFERENCES)\0Harmony.dll" />
-    <Reference Include="Mistaken.Updater" HintPath="$(MISTAKEN_REFERENCES)\Mistaken.Updater.dll" />
     <Reference Include="Newtonsoft.Json" HintPath="$(MISTAKEN_REFERENCES)\Newtonsoft.Json.dll" />
     <Reference Include="Assembly-CSharp-firstpass" HintPath="$(MISTAKEN_REFERENCES)\Assembly-CSharp-firstpass.dll" />
     <Reference Include="Assembly-CSharp-Publicized" HintPath="$(MISTAKEN_REFERENCES)\Assembly-CSharp-Publicized.dll" />
@@ -108,7 +104,7 @@
     <Compile Include="Patches\Vars\NoClipPatch.cs" />
     <Compile Include="Patches\Vars\OverwatchPatch.cs" />
     <Compile Include="PlayerPreferences.cs" />
-    <Compile Include="PluginHandler.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="Handlers\BetterWarheadHandler.cs" />
     <Compile Include="Handlers\CustomInfoHandler.cs" />
     <Compile Include="Diagnostics\Exception.cs" />
@@ -124,7 +120,7 @@
     <Compile Include="Components\InRangeBall.cs" />
     <Compile Include="MapPlus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RealPlayers.cs" />
+    <Compile Include="MPlayer.cs" />
     <Compile Include="RoundPlus.cs" />
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield\Shield.cs" />

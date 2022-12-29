@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 
 namespace Mistaken.API.Diagnostics
 {
@@ -37,3 +37,4 @@ namespace Mistaken.API.Diagnostics
         }
     }
 }
+*/

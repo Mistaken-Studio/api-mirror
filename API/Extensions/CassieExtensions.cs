@@ -5,8 +5,10 @@
 // -----------------------------------------------------------------------
 
 using System.Collections.Generic;
-using Exiled.API.Features;
+using System.Text;
 using JetBrains.Annotations;
+using NorthwoodLib.Pools;
+using Respawning;
 
 namespace Mistaken.API.Extensions
 {
@@ -17,7 +19,7 @@ namespace Mistaken.API.Extensions
     public static class CassieExtensions
     {
         /// <summary>
-        /// Plays an CASSIE announcement with custom subtitles.
+        /// Plays an CASSIE announcement with custom subtitles and gliches if <paramref name="glitchChance"/> or <paramref name="jamChance"/> is set higher than 0f.
         /// </summary>
         /// <param name="message">Message for CASSIE.</param>
         /// <param name="translation">Message displayed in subtitles.</param>
@@ -25,16 +27,17 @@ namespace Mistaken.API.Extensions
         /// <param name="jamChance">Jam chance.</param>
         /// <param name="isHeld">Is held.</param>
         /// <param name="isNoisy">Is noisy.</param>
-        /// <param name="isSubtitles">Is subtitles.</param>
-        public static void GlitchyMessageTranslated(string message, string translation, float glitchChance = 0f, float jamChance = 0f, bool isHeld = false, bool isNoisy = true, bool isSubtitles = true)
+        public static void MessageTranslated(string message, string translation, float glitchChance = 0f, float jamChance = 0f, bool isHeld = false, bool isNoisy = true)
         {
             if (glitchChance > 0f || jamChance > 0f)
             {
                 var array = message.Split(' ');
-                List<string> newWords = NorthwoodLib.Pools.ListPool<string>.Shared.Rent();
+                List<string> newWords = ListPool<string>.Shared.Rent();
+
                 for (var i = 0; i < array.Length; i++)
                 {
                     newWords.Add(array[i]);
+
                     if (i < array.Length - 1)
                     {
                         if (UnityEngine.Random.value < glitchChance)
@@ -46,12 +49,22 @@ namespace Mistaken.API.Extensions
                 }
 
                 message = string.Empty;
+
                 foreach (var newWord in newWords)
                     message += newWord + " ";
-                NorthwoodLib.Pools.ListPool<string>.Shared.Return(newWords);
+
+                ListPool<string>.Shared.Return(newWords);
             }
 
-            Cassie.MessageTranslated(message, translation, isHeld, isNoisy, isSubtitles);
+            StringBuilder announcement = StringBuilderPool.Shared.Rent();
+            string[] cassies = message.Split('\n');
+            string[] translations = translation.Split('\n');
+
+            for (int i = 0; i < cassies.Length; i++)
+                announcement.Append($"{translations[i].Replace(' ', ' ')}<size=0> {cassies[i]} </size><split>");
+
+            RespawnEffectsController.PlayCassieAnnouncement(announcement.ToString(), isHeld, isNoisy, true);
+            StringBuilderPool.Shared.Return(announcement);
         }
     }
 }

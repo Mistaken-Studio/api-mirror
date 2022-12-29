@@ -7,9 +7,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Exiled.API.Features;
 using JetBrains.Annotations;
 using Mistaken.API.Extensions;
+using PlayerRoles;
+using PlayerStatsSystem;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI.Events;
 using UnityEngine;
 
 namespace Mistaken.API.Components
@@ -18,7 +23,7 @@ namespace Mistaken.API.Components
     /// Component used to detect players.
     /// </summary>
     [PublicAPI]
-    public class InRange : MonoBehaviour
+    public sealed class InRange : MonoBehaviour
     {
         /// <summary>
         /// Spawns <see cref="InRange"/>.
@@ -28,7 +33,7 @@ namespace Mistaken.API.Components
         /// <param name="onEnter">Action called when someone enters trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRange"/>.</returns>
-        public static InRange Spawn(Vector3 pos, Vector3 size, Action<Player> onEnter = null, Action<Player> onExit = null)
+        public static InRange Spawn(Vector3 pos, Vector3 size, Action<MPlayer> onEnter = null, Action<MPlayer> onExit = null)
         {
             try
             {
@@ -57,7 +62,7 @@ namespace Mistaken.API.Components
         /// <param name="onEnter">Action called when someone entrees trigger.</param>
         /// <param name="onExit">Action called when someone exits trigger.</param>
         /// <returns>Spawned <see cref="InRange"/>.</returns>
-        public static InRange Spawn(Transform parent, Vector3 offset, Vector3 size, Action<Player> onEnter = null, Action<Player> onExit = null)
+        public static InRange Spawn(Transform parent, Vector3 offset, Vector3 size, Action<MPlayer> onEnter = null, Action<MPlayer> onExit = null)
         {
             try
             {
@@ -113,13 +118,14 @@ namespace Mistaken.API.Components
 
         private readonly HashSet<GameObject> safetyCheck = new();
 
-        private Action<Player> onEnter;
-        private Action<Player> onExit;
+        private Action<MPlayer> onEnter;
+        private Action<MPlayer> onExit;
 
         private void FixedUpdate()
         {
             if (this.ColliderInArea.Count == 0)
                 return;
+
             foreach (var item in this.ColliderInArea.ToArray())
             {
                 try
@@ -141,9 +147,10 @@ namespace Mistaken.API.Components
                     else
                     {
                         Log.Error("[InRange] Failed to remove object from trigger");
-                        Diagnostics.MasterHandler.LogError(new Exception("[InRange] Failed to remove object from trigger"), null, "InRange.FixedUpdate");
+
+                        // Diagnostics.MasterHandler.LogError(new Exception("[InRange] Failed to remove object from trigger"), null, "InRange.FixedUpdate");
                         this.ColliderInArea.Remove(item);
-                        var player = Player.Get(item.gameObject);
+                        var player = Player.Get<MPlayer>(item.gameObject);
                         this.onExit?.Invoke(player);
                         this.safetyCheck.Remove(item);
                     }
@@ -155,35 +162,41 @@ namespace Mistaken.API.Components
 
         private void Start()
         {
-            Exiled.Events.Handlers.Player.Died += this.Player_Died;
-            Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
+            EventManager.RegisterEvents(this);
         }
 
         private void OnDestroy()
         {
-            Exiled.Events.Handlers.Player.Died -= this.Player_Died;
-            Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
+            EventManager.UnregisterEvents(this);
         }
 
-        private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
+        [UsedImplicitly]
+        [PluginEvent(ServerEventType.PlayerChangeRole)]
+        private void OnPlayerChangeRole(MPlayer player, PlayerRoleBase oldRole, RoleTypeId newRole, RoleChangeReason reason)
         {
-            if (ev.Lite)
+            // if (ev.Lite) return;
+            if (player is null)
                 return;
 
-            if (!this.ColliderInArea.Contains(ev.Player.GameObject))
+            if (!this.ColliderInArea.Contains(player.GameObject))
                 return;
 
-            this.onExit?.Invoke(ev.Player);
-            this.ColliderInArea.Remove(ev.Player.GameObject);
+            this.onExit?.Invoke(player);
+            this.ColliderInArea.Remove(player.GameObject);
         }
 
-        private void Player_Died(Exiled.Events.EventArgs.DiedEventArgs ev)
+        [UsedImplicitly]
+        [PluginEvent(ServerEventType.PlayerDeath)]
+        private void OnPlayerDeath(MPlayer player, MPlayer attacker, DamageHandlerBase damageHandler)
         {
-            if (!this.ColliderInArea.Contains(ev.Target.GameObject))
+            if (player is null)
                 return;
 
-            this.onExit?.Invoke(ev.Target);
-            this.ColliderInArea.Remove(ev.Target.GameObject);
+            if (!this.ColliderInArea.Contains(player.GameObject))
+                return;
+
+            this.onExit?.Invoke(player);
+            this.ColliderInArea.Remove(player.GameObject);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -191,8 +204,9 @@ namespace Mistaken.API.Components
             if (!other.GetComponent<CharacterClassManager>())
                 return;
 
-            var player = Player.Get(other.gameObject);
-            if (player?.IsDead ?? true)
+            var player = Player.Get<MPlayer>(other.gameObject);
+
+            if (!player?.IsAlive ?? true)
                 return;
 
             if (player.GetSessionVariable<bool>("IsNPC") && !this.AllowNPCs)
@@ -208,7 +222,7 @@ namespace Mistaken.API.Components
                 return;
 
             this.ColliderInArea.Remove(other.gameObject);
-            var player = Player.Get(other.gameObject);
+            var player = Player.Get<MPlayer>(other.gameObject);
             this.onExit?.Invoke(player);
         }
     }

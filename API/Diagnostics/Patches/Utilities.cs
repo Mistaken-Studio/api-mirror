@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
+/*using System;
 using System.Reflection;
 using Exiled.API.Features;
 
@@ -35,4 +35,4 @@ namespace Mistaken.API.Diagnostics.Patches
             Log.Error(ex);
         }
     }
-}
+}*/
