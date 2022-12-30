@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Exiled.API.Features;
+using PluginAPI.Core.Zones;
 using UnityEngine;
 
 namespace Mistaken.API.Extensions
@@ -17,13 +17,13 @@ namespace Mistaken.API.Extensions
         /// <summary>
         /// Returns room offseted position.
         /// </summary>
-        /// <param name="me">Room.</param>
+        /// <param name="room">Room.</param>
         /// <param name="offset">Offset.</param>
         /// <returns>Position.</returns>
-        public static Vector3 GetByRoomOffset(this Room me, Vector3 offset)
+        public static Vector3 GetByRoomOffset(this FacilityRoom room, Vector3 offset)
         {
-            var basePos = me.Position;
-            offset = (me.transform.right * -offset.x) + (me.transform.forward * -offset.z) + (Vector3.up * offset.y);
+            var basePos = room.Position;
+            offset = (room.Transform.right * -offset.x) + (room.Transform.forward * -offset.z) + (Vector3.up * offset.y);
             basePos += offset;
             return basePos;
         }

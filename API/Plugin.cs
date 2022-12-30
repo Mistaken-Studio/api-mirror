@@ -4,32 +4,81 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using HarmonyLib;
 using JetBrains.Annotations;
 using Mirror;
 using Mistaken.API.Handlers;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
+using PluginAPI.Events;
 using RoundRestarting;
 
 namespace Mistaken.API
 {
     internal sealed class Plugin
     {
-        internal static Plugin Instance { get; private set; }
+        public static Plugin Instance { get; private set; }
 
-        internal static bool VerboseOutput => Instance.Config.VerbouseOutput;
+        [PluginConfig]
+        public Config Config;
 
-        internal HarmonyLib.Harmony Harmony { get; private set; }
+        private static readonly Harmony _harmony = new("com.mistaken.api");
 
-        private static void Server_WaitingForPlayers()
+        [UsedImplicitly]
+        [PluginPriority(LoadPriority.Highest)]
+        [PluginEntryPoint("Mistaken API", "1.0.0", "Mistaken API", "Mistaken Devs")]
+        private void Load()
+        {
+            Instance = this;
+            FactoryManager.RegisterPlayerFactory(this, new MPlayerFactory());
+            EventManager.RegisterEvents(this);
+
+            // Exiled.Events.Handlers.Server.WaitingForPlayers += Module.TerminateAllCoroutines;
+            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += Server_RestartingRound);
+
+            _harmony.PatchAll();
+            Patches.Vars.EnableVarPatch.Patch();
+
+            // Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
+            Module.RegisterHandler<Handlers.BetterWarheadHandler>(this);
+            Module.RegisterHandler<Handlers.CustomInfoHandler>(this);
+            Module.RegisterHandler<Handlers.VanishHandler>(this);
+
+            Module.RegisterHandler<DoorPermissionsHandler>(this);
+            Module.RegisterHandler<InfiniteAmmoHandler>(this);
+            Module.RegisterHandler<BlockInventoryInteractionHandler>(this);
+
+            Module.RegisterHandler<Utilities.UtilitiesHandler>(this);
+
+            Module.RegisterHandler<Handlers.ExperimentalHandler>(this);
+        }
+
+        [UsedImplicitly]
+        [PluginUnload]
+        private void Unload()
+        {
+            Instance = null;
+
+            // Exiled.Events.Handlers.Server.WaitingForPlayers -= Module.TerminateAllCoroutines;
+            EventManager.UnregisterEvents(this);
+            _harmony.UnpatchAll();
+
+            // Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
+        }
+
+        [UsedImplicitly]
+        [PluginEvent(ServerEventType.WaitingForPlayers)]
+        private void OnWaitingForPlayers()
         {
             GUI.PseudoGUIHandler.Ini();
             RoundPlus.IncRoundId();
             Utilities.Room.Reload();
         }
 
-        private static void Server_RestartingRound()
+        [UsedImplicitly]
+        [PluginEvent(ServerEventType.RoundRestart)]
+        private void OnRoundRestart()
         {
             MapPlus.PostRoundCleanup();
 
@@ -42,53 +91,7 @@ namespace Mistaken.API
         }
 
         [UsedImplicitly]
-        [PluginPriority(LoadPriority.Highest)]
-        [PluginEntryPoint("Mistaken API", "1.0.0", "Mistaken API", "Mistaken Devs")]
-        private void Load()
-        {
-            Instance = this;
-            FactoryManager.RegisterPlayerFactory(this, new MPlayerFactory());
-
-            Exiled.Events.Handlers.Server.WaitingForPlayers += Server_WaitingForPlayers;
-            Exiled.Events.Handlers.Server.WaitingForPlayers += Module.TerminateAllCoroutines;
-            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += Server_RestartingRound);
-
-            this.Harmony = new("com.mistaken.api");
-            this.Harmony.PatchAll();
-            Patches.Vars.EnableVarPatch.Patch();
-            Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
-
-            Module.RegisterHandler<Handlers.BetterWarheadHandler>(this);
-            Module.RegisterHandler<Handlers.CustomInfoHandler>(this);
-            Module.RegisterHandler<Handlers.VanishHandler>(this);
-
-            Module.RegisterHandler<DoorPermissionsHandler>(this);
-            Module.RegisterHandler<InfiniteAmmoHandler>(this);
-            Module.RegisterHandler<BlockInventoryInteractionHandler>(this);
-
-            Module.RegisterHandler<Utilities.UtilitiesHandler>(this);
-
-            Module.RegisterHandler<Handlers.ExperimentalHandler>(this);
-
-            Extensions.DoorUtils.Ini();
-
-            Module.OnEnable(this);
-        }
-
-        [UsedImplicitly]
-        [PluginUnload]
-        private void Unload()
-        {
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= Server_WaitingForPlayers;
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= Module.TerminateAllCoroutines;
-            Exiled.Events.Handlers.Server.RestartingRound -= Server_RestartingRound;
-
-            this.Harmony.UnpatchAll();
-            Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
-
-            Extensions.DoorUtils.DeIni();
-
-            Module.OnDisable(this);
-        }
+        [PluginEvent(ServerEventType.MapGenerated)]
+        private void OnMapGenerated() => Extensions.DoorUtils.OnMapGenerated();
     }
 }

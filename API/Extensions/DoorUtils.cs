@@ -10,6 +10,9 @@ using Interactables.Interobjects.DoorUtils;
 using JetBrains.Annotations;
 using MapGeneration;
 using Mirror;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Core.Zones;
+using PluginAPI.Enums;
 using UnityEngine;
 
 namespace Mistaken.API.Extensions
@@ -20,27 +23,6 @@ namespace Mistaken.API.Extensions
     [PublicAPI]
     public static class DoorUtils
     {
-        /// <summary>
-        /// Initiates <see cref="DoorUtils"/>.
-        /// </summary>
-        public static void Ini()
-        {
-            if (initiated)
-                return;
-
-            Exiled.Events.Handlers.Map.Generated += Map_Generated;
-            initiated = true;
-        }
-
-        /// <summary>
-        /// Deinitiates <see cref="DoorUtils"/>.
-        /// </summary>
-        public static void DeIni()
-        {
-            Exiled.Events.Handlers.Map.Generated -= Map_Generated;
-            initiated = false;
-        }
-
         /// <summary>
         /// Returns door prefab.
         /// </summary>
@@ -71,21 +53,26 @@ namespace Mistaken.API.Extensions
         {
             var doorVariant = UnityEngine.Object.Instantiate(GetPrefab(type), position, Quaternion.Euler(rotation));
             UnityEngine.Object.Destroy(doorVariant.GetComponent<DoorEventOpenerExtension>());
+
             if (doorVariant.TryGetComponent<Scp079Interactable>(out var scp079Interactable))
                 UnityEngine.Object.Destroy(scp079Interactable);
+
             doorVariant.transform.localScale = size;
+
             if (!string.IsNullOrEmpty(name))
                 doorVariant.gameObject.AddComponent<DoorNametagExtension>().UpdateName(name);
+
             if (shouldSpawn)
                 NetworkServer.Spawn(doorVariant.gameObject);
+
             return doorVariant;
         }
 
         /// <inheritdoc cref="SpawnDoor(DoorType, Vector3, Vector3, Vector3, bool, string)"/>
-        public static DoorVariant SpawnDoor(DoorType type, Room room, Vector3 offset, Vector3 rotationOffset, Vector3 size, bool shouldSpawn = true, string name = null)
+        public static DoorVariant SpawnDoor(DoorType type, FacilityRoom room, Vector3 offset, Vector3 rotationOffset, Vector3 size, bool shouldSpawn = true, string name = null)
         {
-            offset = (room.transform.forward * -offset.x) + (room.transform.right * -offset.z) + (Vector3.up * offset.y);
-            return SpawnDoor(type, room.Position + offset, room.transform.eulerAngles + rotationOffset, size, shouldSpawn, name);
+            offset = (room.Transform.forward * -offset.x) + (room.Transform.right * -offset.z) + (Vector3.up * offset.y);
+            return SpawnDoor(type, room.Position + offset, room.Transform.eulerAngles + rotationOffset, size, shouldSpawn, name);
         }
 
         /// <summary>
@@ -124,10 +111,7 @@ namespace Mistaken.API.Extensions
 #pragma warning restore CS1591
         }
 
-        private static readonly Dictionary<DoorType, DoorVariant> Prefabs = new();
-        private static bool initiated;
-
-        private static void Map_Generated()
+        internal static void OnMapGenerated()
         {
             Prefabs.Clear();
             foreach (var spawnpoint in UnityEngine.Object.FindObjectsOfType<DoorSpawnpoint>())
@@ -146,5 +130,7 @@ namespace Mistaken.API.Extensions
                 }
             }
         }
+
+        private static readonly Dictionary<DoorType, DoorVariant> Prefabs = new();
     }
 }

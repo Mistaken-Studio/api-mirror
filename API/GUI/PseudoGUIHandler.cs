@@ -9,11 +9,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Exiled.API.Features;
 using JetBrains.Annotations;
 using MEC;
-using Mistaken.API.Extensions;
 using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI.Events;
 using UnityEngine;
 
 namespace Mistaken.API.GUI
@@ -100,19 +101,19 @@ namespace Mistaken.API.GUI
                 ToUpdate.Add(player);
         }
 
-        private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new();
+        private static readonly Dictionary<MPlayer, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new();
         private static readonly object ToUpdateLock = new();
-        private static readonly HashSet<Player> ToUpdate = new();
+        private static readonly HashSet<MPlayer> ToUpdate = new();
         private static readonly object ToIgnoreLock = new();
-        private static readonly HashSet<Player> ToIgnore = new();
-        private readonly ConcurrentDictionary<Player, string> constructedStrings = new();
+        private static readonly HashSet<MPlayer> ToIgnore = new();
+        private readonly ConcurrentDictionary<MPlayer, string> constructedStrings = new();
         private int frames;
         private bool active = true;
 
         private void Start()
         {
             Instance = this;
-            Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
+            EventManager.RegisterEvents(this);
 
             this.active = true;
             _ = Task.Run(async () =>
@@ -154,7 +155,7 @@ namespace Mistaken.API.GUI
                             continue;
                         }
 
-                        Player[] toUpdate;
+                        MPlayer[] toUpdate;
                         lock (ToUpdateLock)
                         {
                             toUpdate = ToUpdate.ToArray();
@@ -177,7 +178,7 @@ namespace Mistaken.API.GUI
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex);
+                        Log.Error(ex.ToString());
                     }
                 }
             });
@@ -186,11 +187,13 @@ namespace Mistaken.API.GUI
         private void OnDestroy()
         {
             Instance = null;
-            Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
+            EventManager.UnregisterEvents(this);
             this.active = false;
         }
 
-        private void Server_RestartingRound()
+        [UsedImplicitly]
+        [PluginEvent(ServerEventType.RoundRestart)]
+        private void OnRoundRestart()
         {
             CustomInfo.Clear();
             lock (ToUpdateLock)
@@ -235,7 +238,7 @@ namespace Mistaken.API.GUI
             }
         }
 
-        private void ConstructString(Player player)
+        private void ConstructString(MPlayer player)
         {
             if (!CustomInfo.ContainsKey(player))
                 CustomInfo[player] = new();
@@ -303,7 +306,7 @@ namespace Mistaken.API.GUI
             this.constructedStrings[player] = $"<size=75%><color=#FFFF>{toWrite}</color><br><br><br><br><br><br><br><br><br><br></size>";
         }
 
-        private void UpdateGui(Player player)
+        private void UpdateGui(MPlayer player)
         {
             if (!this.constructedStrings.TryGetValue(player, out var text))
                 return;
@@ -311,11 +314,11 @@ namespace Mistaken.API.GUI
             try
             {
                 if (player.IsConnected())
-                    player.ShowHint(text, 7200);
+                    player.ReceiveHint(text, 7200);
             }
             catch (Exception ex)
             {
-                Log.Error(ex);
+                Log.Error(ex.ToString());
             }
 
             this.constructedStrings.TryRemove(player, out _);

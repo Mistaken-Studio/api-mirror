@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using PluginAPI.Core;
 using System;
 using System.Linq;
 using System.Reflection;
-using Exiled.API.Features;
 
 namespace Mistaken.API.Extensions
 {
@@ -30,7 +30,7 @@ namespace Mistaken.API.Extensions
             catch (ReflectionTypeLoadException ex)
             {
                 Log.Error($"Assemby: {assembly.FullName}");
-                Log.Error(ex);
+                Log.Error(ex.ToString());
                 return ex.Types.Where(x => x != null).ToArray();
             }
         }
