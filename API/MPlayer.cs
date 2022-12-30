@@ -33,7 +33,7 @@ namespace Mistaken.API
         {
             get
             {
-                var list = new List<MPlayer>(List);
+                var list = List;
                 list.ShuffleList();
                 return list;
             }
