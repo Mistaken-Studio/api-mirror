@@ -34,7 +34,7 @@ namespace Mistaken.API.GUI
         /// <summary>
         /// Adds <see cref="PseudoGUIHandler"/> to <see cref="Server.Instance"/>'s gameObject.
         /// </summary>
-        public static void Ini()
+        public static void Initialize()
         {
             if (Instance is null)
                 Server.Instance.GameObject.AddComponent<PseudoGUIHandler>();

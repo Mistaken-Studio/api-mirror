@@ -129,6 +129,7 @@
     <Compile Include="Utilities\OverheatLevel.cs" />
     <Compile Include="Utilities\Room.cs" />
     <Compile Include="Utilities\TeslaMode.cs" />
+    <Compile Include="Utilities\ThreadDispatcher.cs" />
     <Compile Include="Utilities\UtilitiesHandler.cs" />
     <Compile Include="Handlers\VanishHandler.cs" />
   </ItemGroup>
