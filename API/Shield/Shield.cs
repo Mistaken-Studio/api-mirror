@@ -4,8 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Exiled.API.Features;
 using JetBrains.Annotations;
+using PlayerRoles;
+using PlayerStatsSystem;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI.Events;
 using UnityEngine;
 
 // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -23,7 +28,7 @@ namespace Mistaken.API.Shield
         /// <typeparam name="T">Shield.</typeparam>
         /// <param name="player">Player to affect.</param>
         /// <returns>New shield.</returns>
-        public static T Ini<T>(Player player)
+        public static T Ini<T>(MPlayer player)
             where T : Shield, new()
         {
             var instance = player.GameObject.AddComponent<T>();
@@ -40,7 +45,7 @@ namespace Mistaken.API.Shield
         /// <summary>
         /// Gets player with shield.
         /// </summary>
-        protected Player Player { get; private set; }
+        protected MPlayer Player { get; private set; }
 
         /// <summary>
         /// Gets max value of shield.
@@ -87,11 +92,10 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void Start()
         {
-            Log.Debug("Created " + this.GetType().Name, PluginHandler.VerboseOutput);
+            Log.Debug("Created " + this.GetType().Name, Plugin.Instance.Config.VerboseOutput);
             this.Process = ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerAddProcess(0f, this.MaxShield, -this.ShieldRechargeRate, this.ShieldEffectivnes, 0, true);
 
-            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
-            Exiled.Events.Handlers.Player.ChangingRole += this.Player_ChangingRole;
+            EventManager.RegisterEvents(this);
         }
 
         /// <summary>
@@ -101,9 +105,8 @@ namespace Mistaken.API.Shield
         {
             ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerKillProcess(this.Process.KillCode);
 
-            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
-            Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
-            Log.Debug("Destroyed " + this.GetType().Name, PluginHandler.VerboseOutput);
+            EventManager.UnregisterEvents(this);
+            Log.Debug("Destroyed " + this.GetType().Name, Plugin.Instance.Config.VerboseOutput);
         }
 
         /// <summary>
@@ -158,24 +161,26 @@ namespace Mistaken.API.Shield
             }
         }
 
-        private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerChangeRole)]
+        private void OnPlayerChangeRole(MPlayer player, PlayerRoleBase oldRole, RoleTypeId newRole, RoleChangeReason reason)
         {
-            if (ev.Player != this.Player)
+            if (player != this.Player)
                 return;
 
-            if (!ev.IsAllowed)
-                return;
+            // if (!ev.IsAllowed)
+                // return;
 
             Destroy(this);
         }
 
-        private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerDamage)]
+        private void OnPlayerDamage(MPlayer player, MPlayer attacker, DamageHandlerBase damageHandler)
         {
-            if (ev.Target != this.Player)
+            if (player != this.Player)
                 return;
 
-            if (!ev.IsAllowed)
-                return;
+            // if (!ev.IsAllowed)
+                // return;
 
             this.InternalTimeUntilShieldRecharge = this.TimeUntilShieldRecharge;
         }

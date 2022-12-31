@@ -88,10 +88,6 @@
     <Compile Include="GUI\PseudoGUIHandler.cs" />
     <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="MPlayerFactory.cs" />
-    <Compile Include="Obsolete\Handlers\BetterWarheadHandler.cs" />
-    <Compile Include="Obsolete\Handlers\CustomInfoHandler.cs" />
-    <Compile Include="Obsolete\Handlers\ExperimentalHandler.cs" />
-    <Compile Include="Obsolete\Handlers\VanishHandler.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
