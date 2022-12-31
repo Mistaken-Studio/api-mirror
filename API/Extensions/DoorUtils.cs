@@ -37,7 +37,7 @@ namespace Mistaken.API.Extensions
             };
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Spawns Door.
         /// </summary>
         /// <param name="type">Door Type.</param>
@@ -71,7 +71,7 @@ namespace Mistaken.API.Extensions
         {
             offset = (room.Transform.forward * -offset.x) + (room.Transform.right * -offset.z) + (Vector3.up * offset.y);
             return SpawnDoor(type, room.Position + offset, room.Transform.eulerAngles + rotationOffset, size, shouldSpawn, name);
-        }
+        }*/
 
         /// <summary>
         /// Changes lock setting for plugin door lock.

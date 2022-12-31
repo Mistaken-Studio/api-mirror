@@ -34,7 +34,16 @@ namespace Mistaken.API.Utilities
         private void FixedUpdate()
         {
             if (_invokeQueue.TryDequeue(out Action result))
-                result.Invoke();
+            {
+                try
+                {
+                    result.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.ToString());
+                }
+            }
         }
     }
 }
