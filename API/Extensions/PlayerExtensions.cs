@@ -27,7 +27,7 @@ namespace Mistaken.API.Extensions
         /// </summary>
         /// <param name="sender">Potently player.</param>
         /// <returns>Player.</returns>
-        public static MPlayer GetPlayer(this ICommandSender sender) => sender is PlayerCommandSender player ? Player.Get<MPlayer>(player.ReferenceHub) : null;
+        public static MPlayer GetPlayer(this ICommandSender sender) => GetPlayer(sender as CommandSender);
 
         /// <summary>
         /// Returns true if <paramref name="sender"/> is Player.

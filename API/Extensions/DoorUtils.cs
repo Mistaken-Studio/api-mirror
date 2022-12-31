@@ -10,9 +10,7 @@ using Interactables.Interobjects.DoorUtils;
 using JetBrains.Annotations;
 using MapGeneration;
 using Mirror;
-using PluginAPI.Core.Attributes;
 using PluginAPI.Core.Zones;
-using PluginAPI.Enums;
 using UnityEngine;
 
 namespace Mistaken.API.Extensions

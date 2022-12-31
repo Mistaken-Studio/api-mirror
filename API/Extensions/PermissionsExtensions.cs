@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
+using PluginAPI.Core;
+using RemoteAdmin;
 
 namespace Mistaken.API.Extensions
 {
@@ -19,11 +21,22 @@ namespace Mistaken.API.Extensions
         /// <summary>
         /// Returns if player has permission.
         /// </summary>
-        /// <param name="cs">Player.</param>
+        /// <param name="sender">Player.</param>
         /// <param name="permission">Permission.</param>
         /// <returns>If has permisison.</returns>
-        [Obsolete("Use Exiled.Permissions.Extensions.Permissions.CheckPermission", true)]
-        public static bool CheckPermission(this CommandSender cs, string permission) => Exiled.Permissions.Extensions.Permissions.CheckPermission(cs, permission); // CheckPermission(cs.GetPlayer(), permission);
+        public static bool CheckPermission(this CommandSender sender, string permission)
+        {
+            if (sender.FullPermissions || sender is ServerConsoleSender)
+                return true;
+
+            if (sender.IsPlayer())
+            {
+                MPlayer player = sender.GetPlayer();
+                return player is not null && player.CheckPermission(permission);
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Returns if player has permission.
@@ -31,8 +44,7 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player.</param>
         /// <param name="permission">Permission.</param>
         /// <returns>If has permisison.</returns>
-        [Obsolete("Use Exiled.Permissions.Extensions.Permissions.CheckPermission", true)]
-        public static bool CheckPermission(this Player player, string permission)
+        public static bool CheckPermission(this MPlayer player, string permission)
         {
             if (player.IsDev())
                 return true;

@@ -13,7 +13,7 @@ namespace Mistaken.API.Events.Patches
     {
         internal static bool Prefix()
         {
-            Events.OnPreWaitingForPlayersEvent();
+            Events.OnPreWaitingForPlayers();
             return true;
         }
     }

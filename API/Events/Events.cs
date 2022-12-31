@@ -1,12 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Events.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using Exiled.Events.Extensions;
-
-namespace Mistaken.API.Events
+﻿namespace Mistaken.API.Events
 {
     /// <summary>
     /// Mistaken custom events.
@@ -16,21 +8,21 @@ namespace Mistaken.API.Events
         /// <summary>
         /// The event is fired when all plugins are loaded and initialized.
         /// </summary>
-        public static event Exiled.Events.Events.CustomEventHandler PostInitializationEvent;
+        public static event System.Action PostInitializationEvent;
 
         /// <summary>
         /// The event is fired just before WaitingForPlayers.
         /// </summary>
-        public static event Exiled.Events.Events.CustomEventHandler PreWaitingForPlayersEvent;
+        public static event System.Action PreWaitingForPlayersEvent;
 
         internal static void OnPostInitialization()
         {
-            PostInitializationEvent.InvokeSafely();
+            PostInitializationEvent?.Invoke();
         }
 
-        internal static void OnPreWaitingForPlayersEvent()
+        internal static void OnPreWaitingForPlayers()
         {
-            PreWaitingForPlayersEvent.InvokeSafely();
+            PreWaitingForPlayersEvent?.Invoke();
         }
     }
 }
