@@ -27,17 +27,11 @@ namespace Mistaken.API.GUI
     public sealed class PseudoGUIHandler : MonoBehaviour
     {
         /// <summary>
-        /// Gets instance of <see cref="PseudoGUIHandler"/>.
-        /// </summary>
-        public static PseudoGUIHandler Instance { get; private set; }
-
-        /// <summary>
         /// Adds <see cref="PseudoGUIHandler"/> to <see cref="Server.Instance"/>'s gameObject.
         /// </summary>
         public static void Initialize()
         {
-            if (Instance is null)
-                Server.Instance.GameObject.AddComponent<PseudoGUIHandler>();
+            ReferenceHub.HostHub?.gameObject.AddComponent<PseudoGUIHandler>();
         }
 
         /// <summary>
@@ -112,7 +106,6 @@ namespace Mistaken.API.GUI
 
         private void Start()
         {
-            Instance = this;
             EventManager.RegisterEvents(this);
 
             this.active = true;
@@ -186,7 +179,6 @@ namespace Mistaken.API.GUI
 
         private void OnDestroy()
         {
-            Instance = null;
             EventManager.UnregisterEvents(this);
             this.active = false;
         }
