@@ -11,11 +11,6 @@ namespace Mistaken.API.Utilities
     public sealed class ThreadDispatcher : MonoBehaviour
     {
         /// <summary>
-        /// Instance of ThreadDispatcher class.
-        /// </summary>
-        public static ThreadDispatcher Instance { get; private set; }
-
-        /// <summary>
         /// Enqueues an Action to be performed on the main thread.
         /// </summary>
         /// <param name="action">Action.</param>
@@ -23,10 +18,7 @@ namespace Mistaken.API.Utilities
 
         internal static void Initialize()
         {
-            if (Instance is not null)
-                return;
-
-            Instance = Server.Instance.GameObject.AddComponent<ThreadDispatcher>();
+            ReferenceHub.HostHub?.gameObject.AddComponent<ThreadDispatcher>();
         }
 
         private static readonly ConcurrentQueue<Action> _invokeQueue = new();
