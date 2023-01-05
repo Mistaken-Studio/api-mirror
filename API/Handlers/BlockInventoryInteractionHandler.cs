@@ -12,7 +12,7 @@ using Mistaken.API.Extensions;
 namespace Mistaken.API.Handlers
 {
     [UsedImplicitly]
-    internal class BlockInventoryInteractionHandler : Module
+    internal sealed class BlockInventoryInteractionHandler : Module
     {
         public BlockInventoryInteractionHandler(IPlugin<IConfig> plugin)
             : base(plugin)
@@ -23,7 +23,7 @@ namespace Mistaken.API.Handlers
 
         public override void OnEnable()
         {
-            Exiled.Events.Handlers.Player.ThrowingItem += Player_ThrowingItem;
+            Exiled.Events.Handlers.Player.ThrowingRequest += Player_ThrowingRequest;
             Exiled.Events.Handlers.Player.DroppingAmmo += Player_DroppingAmmo;
             Exiled.Events.Handlers.Player.DroppingItem += Player_DroppingItem;
             Exiled.Events.Handlers.Player.ChangingItem += Player_ChangingItem;
@@ -33,7 +33,7 @@ namespace Mistaken.API.Handlers
 
         public override void OnDisable()
         {
-            Exiled.Events.Handlers.Player.ThrowingItem -= Player_ThrowingItem;
+            Exiled.Events.Handlers.Player.ThrowingRequest -= Player_ThrowingRequest;
             Exiled.Events.Handlers.Player.DroppingAmmo -= Player_DroppingAmmo;
             Exiled.Events.Handlers.Player.DroppingItem -= Player_DroppingItem;
             Exiled.Events.Handlers.Player.ChangingItem -= Player_ChangingItem;
@@ -41,37 +41,37 @@ namespace Mistaken.API.Handlers
             Exiled.Events.Handlers.Player.SearchingPickup -= Player_SearchingPickup;
         }
 
-        private static void Player_SearchingPickup(Exiled.Events.EventArgs.SearchingPickupEventArgs ev)
+        private static void Player_SearchingPickup(Exiled.Events.EventArgs.Player.SearchingPickupEventArgs ev)
         {
             if (ev.Player.GetSessionVariable<bool>(SessionVarType.BLOCK_INVENTORY_INTERACTION))
                 ev.IsAllowed = false;
         }
 
-        private static void Player_UsingItem(Exiled.Events.EventArgs.UsingItemEventArgs ev)
+        private static void Player_UsingItem(Exiled.Events.EventArgs.Player.UsingItemEventArgs ev)
         {
             if (ev.Player.GetSessionVariable<bool>(SessionVarType.BLOCK_INVENTORY_INTERACTION))
                 ev.IsAllowed = false;
         }
 
-        private static void Player_ChangingItem(Exiled.Events.EventArgs.ChangingItemEventArgs ev)
+        private static void Player_ChangingItem(Exiled.Events.EventArgs.Player.ChangingItemEventArgs ev)
         {
             if (ev.Player.GetSessionVariable<bool>(SessionVarType.BLOCK_INVENTORY_INTERACTION))
                 ev.IsAllowed = false;
         }
 
-        private static void Player_DroppingItem(Exiled.Events.EventArgs.DroppingItemEventArgs ev)
+        private static void Player_DroppingItem(Exiled.Events.EventArgs.Player.DroppingItemEventArgs ev)
         {
             if (ev.Player.GetSessionVariable<bool>(SessionVarType.BLOCK_INVENTORY_INTERACTION))
                 ev.IsAllowed = false;
         }
 
-        private static void Player_DroppingAmmo(Exiled.Events.EventArgs.DroppingAmmoEventArgs ev)
+        private static void Player_DroppingAmmo(Exiled.Events.EventArgs.Player.DroppingAmmoEventArgs ev)
         {
             if (ev.Player.GetSessionVariable<bool>(SessionVarType.BLOCK_INVENTORY_INTERACTION))
                 ev.IsAllowed = false;
         }
 
-        private static void Player_ThrowingItem(Exiled.Events.EventArgs.ThrowingItemEventArgs ev)
+        private void Player_ThrowingRequest(Exiled.Events.EventArgs.Player.ThrowingRequestEventArgs ev)
         {
             if (ev.Player.GetSessionVariable<bool>(SessionVarType.BLOCK_INVENTORY_INTERACTION))
                 ev.IsAllowed = false;

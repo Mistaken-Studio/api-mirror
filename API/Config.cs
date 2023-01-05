@@ -5,38 +5,18 @@
 // -----------------------------------------------------------------------
 
 using System.ComponentModel;
-using Mistaken.Updater.Config;
-
-#pragma warning disable CS0618
+using Exiled.API.Interfaces;
 
 namespace Mistaken.API
 {
-    /// <inheritdoc/>
-    public class Config : IAutoUpdatableConfig
+    public sealed class Config : IConfig
     {
-        /// <inheritdoc/>
         public bool IsEnabled { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether debug should be displayed.
-        /// </summary>
         [Description("If true then debug will be displayed")]
-        public bool VerbouseOutput { get; set; }
+        public bool Debug { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether run result file will be generated.
-        /// </summary>
         [Description("If true then diagnostics will generate run result file (If you don't know what this is, just leave it disabled)")]
         public bool GenerateRunResultFile { get; set; } = false;
-
-        /// <inheritdoc/>
-        [Description("Auto Update Settings")]
-        public System.Collections.Generic.Dictionary<string, string> AutoUpdateConfig { get; set; } = new()
-        {
-            { "Url", "https://git.mistaken.pl/api/v4/projects/9" },
-            { "Token", string.Empty },
-            { "Type", "GITLAB" },
-            { "VerbouseOutput", "false" },
-        };
     }
 }

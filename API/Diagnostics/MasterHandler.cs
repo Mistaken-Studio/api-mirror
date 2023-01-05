@@ -112,7 +112,7 @@ namespace Mistaken.API.Diagnostics
 
         internal static void Ini()
         {
-            Log.Debug("Called Ini", PluginHandler.VerboseOutput);
+            Log.Debug("Called Ini", PluginHandler.Debug);
             if (initiated)
                 return;
             if (PluginHandler.Instance.Config.GenerateRunResultFile)
@@ -176,11 +176,11 @@ namespace Mistaken.API.Diagnostics
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
-                Log.Debug($"{path} Created", PluginHandler.VerboseOutput);
+                Log.Debug($"{path} Created", PluginHandler.Debug);
             }
             else
             {
-                Log.Debug($"{path} Exists", PluginHandler.VerboseOutput);
+                Log.Debug($"{path} Exists", PluginHandler.Debug);
             }
 
             path = Path.Combine(path, Server.Port.ToString());
@@ -188,11 +188,11 @@ namespace Mistaken.API.Diagnostics
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
-                Log.Debug($"{path} Created", PluginHandler.VerboseOutput);
+                Log.Debug($"{path} Created", PluginHandler.Debug);
             }
             else
             {
-                Log.Debug($"{path} Exists", PluginHandler.VerboseOutput);
+                Log.Debug($"{path} Exists", PluginHandler.Debug);
             }
 
             var now = DateTime.Now;
@@ -201,7 +201,7 @@ namespace Mistaken.API.Diagnostics
             string day;
             string internalPath;
 
-            Log.Debug($"Starting Loop", PluginHandler.VerboseOutput);
+            Log.Debug($"Starting Loop", PluginHandler.Debug);
             while (initiated)
             {
                 now = DateTime.Now;
@@ -215,7 +215,7 @@ namespace Mistaken.API.Diagnostics
                     if (!Directory.Exists(internalPath))
                     {
                         Directory.CreateDirectory(internalPath);
-                        Log.Debug($"Created {internalPath}", PluginHandler.VerboseOutput);
+                        Log.Debug($"Created {internalPath}", PluginHandler.Debug);
                     }
 
                     // Log.Debug($"{Paths.Configs}/{Server.Port}/{day}/{DateTime.Now.ToString("yyyy-MM-dd_HH")}.log");

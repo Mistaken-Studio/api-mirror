@@ -9,12 +9,13 @@ using Exiled.API.Features;
 using Mirror;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Handlers;
+using Mistaken.Updater.API.Config;
 using RoundRestarting;
 
 namespace Mistaken.API
 {
     /// <inheritdoc/>
-    public class PluginHandler : Plugin<Config>
+    public sealed class PluginHandler : Plugin<Config>, IAutoUpdateablePlugin
     {
         /// <inheritdoc/>
         public override string Author => "Mistaken Devs";
@@ -30,6 +31,12 @@ namespace Mistaken.API
 
         /// <inheritdoc/>
         public override System.Version RequiredExiledVersion => new(5, 0, 0);
+
+        public AutoUpdateConfig AutoUpdateConfig => new()
+        {
+            Url = "https://git.mistaken.pl/api/v4/projects/9",
+            Type = SourceType.GITLAB,
+        };
 
         /// <inheritdoc/>
         public override void OnEnabled()
@@ -83,8 +90,6 @@ namespace Mistaken.API
 
         internal static PluginHandler Instance { get; private set; }
 
-        internal static bool VerboseOutput => Instance.Config.VerbouseOutput;
-
         internal HarmonyLib.Harmony Harmony { get; private set; }
 
         private static void Server_WaitingForPlayers()
@@ -96,7 +101,7 @@ namespace Mistaken.API
 
         private static void Server_RestartingRound()
         {
-            MapPlus.PostRoundCleanup();
+            // MapPlus.PostRoundCleanup();
 
             if (ServerStatic.StopNextRound != ServerStatic.NextRoundAction.Restart)
                 return;

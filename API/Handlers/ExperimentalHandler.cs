@@ -53,7 +53,7 @@ namespace Mistaken.API.Handlers
         public override string Name => "ExperimentalHandler";
 
         /// <inheritdoc/>
-        public override bool Enabled => PluginHandler.VerboseOutput;
+        public override bool Enabled => PluginHandler.Instance.Config.Debug;
 
         /// <inheritdoc/>
         public override void OnDisable()
@@ -76,9 +76,9 @@ namespace Mistaken.API.Handlers
 
             this.first = true;
 
-            this.Log.Debug($"Mistaken Studio's plugin versions:", PluginHandler.VerboseOutput);
+            this.Log.Debug($"Mistaken Studio's plugin versions:");
             foreach (var item in GetPluginVersionsList())
-                this.Log.Debug(item, PluginHandler.VerboseOutput);
+                this.Log.Debug(item);
         }
     }
 }

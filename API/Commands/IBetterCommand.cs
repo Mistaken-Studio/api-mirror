@@ -222,11 +222,11 @@ namespace Mistaken.API.Commands
                         if (match.Value != player.Nickname && match.Value != player.DisplayNickname)
                             continue;
 
-                        Log.Debug($"Replaced {match.Value} with {player.Id}", PluginHandler.VerboseOutput);
+                        Log.Debug($"Replaced {match.Value} with {player.Id}", PluginHandler.Debug);
                         return player.Id.ToString();
                     }
 
-                    Log.Debug($"No mach found for {match.Value}", PluginHandler.VerboseOutput);
+                    Log.Debug($"No mach found for {match.Value}", PluginHandler.Debug);
                     return match.Value;
                 });
             }

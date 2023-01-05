@@ -9,7 +9,7 @@ using Mistaken.API.Extensions;
 
 namespace Mistaken.API.Utilities
 {
-    internal class UtilitiesHandler : Module
+    internal sealed class UtilitiesHandler : Module
     {
         public UtilitiesHandler(PluginHandler p)
             : base(p)
@@ -38,11 +38,11 @@ namespace Mistaken.API.Utilities
             Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
         }
 
-        private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
+        private void Player_Hurting(Exiled.Events.EventArgs.Player.HurtingEventArgs ev)
         {
-            if (ev.Handler.Type == Exiled.API.Enums.DamageType.Scp207)
+            if (ev.DamageHandler.Type == Exiled.API.Enums.DamageType.Scp207)
             {
-                if (ev.Target.GetSessionVariable<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
+                if (ev.Player.GetSessionVariable<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
                     ev.IsAllowed = false;
             }
         }
@@ -52,22 +52,23 @@ namespace Mistaken.API.Utilities
             Map.Restart();
         }
 
-        private void Player_TriggeringTesla(Exiled.Events.EventArgs.TriggeringTeslaEventArgs ev)
+        private void Player_TriggeringTesla(Exiled.Events.EventArgs.Player.TriggeringTeslaEventArgs ev)
         {
             if (Map.TeslaMode == TeslaMode.DISABLED || Map.TeslaMode == TeslaMode.DISABLED_FOR_ALL)
-                ev.IsTriggerable = false;
+                ev.IsAllowed = false;
         }
 
-        private void Scp079_InteractingTesla(Exiled.Events.EventArgs.InteractingTeslaEventArgs ev)
+        private void Scp079_InteractingTesla(Exiled.Events.EventArgs.Scp079.InteractingTeslaEventArgs ev)
         {
             if (Map.TeslaMode == TeslaMode.DISABLED_FOR_079 || Map.TeslaMode == TeslaMode.DISABLED_FOR_ALL)
                 ev.IsAllowed = false;
         }
 
-        private void Server_RespawningTeam(Exiled.Events.EventArgs.RespawningTeamEventArgs ev)
+        private void Server_RespawningTeam(Exiled.Events.EventArgs.Server.RespawningTeamEventArgs ev)
         {
             if (Map.RespawnLock)
                 ev.Players.Clear();
+
             foreach (var player in ev.Players.ToArray())
             {
                 if (player.GetSessionVariable<bool>(SessionVarType.RESPAWN_BLOCK))

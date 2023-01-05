@@ -87,7 +87,7 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void Start()
         {
-            Log.Debug("Created " + this.GetType().Name, PluginHandler.VerboseOutput);
+            Log.Debug("Created " + this.GetType().Name);
             this.Process = ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerAddProcess(0f, this.MaxShield, -this.ShieldRechargeRate, this.ShieldEffectivnes, 0, true);
 
             Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
@@ -103,7 +103,7 @@ namespace Mistaken.API.Shield
 
             Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
             Exiled.Events.Handlers.Player.ChangingRole -= this.Player_ChangingRole;
-            Log.Debug("Destroyed " + this.GetType().Name, PluginHandler.VerboseOutput);
+            Log.Debug("Destroyed " + this.GetType().Name);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace Mistaken.API.Shield
             }
         }
 
-        private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
+        private void Player_ChangingRole(Exiled.Events.EventArgs.Player.ChangingRoleEventArgs ev)
         {
             if (ev.Player != this.Player)
                 return;
@@ -169,9 +169,9 @@ namespace Mistaken.API.Shield
             Destroy(this);
         }
 
-        private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
+        private void Player_Hurting(Exiled.Events.EventArgs.Player.HurtingEventArgs ev)
         {
-            if (ev.Target != this.Player)
+            if (ev.Player != this.Player)
                 return;
 
             if (!ev.IsAllowed)

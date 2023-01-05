@@ -135,7 +135,7 @@ namespace Mistaken.API.Handlers
             Warhead.StopLock = false;
         }
 
-        private void Player_ActivatingWarheadPanel(Exiled.Events.EventArgs.ActivatingWarheadPanelEventArgs ev)
+        private void Player_ActivatingWarheadPanel(Exiled.Events.EventArgs.Player.ActivatingWarheadPanelEventArgs ev)
         {
             if (Warhead.ButtonLock)
                 ev.IsAllowed = false;
@@ -143,7 +143,7 @@ namespace Mistaken.API.Handlers
                 ev.IsAllowed = true;
         }
 
-        private void Warhead_Stopping(Exiled.Events.EventArgs.StoppingEventArgs ev)
+        private void Warhead_Stopping(Exiled.Events.EventArgs.Warhead.StoppingEventArgs ev)
         {
             if (ev.Player?.IsHost ?? true)
                 return;
@@ -159,7 +159,7 @@ namespace Mistaken.API.Handlers
             }
         }
 
-        private void Warhead_Starting(Exiled.Events.EventArgs.StartingEventArgs ev)
+        private void Warhead_Starting(Exiled.Events.EventArgs.Warhead.StartingEventArgs ev)
         {
             if (ev.Player?.IsHost ?? true)
                 return;

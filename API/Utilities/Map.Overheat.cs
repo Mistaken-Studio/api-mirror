@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using Exiled.API.Features;
 using JetBrains.Annotations;
 using MEC;
+using PlayerRoles;
+using PlayerRoles.PlayableScps.Scp079;
+using PlayerRoles.Spectating;
 
 namespace Mistaken.API.Utilities
 {
@@ -317,19 +320,16 @@ namespace Mistaken.API.Utilities
 
                     case 16:
                         {
-                            AlphaWarheadController.Host.InstantPrepare();
-                            AlphaWarheadController.Host.StartDetonation();
-                            AlphaWarheadController.Host.NetworktimeToDetonation = 0.1f;
+                            AlphaWarheadController.Singleton.InstantPrepare();
+                            AlphaWarheadController.Singleton.StartDetonation();
+                            AlphaWarheadController.Singleton.ForceTime(0.1f);
                             RespawnLock = false;
                             foreach (var player in RealPlayers.List)
-                            {
-                                player.ReferenceHub.playerStats.TargetReceiveSpecificDeathReason(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
-                                player.Role.Type = RoleType.Spectator;
-                            }
+                                player.ReferenceHub.playerStats.KillPlayer(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
 
                             Round.IsLocked = false;
                             LockBlackout = false;
-                            UnityEngine.Object.FindObjectOfType<Recontainer079>().BeginOvercharge();
+                            UnityEngine.Object.FindObjectOfType<Scp079Recontainer>().BeginOvercharge();
                             break;
                         }
 

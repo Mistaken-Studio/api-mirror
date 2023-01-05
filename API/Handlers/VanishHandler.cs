@@ -11,12 +11,13 @@ using JetBrains.Annotations;
 using MEC;
 using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
+using PlayerRoles;
 
 namespace Mistaken.API.Handlers
 {
     /// <inheritdoc/>
     [PublicAPI]
-    public class VanishHandler : Module
+    public sealed class VanishHandler : Module
     {
         /// <summary>
         /// Gets list of players with active ghostmode and their levels.
@@ -105,7 +106,7 @@ namespace Mistaken.API.Handlers
             Vanished.Clear();
         }
 
-        private void Player_ChangingRole(Exiled.Events.EventArgs.ChangingRoleEventArgs ev)
+        private void Player_ChangingRole(Exiled.Events.EventArgs.Player.ChangingRoleEventArgs ev)
         {
             if (ev.Player == null)
                 return;
@@ -154,7 +155,7 @@ namespace Mistaken.API.Handlers
 
                             case 2:
                             {
-                                if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || !(player.Role.Team == Team.TUT || player.Role.Team == Team.RIP))
+                                if (!HasAdminChat(player.ReferenceHub.serverRoles.Permissions) || !(player.Role.Type == RoleTypeId.Tutorial || player.Role.Team == Team.Dead))
                                     Hide(player, seenPlayer.Id);
                                 break;
                             }

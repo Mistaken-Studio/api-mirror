@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Features;
 using Mistaken.API.Extensions;
+using PlayerRoles;
 
 namespace Mistaken.API
 {
@@ -48,7 +49,7 @@ namespace Mistaken.API
         /// </summary>
         /// <param name="value">Role.</param>
         /// <returns>Matching players.</returns>
-        public static IEnumerable<Player> Get(RoleType value) => List.Where(p => p.Role == value);
+        public static IEnumerable<Player> Get(RoleTypeId value) => List.Where(p => p.Role == value);
 
         /// <summary>
         /// Player with playerId.
@@ -76,6 +77,6 @@ namespace Mistaken.API
         /// </summary>
         /// <param name="value">Role.</param>
         /// <returns>If there is maching player.</returns>
-        public static bool Any(RoleType value) => List.Any(p => p.Role == value);
+        public static bool Any(RoleTypeId value) => List.Any(p => p.Role == value);
     }
 }

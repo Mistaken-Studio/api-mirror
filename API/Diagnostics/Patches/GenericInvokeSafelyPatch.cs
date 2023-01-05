@@ -31,7 +31,7 @@ namespace Mistaken.API.Diagnostics.Patches
             {
                 try
                 {
-                    Log.Debug(item.FullName, PluginHandler.VerboseOutput);
+                    Log.Debug(item.FullName, PluginHandler.Debug);
                     var genericPatch = typeof(Patch<>).MakeGenericType(item)
                         .GetMethod("Prefix", BindingFlags.NonPublic | BindingFlags.Static);
                     harmony.Patch(baseType.MakeGenericMethod(item), prefix: new HarmonyMethod(genericPatch));

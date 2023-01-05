@@ -14,7 +14,7 @@ using Mistaken.API.Extensions;
 namespace Mistaken.API.Handlers
 {
     [UsedImplicitly]
-    internal class DoorPermissionsHandler : Module
+    internal sealed class DoorPermissionsHandler : Module
     {
         public DoorPermissionsHandler(IPlugin<IConfig> plugin)
             : base(plugin)
@@ -37,7 +37,7 @@ namespace Mistaken.API.Handlers
             Exiled.Events.Handlers.Player.UnlockingGenerator -= this.Player_UnlockingGenerator;
         }
 
-        private void Player_UnlockingGenerator(Exiled.Events.EventArgs.UnlockingGeneratorEventArgs ev)
+        private void Player_UnlockingGenerator(Exiled.Events.EventArgs.Player.UnlockingGeneratorEventArgs ev)
         {
             if (ev.IsAllowed)
                 return;
@@ -57,7 +57,7 @@ namespace Mistaken.API.Handlers
                 ev.IsAllowed = true;
         }
 
-        private void Player_InteractingLocker(Exiled.Events.EventArgs.InteractingLockerEventArgs ev)
+        private void Player_InteractingLocker(Exiled.Events.EventArgs.Player.InteractingLockerEventArgs ev)
         {
             if (ev.IsAllowed)
                 return;
@@ -77,7 +77,7 @@ namespace Mistaken.API.Handlers
                 ev.IsAllowed = true;
         }
 
-        private void Player_InteractingDoor(Exiled.Events.EventArgs.InteractingDoorEventArgs ev)
+        private void Player_InteractingDoor(Exiled.Events.EventArgs.Player.InteractingDoorEventArgs ev)
         {
             if (ev.IsAllowed)
                 return;

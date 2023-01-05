@@ -10,7 +10,7 @@ using CommandSystem;
 namespace Mistaken.API.Commands
 {
     [CommandHandler(typeof(ClientCommandHandler))]
-    internal class VersionCommand : IBetterCommand
+    internal sealed class VersionCommand : IBetterCommand
     {
         public override string Command => "version";
 

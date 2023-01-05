@@ -12,7 +12,7 @@ using Mistaken.API.Extensions;
 namespace Mistaken.API.Handlers
 {
     [UsedImplicitly]
-    internal class InfiniteAmmoHandler : Module
+    internal sealed class InfiniteAmmoHandler : Module
     {
         public InfiniteAmmoHandler(IPlugin<IConfig> plugin)
             : base(plugin)
@@ -33,7 +33,7 @@ namespace Mistaken.API.Handlers
             Exiled.Events.Handlers.Player.DroppingAmmo -= this.Player_DroppingAmmo;
         }
 
-        private void Player_DroppingAmmo(Exiled.Events.EventArgs.DroppingAmmoEventArgs ev)
+        private void Player_DroppingAmmo(Exiled.Events.EventArgs.Player.DroppingAmmoEventArgs ev)
         {
             if (!ev.Player.TryGetSessionVariable(SessionVarType.INFINITE_AMMO, out bool hasInfiniteAmmo) || !hasInfiniteAmmo)
                 return;
@@ -41,7 +41,7 @@ namespace Mistaken.API.Handlers
             ev.IsAllowed = false;
         }
 
-        private void Player_ReloadingWeapon(Exiled.Events.EventArgs.ReloadingWeaponEventArgs ev)
+        private void Player_ReloadingWeapon(Exiled.Events.EventArgs.Player.ReloadingWeaponEventArgs ev)
         {
             if (!ev.Player.TryGetSessionVariable(SessionVarType.INFINITE_AMMO, out bool hasInfiniteAmmo) || !hasInfiniteAmmo)
                 return;

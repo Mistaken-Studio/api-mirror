@@ -18,7 +18,7 @@ namespace Mistaken.API.Utilities
     /// Mapped <see cref="Exiled.API.Features.Room"/>.
     /// </summary>
     [PublicAPI]
-    public class Room
+    public sealed class Room
     {
         /// <summary>
         /// Rooms.

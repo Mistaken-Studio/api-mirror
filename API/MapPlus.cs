@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 // ReSharper disable InconsistentNaming
 namespace Mistaken.API
 {
-    /// <summary>
+    /*/// <summary>
     /// Map Extensions but not as extension because <see cref="Map"/> is static.
     /// </summary>
     [PublicAPI]
@@ -219,5 +219,5 @@ namespace Mistaken.API
 
         private static Recontainer079 recontainer;
         private static LureSubjectContainer container;
-    }
+    }*/
 }

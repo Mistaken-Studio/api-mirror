@@ -18,7 +18,7 @@ namespace Mistaken.API.Handlers
 {
     /// <inheritdoc/>
     [PublicAPI]
-    public class CustomInfoHandler : Module
+    public sealed class CustomInfoHandler : Module
     {
         /// <summary>
         /// Sets CustomInfo.

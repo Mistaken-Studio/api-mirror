@@ -12,7 +12,7 @@ namespace Mistaken.API.Diagnostics
     /// <summary>
     /// Used to Log with prefix.
     /// </summary>
-    public class ModuleLogger
+    public sealed class ModuleLogger
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ModuleLogger"/> class.
@@ -21,7 +21,7 @@ namespace Mistaken.API.Diagnostics
         public ModuleLogger(Module module)
             => this.module = module;
 
-        /// <inheritdoc cref="Log.Debug(object, bool)"/>
+        /// <inheritdoc cref="Log.Debug(object)"/>
         public void Debug(object message, bool canBeSent/* = true*/)
         {
             if (canBeSent)
