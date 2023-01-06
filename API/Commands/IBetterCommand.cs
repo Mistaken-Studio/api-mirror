@@ -12,6 +12,7 @@ using CommandSystem;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Mistaken.API.Extensions;
+using PlayerRoles;
 using Utils;
 
 using static Exiled.Permissions.Extensions.Permissions;
@@ -140,7 +141,7 @@ namespace Mistaken.API.Commands
                         if (values.Length <= 0)
                             continue;
                         var value = values[1];
-                        if (Enum.TryParse<RoleType>(value, true, out var roleType))
+                        if (Enum.TryParse<RoleTypeId>(value, true, out var roleType))
                         {
                             newQuery = argsString.Replace(
                                 "@role:" + value,
@@ -157,7 +158,7 @@ namespace Mistaken.API.Commands
                         if (values.Length <= 0)
                             continue;
                         var value = values[1];
-                        if (Enum.TryParse<RoleType>(value, true, out var roleType))
+                        if (Enum.TryParse<RoleTypeId>(value, true, out var roleType))
                         {
                             newQuery = argsString.Replace(
                                 "@!role:" + value,
@@ -222,11 +223,11 @@ namespace Mistaken.API.Commands
                         if (match.Value != player.Nickname && match.Value != player.DisplayNickname)
                             continue;
 
-                        Log.Debug($"Replaced {match.Value} with {player.Id}", PluginHandler.Debug);
+                        Log.Debug($"Replaced {match.Value} with {player.Id}");
                         return player.Id.ToString();
                     }
 
-                    Log.Debug($"No mach found for {match.Value}", PluginHandler.Debug);
+                    Log.Debug($"No mach found for {match.Value}");
                     return match.Value;
                 });
             }
