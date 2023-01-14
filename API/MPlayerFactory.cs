@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="MPlayer.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System;
+﻿using System;
 using PluginAPI.Core.Factories;
 using PluginAPI.Core.Interfaces;
 

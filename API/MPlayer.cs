@@ -1,16 +1,6 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="MPlayer.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Mistaken.API.Extensions;
-using Mistaken.API.GUI;
 using PlayerRoles;
-using PlayerRoles.Spectating;
-using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Interfaces;
 

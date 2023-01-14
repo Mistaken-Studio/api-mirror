@@ -1,11 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="EnableVarPatch.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using Exiled.API.Features;
-using HarmonyLib;
+﻿/*using HarmonyLib;
 
 namespace Mistaken.API.Patches.Vars
 {
@@ -43,3 +36,4 @@ namespace Mistaken.API.Patches.Vars
         }
     }
 }
+*/

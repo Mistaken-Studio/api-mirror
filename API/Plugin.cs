@@ -32,15 +32,15 @@ namespace Mistaken.API
             // Exiled.Events.Handlers.Server.WaitingForPlayers += Module.TerminateAllCoroutines;
 
             _harmony.PatchAll();
-            Patches.Vars.EnableVarPatch.Patch();
+            // Patches.Vars.EnableVarPatch.Patch();
 
             // Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
             // new Handlers.BetterWarheadHandler();
+            // new DoorPermissionsHandler();
             // new ExperimentalHandler();
+            // new VanishHandler();
             new BlockInventoryInteractionHandler();
-            new CustomInfoHandler();
-            new VanishHandler();
-            new DoorPermissionsHandler();
+            // new CustomInfoHandler();
             new InfiniteAmmoHandler();
             new UtilitiesHandler();
         }

@@ -1,13 +1,7 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Map.Overheat.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System.Collections.Generic;
-using Exiled.API.Features;
-using JetBrains.Annotations;
+﻿using System.Collections.Generic;
 using MEC;
+using PlayerRoles;
+using PluginAPI.Core;
 
 namespace Mistaken.API.Utilities
 {
@@ -16,7 +10,6 @@ namespace Mistaken.API.Utilities
         /// <summary>
         /// Overheat.
         /// </summary>
-        [PublicAPI]
         public static class Overheat
         {
             /// <summary>
@@ -35,8 +28,9 @@ namespace Mistaken.API.Utilities
                     ohLevel = value;
                     if (handle.HasValue)
                         Timing.KillCoroutines(handle.Value);
+
                     if (ohLevel != -1)
-                        handle = Diagnostics.Module.RunSafeCoroutine(HandleOverheat(RoundPlus.RoundId, ohLevel, ohLevel), "Utilities.API.Map.HandleOverheat");
+                        handle = Timing.RunCoroutine(HandleOverheat(RoundPlus.RoundId, ohLevel, ohLevel), nameof(HandleOverheat));
                 }
             }
 
@@ -47,17 +41,21 @@ namespace Mistaken.API.Utilities
             {
                 if (RoundPlus.RoundId != roundId)
                     yield break;
-                if (!Round.IsStarted)
+
+                if (!Round.IsRoundStarted)
                     yield break;
+
                 ohLevel = proggressLevel;
                 switch (proggressLevel)
                 {
                     case -1:
                         yield break;
+
                     case 0:
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
                                 "ALERT  ALERT .  DETECTED FACILITY REACTOR CORE OVERHEAT . REACTOR WILL OVERHEAT IN T MINUS 30 MINUTES . ALL PERSONNEL HAVE TO EVACUATE UNTIL OVERHEAT . IT WILL CAUSE THERMAL EXPLOSION OF FACILITY",
                                 0.15f,
@@ -70,6 +68,7 @@ namespace Mistaken.API.Utilities
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
@@ -93,6 +92,7 @@ namespace Mistaken.API.Utilities
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
@@ -116,6 +116,7 @@ namespace Mistaken.API.Utilities
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
@@ -139,6 +140,7 @@ namespace Mistaken.API.Utilities
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
@@ -162,6 +164,7 @@ namespace Mistaken.API.Utilities
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
@@ -185,6 +188,7 @@ namespace Mistaken.API.Utilities
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
@@ -203,12 +207,14 @@ namespace Mistaken.API.Utilities
                             RespawnLock = true;
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
                                 "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
                                 0.35f,
                                 0.30f);
-                            foreach (var item in Exiled.API.Features.Room.List)
-                                item.TurnOffLights(3000);
+                            foreach (var item in Facility.Rooms)
+                                item.Lights.FlickerLights(3000); // TurnOffLights(3000)
+
                             LockBlackout = true;
                             yield return Timing.WaitForSeconds(90);
                             break;
@@ -218,6 +224,7 @@ namespace Mistaken.API.Utilities
                         {
                             while (Cassie.IsSpeaking)
                                 yield return Timing.WaitForOneFrame;
+
                             if (startLevel == proggressLevel)
                             {
                                 NineTailedFoxAnnouncer.singleton.ServerOnlyAddGlitchyPhrase(
@@ -227,12 +234,14 @@ namespace Mistaken.API.Utilities
                                 RespawnLock = true;
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
+
                                 Cassie.Message(
                                     "FACILITY LIGHT SYSTEM CRITICAL DAMAGE . LIGHTS OUT",
                                     false,
                                     false);
-                                foreach (var item in Exiled.API.Features.Room.List)
-                                    item.TurnOffLights(3000);
+                                foreach (var item in Facility.Rooms)
+                                    item.Lights.FlickerLights(3000); // TurnOffLights(3000)
+
                                 LockBlackout = true;
                             }
                             else
@@ -251,10 +260,12 @@ namespace Mistaken.API.Utilities
                         {
                             if (startLevel == proggressLevel)
                                 yield break;
+
                             else
                             {
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
+
                                 Cassie.Message(
                                     "T MINUS 60 SECONDS",
                                     false,
@@ -269,10 +280,12 @@ namespace Mistaken.API.Utilities
                         {
                             if (startLevel == proggressLevel)
                                 yield break;
+
                             else
                             {
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
+
                                 Cassie.Message(
                                     "T MINUS 30 SECONDS",
                                     false,
@@ -287,10 +300,12 @@ namespace Mistaken.API.Utilities
                         {
                             if (startLevel == proggressLevel)
                                 yield break;
+
                             else
                             {
                                 while (Cassie.IsSpeaking)
                                     yield return Timing.WaitForOneFrame;
+
                                 Cassie.Message(
                                     "10 SECONDS 9 . 8 . 7 . 6 . 5 . 4 . 3 . 2 . 1",
                                     false,
@@ -309,27 +324,30 @@ namespace Mistaken.API.Utilities
                         {
                             if (startLevel == proggressLevel)
                                 yield break;
+
                             else
                                 Warhead.Shake();
+
                             yield return Timing.WaitForSeconds(1);
                             break;
                         }
 
                     case 16:
                         {
-                            AlphaWarheadController.Host.InstantPrepare();
-                            AlphaWarheadController.Host.StartDetonation();
-                            AlphaWarheadController.Host.NetworktimeToDetonation = 0.1f;
+                            AlphaWarheadController.Singleton.InstantPrepare();
+                            AlphaWarheadController.Singleton.StartDetonation();
+                            AlphaWarheadController.Singleton.ForceTime(0.1f);
                             RespawnLock = false;
-                            foreach (var player in RealPlayers.List)
+                            foreach (var player in Player.GetPlayers())
                             {
-                                player.ReferenceHub.playerStats.TargetReceiveSpecificDeathReason(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
-                                player.Role.Type = RoleType.Spectator;
+                                // Nie mam na to pomysłu
+                                // player.ReferenceHub.playerStats.TargetReceiveSpecificDeathReason(new PlayerStatsSystem.CustomReasonDamageHandler("Facility Reactor"));
+                                player.SetRole(RoleTypeId.Spectator, RoleChangeReason.Died);
                             }
 
                             Round.IsLocked = false;
                             LockBlackout = false;
-                            UnityEngine.Object.FindObjectOfType<Recontainer079>().BeginOvercharge();
+                            MapPlus.SCP079Recontainer.BeginOvercharge();
                             break;
                         }
 
@@ -340,7 +358,7 @@ namespace Mistaken.API.Utilities
                         }
                 }
 
-                handle = Diagnostics.Module.RunSafeCoroutine(HandleOverheat(roundId, proggressLevel + 1, startLevel), "Utilities.API.Map.HandleOverheat");
+                handle = Timing.RunCoroutine(HandleOverheat(roundId, proggressLevel + 1, startLevel), nameof(HandleOverheat));
             }
         }
     }

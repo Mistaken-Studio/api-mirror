@@ -1,15 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Map.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Exiled.API.Features;
 using JetBrains.Annotations;
 using MEC;
+using PluginAPI.Core;
 
 namespace Mistaken.API.Utilities
 {
@@ -46,16 +39,16 @@ namespace Mistaken.API.Utilities
         /// Fires all tesla gates 3 times.
         /// </summary>
         /// <param name="loud">If <see langword="true"/> CASSIE message will be played.</param>
-        public static void RestartTeslaGates(bool loud) =>
-            Diagnostics.Module.RunSafeCoroutine(RestartTeslaGatesMec(loud), "Utilities.API.Map.RestartTeslaGatesMec");
+        public static void RestartTeslaGates(bool loud)
+            => Timing.RunCoroutine(RestartTeslaGatesMec(loud), nameof(RestartTeslaGatesMec));
 
         /// <summary>
         /// Opens all doors.
         /// </summary>
         public static void OpenAllDoors()
         {
-            foreach (var d in Door.List)
-                d.IsOpen = true;
+            foreach (var d in Facility.Doors)
+                d.IsOpened = true;
         }
 
         /// <summary>
@@ -63,15 +56,15 @@ namespace Mistaken.API.Utilities
         /// </summary>
         public static void CloseAllDoors()
         {
-            foreach (var d in Door.List)
-                d.IsOpen = false;
+            foreach (var d in Facility.Doors)
+                d.IsOpened = false;
         }
 
         /// <summary>
         /// Closes all doors with CASSIE message.
         /// </summary>
-        public static void RestartDoors() =>
-            Diagnostics.Module.RunSafeCoroutine(RestartDoorsMec(), "Utilities.API.Map.RestartDoorsMec");
+        public static void RestartDoors()
+            => Timing.RunCoroutine(RestartDoorsMec(), nameof(RestartDoorsMec));
 
         internal static void Restart()
         {
@@ -91,13 +84,14 @@ namespace Mistaken.API.Utilities
             {
                 while (Cassie.IsSpeaking)
                     yield return Timing.WaitForOneFrame;
+
                 Cassie.Message("FACILITY TESLA GATES REACTIVATION IN 3 . 2 . 1 . . ");
                 yield return Timing.WaitForSeconds(8);
             }
 
             for (var i = 0; i < 5; i++)
             {
-                Exiled.API.Features.TeslaGate.List.ToList().ForEach(tesla => tesla.ForceTrigger());
+                TeslaGateController.Singleton.TeslaGates.ForEach(tesla => tesla._DoShock());
                 yield return Timing.WaitForSeconds(0.5f);
             }
         }

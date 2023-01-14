@@ -1,13 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="NoClipPatch.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using Exiled.API.Features;
-using JetBrains.Annotations;
-
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+﻿/*using JetBrains.Annotations;
 
 namespace Mistaken.API.Patches.Vars
 {
@@ -20,4 +11,4 @@ namespace Mistaken.API.Patches.Vars
             AnnonymousEvents.Call("NOCLIP", (Player.Get(__instance.gameObject), status));
         }
     }
-}
+}*/

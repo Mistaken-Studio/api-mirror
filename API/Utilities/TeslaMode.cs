@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="TeslaMode.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-namespace Mistaken.API.Utilities
+﻿namespace Mistaken.API.Utilities
 {
     /// <summary>
     /// Tesla Mode.

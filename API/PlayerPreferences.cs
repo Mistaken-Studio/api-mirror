@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="PlayerPreferences.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 #pragma warning disable CS1591
 

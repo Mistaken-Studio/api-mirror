@@ -4,75 +4,74 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
+using PlayerStatsSystem;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI.Events;
+using Respawning;
+using System.Runtime.CompilerServices;
 
 namespace Mistaken.API.Utilities
 {
-    internal class UtilitiesHandler : Module
+    internal sealed class UtilitiesHandler
     {
-        public UtilitiesHandler(PluginHandler p)
-            : base(p)
+        public UtilitiesHandler()
         {
+            EventManager.RegisterEvents(this);
         }
 
-        public override bool IsBasic => true;
-
-        public override string Name => "Utilities";
-
-        public override void OnEnable()
+        ~UtilitiesHandler()
         {
-            Exiled.Events.Handlers.Server.RespawningTeam += this.Server_RespawningTeam;
-            Exiled.Events.Handlers.Scp079.InteractingTesla += this.Scp079_InteractingTesla;
-            Exiled.Events.Handlers.Player.TriggeringTesla += this.Player_TriggeringTesla;
-            Exiled.Events.Handlers.Server.RestartingRound += this.Server_RestartingRound;
-            Exiled.Events.Handlers.Player.Hurting += this.Player_Hurting;
+            EventManager.UnregisterEvents(this);
         }
 
-        public override void OnDisable()
+        [PluginEvent(ServerEventType.PlayerDamage)]
+        private bool OnPlayerDamage(Player player, Player attacker, DamageHandlerBase damageHandler)
         {
-            Exiled.Events.Handlers.Server.RespawningTeam -= this.Server_RespawningTeam;
-            Exiled.Events.Handlers.Scp079.InteractingTesla -= this.Scp079_InteractingTesla;
-            Exiled.Events.Handlers.Player.TriggeringTesla -= this.Player_TriggeringTesla;
-            Exiled.Events.Handlers.Server.RestartingRound -= this.Server_RestartingRound;
-            Exiled.Events.Handlers.Player.Hurting -= this.Player_Hurting;
-        }
-
-        private void Player_Hurting(Exiled.Events.EventArgs.HurtingEventArgs ev)
-        {
-            if (ev.Handler.Type == Exiled.API.Enums.DamageType.Scp207)
+            if (damageHandler is UniversalDamageHandler universalDamageHandler && universalDamageHandler.TranslationId == 10)
             {
-                if (ev.Target.GetSessionVariable<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
-                    ev.IsAllowed = false;
+                if (player.GetSessionVariable<bool>(SessionVarType.IGNORE_SCP207_DAMAGE))
+                    return false;
             }
+
+            return true;
         }
 
-        private void Server_RestartingRound()
-        {
-            Map.Restart();
-        }
+        [PluginEvent(ServerEventType.RoundRestart)]
+        private void OnRoundRestart()
+            => Map.Restart();
 
-        private void Player_TriggeringTesla(Exiled.Events.EventArgs.TriggeringTeslaEventArgs ev)
-        {
-            if (Map.TeslaMode == TeslaMode.DISABLED || Map.TeslaMode == TeslaMode.DISABLED_FOR_ALL)
-                ev.IsTriggerable = false;
-        }
-
-        private void Scp079_InteractingTesla(Exiled.Events.EventArgs.InteractingTeslaEventArgs ev)
+        [PluginEvent(ServerEventType.Scp079UseTesla)]
+        private bool OnScp079UseTesla(Player player, TeslaGate tesla)
         {
             if (Map.TeslaMode == TeslaMode.DISABLED_FOR_079 || Map.TeslaMode == TeslaMode.DISABLED_FOR_ALL)
-                ev.IsAllowed = false;
+                return false;
+
+            return true;
         }
 
-        private void Server_RespawningTeam(Exiled.Events.EventArgs.RespawningTeamEventArgs ev)
+        [PluginEvent(ServerEventType.TeamRespawn)]
+        private bool OnTeamRespawn()
+            => !Map.RespawnLock;
+
+        /*private void Server_RespawningTeam(Exiled.Events.EventArgs.RespawningTeamEventArgs ev)
         {
             if (Map.RespawnLock)
                 ev.Players.Clear();
+
             foreach (var player in ev.Players.ToArray())
             {
                 if (player.GetSessionVariable<bool>(SessionVarType.RESPAWN_BLOCK))
                     ev.Players.Remove(player);
             }
         }
+
+        private void Player_TriggeringTesla(Exiled.Events.EventArgs.TriggeringTeslaEventArgs ev)
+        {
+            if (Map.TeslaMode == TeslaMode.DISABLED || Map.TeslaMode == TeslaMode.DISABLED_FOR_ALL)
+                ev.IsTriggerable = false;
+        }*/
     }
 }

@@ -1,10 +1,4 @@
-// -----------------------------------------------------------------------
-// <copyright file="VersionCommand.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using CommandSystem;
 
 namespace Mistaken.API.Commands
@@ -27,4 +21,4 @@ namespace Mistaken.API.Commands
             return tor.ToArray();
         }
     }
-}
+}*/

@@ -1,12 +1,6 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="AnnonymousEvents.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Exiled.API.Features;
+using PluginAPI.Core;
 
 namespace Mistaken.API
 {
@@ -22,8 +16,9 @@ namespace Mistaken.API
         /// <param name="arg">Event args.</param>
         public static void Call(string name, object arg)
         {
-            Log.Debug("Running " + name, PluginHandler.VerboseOutput);
-            if (Subscribers.TryGetValue(name, out List<Action<object>> handlers))
+            Log.Debug("Running " + name, Plugin.Instance.Config.Debug);
+
+            if (_subscribers.TryGetValue(name, out List<Action<object>> handlers))
             {
                 foreach (var item in handlers)
                     item(arg);
@@ -37,10 +32,12 @@ namespace Mistaken.API
         /// <param name="handler">Event handler.</param>
         public static void Subscribe(string name, Action<object> handler)
         {
-            Log.Debug("Subscribing to " + name, PluginHandler.VerboseOutput);
-            if (!Subscribers.ContainsKey(name))
-                Subscribers[name] = new();
-            Subscribers[name].Add(handler);
+            Log.Debug("Subscribing to " + name, Plugin.Instance.Config.Debug);
+
+            if (!_subscribers.ContainsKey(name))
+                _subscribers[name] = new();
+
+            _subscribers[name].Add(handler);
         }
 
         /// <summary>
@@ -50,11 +47,12 @@ namespace Mistaken.API
         /// <param name="handler">Event handler.</param>
         public static void UnSubscribe(string name, Action<object> handler)
         {
-            Log.Debug("UnSubscribing to " + name, PluginHandler.VerboseOutput);
-            if (Subscribers.ContainsKey(name))
-                Subscribers[name].Remove(handler);
+            Log.Debug("UnSubscribing to " + name, Plugin.Instance.Config.Debug);
+
+            if (_subscribers.ContainsKey(name))
+                _subscribers[name].Remove(handler);
         }
 
-        private static readonly Dictionary<string, List<Action<object>>> Subscribers = new();
+        private static readonly Dictionary<string, List<Action<object>>> _subscribers = new();
     }
 }

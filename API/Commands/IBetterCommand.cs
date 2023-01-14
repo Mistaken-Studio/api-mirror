@@ -48,16 +48,18 @@ namespace Mistaken.API.Commands
         /// <inheritdoc cref="ICommand.Execute(ArraySegment{string}, ICommandSender, out string)"/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
+            response = "Not implemented";
+            return true;
             var start = DateTime.Now;
             if (sender.IsPlayer())
             {
-                if (this is IPermissionLocked && !sender.CheckPermission(this.FullPermission))
+                /*if (this is IPermissionLocked && !sender.CheckPermission(this.FullPermission))
                 {
                     response = $"<b>Access Denied</b>\nMissing {this.FullPermission}";
 
                     // Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
                     return false;
-                }
+                }*/
             }
 
             var bc = false;
@@ -222,11 +224,11 @@ namespace Mistaken.API.Commands
                         if (match.Value != player.Nickname && match.Value != player.DisplayNickname)
                             continue;
 
-                        Log.Debug($"Replaced {match.Value} with {player.PlayerId}", PluginHandler.VerboseOutput);
+                        Log.Debug($"Replaced {match.Value} with {player.PlayerId}", Plugin.Instance.Config.Debug);
                         return player.PlayerId.ToString();
                     }
 
-                    Log.Debug($"No mach found for {match.Value}", PluginHandler.VerboseOutput);
+                    Log.Debug($"No mach found for {match.Value}", Plugin.Instance.Config.Debug);
                     return match.Value;
                 });
             }

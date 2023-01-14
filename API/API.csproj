@@ -130,11 +130,6 @@
     <Compile Include="Handlers\VanishHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".editorconfig" />
-    <None Include="packages.config" />
-    <AdditionalFiles Include="stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
   </ItemGroup>
   <ItemGroup />

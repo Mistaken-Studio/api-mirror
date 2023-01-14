@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Room.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-/*using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using Exiled.API.Enums;

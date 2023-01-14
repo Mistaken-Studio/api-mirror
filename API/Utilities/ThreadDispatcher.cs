@@ -14,12 +14,11 @@ namespace Mistaken.API.Utilities
         /// Enqueues an Action to be performed on the main thread.
         /// </summary>
         /// <param name="action">Action.</param>
-        public static void Invoke(Action action) => _invokeQueue.Enqueue(action);
+        public static void Invoke(Action action)
+            => _invokeQueue.Enqueue(action);
 
         internal static void Initialize()
-        {
-            ReferenceHub.HostHub?.gameObject.AddComponent<ThreadDispatcher>();
-        }
+            => ReferenceHub.HostHub?.gameObject.AddComponent<ThreadDispatcher>();
 
         private static readonly ConcurrentQueue<Action> _invokeQueue = new();
 

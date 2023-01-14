@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -78,10 +78,10 @@ namespace Mistaken.API.Handlers
             {
                 // for_players = Regex.Replace(for_players, $"<color=[^{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]>", string.Empty);
                 // Log.Debug(for_players.Replace('<', '[').Replace('>', ']'), true);
-                /*for_players = Regex.Replace(for_players, "(<color=.*>)|(</color>)", string.Empty);
-                for_players = Regex.Replace(for_players, "(<b>)|(</b>)", string.Empty);
-                for_players = Regex.Replace(for_players, "(<i>)|(</i>)", string.Empty);
-                for_players = Regex.Replace(for_players, "<|>", string.Empty);*/
+                // for_players = Regex.Replace(for_players, "(<color=.*>)|(</color>)", string.Empty);
+                // for_players = Regex.Replace(for_players, "(<b>)|(</b>)", string.Empty);
+                // for_players = Regex.Replace(for_players, "(<i>)|(</i>)", string.Empty);
+                // for_players = Regex.Replace(for_players, "<|>", string.Empty);
                 // for_players = for_players.Replace('<', '[').Replace('>', ']');
                 // Log.Debug(for_players, true);
                 forPlayers = Regex.Replace(forPlayers, "<[.^\\w\\/=#%]*>", string.Empty);
@@ -127,10 +127,10 @@ namespace Mistaken.API.Handlers
                     // toSet = Regex.Replace(toSet, $"<color=[^{string.Join("|", Misc.AllowedColors.Select(x => x.Key.ToString().ToLower() + "|" + x.Value))}]^>", string.Empty);
                     // Log.Debug(toSet.Replace("<", "[").Replace(">", "]").Replace("\n", "|_n"), true);
                     // toSet = Regex.Replace(toSet, "<color=.*>", $"<color={Misc.AllowedColors[Misc.PlayerInfoColorTypes.Yellow]}>");
-                    /*toSet = Regex.Replace(toSet, "(<color=.*>)|(</color>)", string.Empty);
-                        toSet = Regex.Replace(toSet, "(<b>)|(</b>)", string.Empty);
-                        toSet = Regex.Replace(toSet, "(<i>)|(</i>)", string.Empty);
-                        toSet = Regex.Replace(toSet, "<|>", string.Empty);*/
+                    // toSet = Regex.Replace(toSet, "(<color=.*>)|(</color>)", string.Empty);
+                    // toSet = Regex.Replace(toSet, "(<b>)|(</b>)", string.Empty);
+                    // toSet = Regex.Replace(toSet, "(<i>)|(</i>)", string.Empty);
+                    // toSet = Regex.Replace(toSet, "<|>", string.Empty);
 
                     // Log.Debug(toSet, true);
                     toSet = Regex.Replace(toSet, "<[.^\\w\\/=#%]*>", string.Empty);
@@ -142,4 +142,4 @@ namespace Mistaken.API.Handlers
             }
         }
     }
-}
+}*/

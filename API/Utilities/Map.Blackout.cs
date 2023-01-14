@@ -1,14 +1,9 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Map.Blackout.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Exiled.API.Features;
 using JetBrains.Annotations;
+using MapGeneration;
 using MEC;
+using PluginAPI.Core;
 
 // ReSharper disable InconsistentNaming
 namespace Mistaken.API.Utilities
@@ -36,7 +31,7 @@ namespace Mistaken.API.Utilities
                     if (handle.HasValue)
                         Timing.KillCoroutines(handle.Value);
 
-                    handle = Diagnostics.Module.RunSafeCoroutine(ExecuteBlackout(), "Utilities.API.Map.ExecuteBlackout");
+                    handle = Timing.RunCoroutine(ExecuteBlackout(), nameof(ExecuteBlackout));
                 }
             }
 
@@ -73,10 +68,10 @@ namespace Mistaken.API.Utilities
                 {
                     try
                     {
-                        foreach (var item in Exiled.API.Features.Room.List)
+                        foreach (var item in Facility.Rooms)
                         {
-                            if (!OnlyHCZ || item.Zone == Exiled.API.Enums.ZoneType.HeavyContainment)
-                                item.TurnOffLights(Length);
+                            if (!OnlyHCZ || item.Zone.ZoneType == FacilityZone.HeavyContainment)
+                                item.Lights.FlickerLights(Length); // TurnOffLights(Length)
                         }
                     }
                     catch (Exception ex)

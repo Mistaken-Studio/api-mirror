@@ -1,11 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="OverheatLevel.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using JetBrains.Annotations;
-
+﻿
 // ReSharper disable InconsistentNaming
 #pragma warning disable CS1591
 
@@ -14,7 +7,6 @@ namespace Mistaken.API.Utilities
     /// <summary>
     /// Overheat Level.
     /// </summary>
-    [PublicAPI]
     public enum OverheatLevel
     {
         NONE = -1,

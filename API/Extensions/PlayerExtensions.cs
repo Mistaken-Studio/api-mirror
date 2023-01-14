@@ -349,7 +349,7 @@ namespace Mistaken.API.Extensions
             => player.GetRealDamageAmount(handler, out _, out _);
         #endregion
 
-        #region CustomInfoExtensions
+        /*#region CustomInfoExtensions
         /// <summary>
         /// Sets CustomInfo.
         /// </summary>
@@ -434,6 +434,6 @@ namespace Mistaken.API.Extensions
 
             CustomInfoHandler.ToUpdate.Add(player);
         }
-        #endregion
+        #endregion*/
     }
 }

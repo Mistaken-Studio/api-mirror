@@ -92,7 +92,7 @@ namespace Mistaken.API.Shield
         /// </summary>
         protected virtual void Start()
         {
-            Log.Debug("Created " + this.GetType().Name, Plugin.Instance.Config.VerboseOutput);
+            Log.Debug("Created " + this.GetType().Name, Plugin.Instance.Config.Debug);
             this.Process = ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerAddProcess(0f, this.MaxShield, -this.ShieldRechargeRate, this.ShieldEffectivnes, 0, true);
 
             EventManager.RegisterEvents(this);
@@ -106,7 +106,7 @@ namespace Mistaken.API.Shield
             ((PlayerStatsSystem.AhpStat)this.Player.ReferenceHub.playerStats.StatModules[1]).ServerKillProcess(this.Process.KillCode);
 
             EventManager.UnregisterEvents(this);
-            Log.Debug("Destroyed " + this.GetType().Name, Plugin.Instance.Config.VerboseOutput);
+            Log.Debug("Destroyed " + this.GetType().Name, Plugin.Instance.Config.Debug);
         }
 
         /// <summary>
