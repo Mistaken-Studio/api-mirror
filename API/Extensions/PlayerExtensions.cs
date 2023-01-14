@@ -6,10 +6,12 @@
 
 using CommandSystem;
 using Mistaken.API.GUI;
+using Mistaken.API.Handlers;
 using PlayerRoles.Spectating;
 using PlayerStatsSystem;
 using PluginAPI.Core;
 using RemoteAdmin;
+using System;
 using System.Linq;
 
 namespace Mistaken.API.Extensions
@@ -19,6 +21,10 @@ namespace Mistaken.API.Extensions
     /// </summary>
     public static class PlayerExtensions
     {
+        /// <inheritdoc cref="Player.SendBroadcast(string, ushort, global::Broadcast.BroadcastFlags, bool)"/>
+        public static void BroadcastWithTag(this Player player, string tag, string message, ushort duration, Broadcast.BroadcastFlags flags = global::Broadcast.BroadcastFlags.Normal)
+            => player.SendBroadcast($"<color=orange>[<color=green>{tag}</color>]</color> {message}", duration, flags);
+
         /// <summary>
         /// Returns player.
         /// </summary>
@@ -341,6 +347,93 @@ namespace Mistaken.API.Extensions
         /// <returns>Real dealt damage.</returns>
         public static float GetRealDamageAmount(this Player player, StandardDamageHandler handler)
             => player.GetRealDamageAmount(handler, out _, out _);
+        #endregion
+
+        #region CustomInfoExtensions
+        /// <summary>
+        /// Sets CustomInfo.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="key">Key.</param>
+        /// <param name="value">Value.</param>
+        public static void Set(this Player player, string key, string value)
+        {
+            if (!CustomInfoHandler.CustomInfo.ContainsKey(player))
+                CustomInfoHandler.CustomInfo[player] = new();
+
+            if (string.IsNullOrWhiteSpace(value))
+                CustomInfoHandler.CustomInfo[player].Remove(key);
+
+            else if (!CustomInfoHandler.CustomInfo[player].TryGetValue(key, out var oldValue) || oldValue != value)
+                CustomInfoHandler.CustomInfo[player][key] = value;
+            else
+                return;
+
+            CustomInfoHandler.ToUpdate.Add(player);
+        }
+
+        /// <summary>
+        /// Sets CustomInfo for players maching criteria.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="key">Key.</param>
+        /// <param name="value">Value.</param>
+        /// <param name="selector">Func which selects players maching criteria.</param>
+        public static void SetTargets(this Player player, string key, string value, Func<Player, bool> selector)
+        {
+            var players = Player.GetPlayers().Where(selector).ToArray();
+            if (players.Length == 0)
+                return;
+
+            if (!CustomInfoHandler.CustomInfoTargeted.ContainsKey(player))
+                CustomInfoHandler.CustomInfoTargeted[player] = new();
+
+            var changedAny = false;
+            foreach (var target in players)
+            {
+                if (!CustomInfoHandler.CustomInfoTargeted[player].ContainsKey(target))
+                    CustomInfoHandler.CustomInfoTargeted[player][target] = new();
+
+                if (string.IsNullOrWhiteSpace(value))
+                    CustomInfoHandler.CustomInfoTargeted[player][target].Remove(key);
+
+                else if (!CustomInfoHandler.CustomInfoTargeted[player][target].TryGetValue(key, out var oldValue) || oldValue != value)
+                    CustomInfoHandler.CustomInfoTargeted[player][target][key] = value;
+                else
+                    continue;
+
+                changedAny = true;
+            }
+
+            if (changedAny)
+                CustomInfoHandler.ToUpdate.Add(player);
+        }
+
+        /// <summary>
+        /// Sets CustomInfo for specific player.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="key">Key.</param>
+        /// <param name="value">Value.</param>
+        /// <param name="target">Target.</param>
+        public static void SetTarget(this Player player, string key, string value, Player target)
+        {
+            if (!CustomInfoHandler.CustomInfoTargeted.ContainsKey(player))
+                CustomInfoHandler.CustomInfoTargeted[player] = new();
+
+            if (!CustomInfoHandler.CustomInfoTargeted[player].ContainsKey(target))
+                CustomInfoHandler.CustomInfoTargeted[player][target] = new();
+
+            if (string.IsNullOrWhiteSpace(value))
+                CustomInfoHandler.CustomInfoTargeted[player][target].Remove(key);
+
+            else if (!CustomInfoHandler.CustomInfoTargeted[player][target].TryGetValue(key, out var oldValue) || oldValue != value)
+                CustomInfoHandler.CustomInfoTargeted[player][target][key] = value;
+            else
+                return;
+
+            CustomInfoHandler.ToUpdate.Add(player);
+        }
         #endregion
     }
 }

@@ -222,8 +222,8 @@ namespace Mistaken.API.Commands
                         if (match.Value != player.Nickname && match.Value != player.DisplayNickname)
                             continue;
 
-                        Log.Debug($"Replaced {match.Value} with {player.Id}", PluginHandler.VerboseOutput);
-                        return player.Id.ToString();
+                        Log.Debug($"Replaced {match.Value} with {player.PlayerId}", PluginHandler.VerboseOutput);
+                        return player.PlayerId.ToString();
                     }
 
                     Log.Debug($"No mach found for {match.Value}", PluginHandler.VerboseOutput);
@@ -241,10 +241,10 @@ namespace Mistaken.API.Commands
                         .ToArray(),
                     out var successful));
             if (bc)
-                sender.GetPlayer<Player>().SendBroadcast(this.Command, 10, string.Join("\n", response));
+                sender.GetPlayer<Player>().BroadcastWithTag(this.Command, string.Join("\n", response), 10);
 
             NorthwoodLib.Pools.ListPool<string>.Shared.Return(args);
-            Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
+            // Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
             return successful;
         }
 
@@ -273,9 +273,9 @@ namespace Mistaken.API.Commands
                 if (!int.TryParse(item, out var pid))
                     continue;
 
-                var p = allowPets ? Player.Get(pid) : RealPlayers.Get(pid);
-                if (p != null)
-                    tor.Add(p);
+                var player = Player.Get(pid);
+                if (player != null)
+                    tor.Add(player);
             }
 
             return tor;
@@ -293,8 +293,10 @@ namespace Mistaken.API.Commands
             var players = this.GetPlayers(arg, allowPets).ToArray();
             if (players.Length == 0)
                 return false;
+
             foreach (var item in players)
                 toExecute?.Invoke(item);
+
             return true;
         }
 

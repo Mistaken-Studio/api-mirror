@@ -1,13 +1,8 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="Plugin.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using HarmonyLib;
+﻿using HarmonyLib;
 using JetBrains.Annotations;
 using Mirror;
 using Mistaken.API.Handlers;
+using Mistaken.API.Utilities;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
@@ -35,23 +30,19 @@ namespace Mistaken.API
             EventManager.RegisterEvents(this);
 
             // Exiled.Events.Handlers.Server.WaitingForPlayers += Module.TerminateAllCoroutines;
-            MEC.Timing.CallDelayed(1, () => Exiled.Events.Handlers.Server.RestartingRound += Server_RestartingRound);
 
             _harmony.PatchAll();
             Patches.Vars.EnableVarPatch.Patch();
 
             // Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
-            Module.RegisterHandler<Handlers.BetterWarheadHandler>(this);
-            Module.RegisterHandler<Handlers.CustomInfoHandler>(this);
-            Module.RegisterHandler<Handlers.VanishHandler>(this);
-
-            Module.RegisterHandler<DoorPermissionsHandler>(this);
-            Module.RegisterHandler<InfiniteAmmoHandler>(this);
-            Module.RegisterHandler<BlockInventoryInteractionHandler>(this);
-
-            Module.RegisterHandler<Utilities.UtilitiesHandler>(this);
-
-            Module.RegisterHandler<Handlers.ExperimentalHandler>(this);
+            // new Handlers.BetterWarheadHandler();
+            // new ExperimentalHandler();
+            new BlockInventoryInteractionHandler();
+            new CustomInfoHandler();
+            new VanishHandler();
+            new DoorPermissionsHandler();
+            new InfiniteAmmoHandler();
+            new UtilitiesHandler();
         }
 
         [UsedImplicitly]
@@ -93,6 +84,7 @@ namespace Mistaken.API
 
         [UsedImplicitly]
         [PluginEvent(ServerEventType.MapGenerated)]
-        private void OnMapGenerated() => Extensions.DoorUtils.OnMapGenerated();
+        private void OnMapGenerated()
+            => Extensions.DoorUtils.OnMapGenerated();
     }
 }

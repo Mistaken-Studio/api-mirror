@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="SessionVarType.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using InventorySystem.Items.Keycards;
+﻿using InventorySystem.Items.Keycards;
 using InventorySystem.Items.Pickups;
 
 namespace Mistaken.API

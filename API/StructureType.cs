@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="StructureType.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-#pragma warning disable CS1591
+﻿#pragma warning disable CS1591
 
 // ReSharper disable InconsistentNaming
 namespace Mistaken.API

@@ -1,10 +1,4 @@
-// -----------------------------------------------------------------------
-// <copyright file="ExperimentalHandler.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.Reflection;
 using JetBrains.Annotations;
 using Module = Mistaken.API.Diagnostics.Module;
@@ -81,4 +75,4 @@ namespace Mistaken.API.Handlers
                 this.Log.Debug(item, PluginHandler.VerboseOutput);
         }
     }
-}
+}*/

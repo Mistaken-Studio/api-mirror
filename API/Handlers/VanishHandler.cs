@@ -1,22 +1,15 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="VanishHandler.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using System;
+﻿/*using System;
 using System.Collections.Generic;
-using Exiled.API.Features;
 using JetBrains.Annotations;
 using MEC;
-using Mistaken.API.Diagnostics;
 using Mistaken.API.Extensions;
+using PluginAPI.Core;
 
 namespace Mistaken.API.Handlers
 {
     /// <inheritdoc/>
     [PublicAPI]
-    public class VanishHandler : Module
+    public sealed class VanishHandler
     {
         /// <summary>
         /// Gets list of players with active ghostmode and their levels.
@@ -173,4 +166,4 @@ namespace Mistaken.API.Handlers
             }
         }
     }
-}
+}*/

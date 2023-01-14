@@ -7,10 +7,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Exiled.API.Features;
 using JetBrains.Annotations;
 using Mirror;
-using RemoteAdmin;
+using PlayerRoles.PlayableScps.Scp079;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -23,38 +22,6 @@ namespace Mistaken.API
     [PublicAPI]
     public static class MapPlus
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether if SCP 106 someone lured.
-        /// </summary>
-        public static bool Lured
-        {
-            get => LureSubjectContainer.NetworkallowContain;
-            set => LureSubjectContainer.SetState(value, value);
-        }
-
-        /// <summary>
-        /// Gets instance of <see cref="global::LureSubjectContainer"/>.
-        /// </summary>
-        public static LureSubjectContainer LureSubjectContainer
-        {
-            get
-            {
-                if (container == null)
-                    container = Object.FindObjectOfType<LureSubjectContainer>();
-
-                return container;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether if SCP 106 Containment was used.
-        /// </summary>
-        public static bool FemurBreaked
-        {
-            get => OneOhSixContainer.used;
-            set => OneOhSixContainer.used = value;
-        }
-
         /// <summary>
         /// Gets time to decontamination end.
         /// </summary>
@@ -74,20 +41,18 @@ namespace Mistaken.API
         public static bool IsSCP079Recontained => SCP079Recontainer._alreadyRecontained;
 
         /// <summary>
-        /// Gets <see cref="Recontainer079"/> instance.
+        /// Gets <see cref="Scp079Recontainer"/> instance.
         /// </summary>
-        public static Recontainer079 SCP079Recontainer
+        public static Scp079Recontainer SCP079Recontainer
         {
             get
             {
-                if (recontainer == null)
-                    recontainer = Object.FindObjectOfType<Recontainer079>();
-
+                recontainer ??= Object.FindObjectOfType<Scp079Recontainer>();
                 return recontainer;
             }
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Send Broadcast.
         /// </summary>
         /// <param name="tag">Tag.</param>
@@ -137,7 +102,7 @@ namespace Mistaken.API
             NetworkServer.Spawn(obj);
 
             return obj;
-        }
+        }*/
 
         /// <summary>
         /// Is LCZ Decontaminated.
@@ -195,7 +160,6 @@ namespace Mistaken.API
 
         internal static void PostRoundCleanup()
         {
-            container = null;
             recontainer = null;
         }
 
@@ -217,7 +181,6 @@ namespace Mistaken.API
             { StructureType.Workstation, new("ad8a455f-062d-dea4-5b47-ac9217d4c58b") },
         };
 
-        private static Recontainer079 recontainer;
-        private static LureSubjectContainer container;
+        private static Scp079Recontainer recontainer;
     }
 }

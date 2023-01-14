@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="RoundPlus.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-namespace Mistaken.API
+﻿namespace Mistaken.API
 {
     /// <summary>
     /// Used for RoundId.

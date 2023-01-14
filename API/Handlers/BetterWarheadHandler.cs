@@ -1,10 +1,4 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="BetterWarheadHandler.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-/*using Exiled.API.Features;
+﻿/*using Exiled.API.Features;
 using JetBrains.Annotations;
 using Mistaken.API.Diagnostics;
 

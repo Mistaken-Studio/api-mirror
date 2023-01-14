@@ -1,52 +1,40 @@
-// -----------------------------------------------------------------------
-// <copyright file="InfiniteAmmoHandler.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using Exiled.API.Interfaces;
-using JetBrains.Annotations;
-using Mistaken.API.Diagnostics;
+using InventorySystem.Items.Firearms;
 using Mistaken.API.Extensions;
+using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
+using PluginAPI.Enums;
+using PluginAPI.Events;
 
 namespace Mistaken.API.Handlers
 {
-    [UsedImplicitly]
-    internal class InfiniteAmmoHandler : Module
+    internal sealed class InfiniteAmmoHandler
     {
-        public InfiniteAmmoHandler(IPlugin<IConfig> plugin)
-            : base(plugin)
+        public InfiniteAmmoHandler()
         {
+            EventManager.RegisterEvents(this);
         }
 
-        public override string Name => nameof(InfiniteAmmoHandler);
-
-        public override void OnEnable()
+        ~InfiniteAmmoHandler()
         {
-            Exiled.Events.Handlers.Player.ReloadingWeapon += this.Player_ReloadingWeapon;
-            Exiled.Events.Handlers.Player.DroppingAmmo += this.Player_DroppingAmmo;
+            EventManager.UnregisterEvents(this);
         }
 
-        public override void OnDisable()
+        [PluginEvent(ServerEventType.PlayerDropAmmo)]
+        private bool Player_DroppingAmmo(Player player, ItemType type, int amount)
         {
-            Exiled.Events.Handlers.Player.ReloadingWeapon -= this.Player_ReloadingWeapon;
-            Exiled.Events.Handlers.Player.DroppingAmmo -= this.Player_DroppingAmmo;
+            if (!player.TryGetSessionVariable(SessionVarType.INFINITE_AMMO, out bool hasInfiniteAmmo))
+                return true;
+
+            return !hasInfiniteAmmo;
         }
 
-        private void Player_DroppingAmmo(Exiled.Events.EventArgs.DroppingAmmoEventArgs ev)
+        [PluginEvent(ServerEventType.PlayerReloadWeapon)]
+        private void Player_ReloadingWeapon(Player player, Firearm firearm)
         {
-            if (!ev.Player.TryGetSessionVariable(SessionVarType.INFINITE_AMMO, out bool hasInfiniteAmmo) || !hasInfiniteAmmo)
+            if (!player.TryGetSessionVariable(SessionVarType.INFINITE_AMMO, out bool hasInfiniteAmmo) || !hasInfiniteAmmo)
                 return;
 
-            ev.IsAllowed = false;
-        }
-
-        private void Player_ReloadingWeapon(Exiled.Events.EventArgs.ReloadingWeaponEventArgs ev)
-        {
-            if (!ev.Player.TryGetSessionVariable(SessionVarType.INFINITE_AMMO, out bool hasInfiniteAmmo) || !hasInfiniteAmmo)
-                return;
-
-            ev.Player.SetAmmo(ev.Firearm.AmmoType, (ushort)(ev.Firearm.MaxAmmo - ev.Firearm.Ammo + 1));
+            player.SetAmmo(firearm.AmmoType, (ushort)(firearm.AmmoManagerModule.MaxAmmo - firearm.Status.Ammo + 1));
         }
     }
 }

@@ -1,27 +1,12 @@
-// -----------------------------------------------------------------------
-// <copyright file="DoorPermissionsHandler.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using Exiled.API.Enums;
-using Exiled.API.Features.Items;
-using Exiled.API.Interfaces;
-using JetBrains.Annotations;
-using Mistaken.API.Diagnostics;
-using Mistaken.API.Extensions;
+/*using Mistaken.API.Extensions;
 
 namespace Mistaken.API.Handlers
 {
-    [UsedImplicitly]
-    internal class DoorPermissionsHandler : Module
+    internal sealed class DoorPermissionsHandler
     {
-        public DoorPermissionsHandler(IPlugin<IConfig> plugin)
-            : base(plugin)
+        public DoorPermissionsHandler()
         {
         }
-
-        public override string Name => nameof(DoorPermissionsHandler);
 
         public override void OnEnable()
         {
@@ -100,4 +85,4 @@ namespace Mistaken.API.Handlers
                 ev.IsAllowed = true;
         }
     }
-}
+}*/
