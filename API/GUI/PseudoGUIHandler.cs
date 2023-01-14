@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using MEC;
+using Mistaken.API.Extensions;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
@@ -51,7 +52,7 @@ namespace Mistaken.API.GUI
         /// Starts updating GUI.
         /// </summary>
         /// <param name="p">player to stop ignoring.</param>
-        public static void StopIgnore(MPlayer p)
+        public static void StopIgnore(Player p)
         {
             lock (ToIgnoreLock)
                 ToIgnore.Remove(p);
@@ -59,13 +60,13 @@ namespace Mistaken.API.GUI
                 ToUpdate.Add(p);
         }
 
-        internal static void Set(MPlayer player, string key, PseudoGUIPosition type, string content, float duration)
+        internal static void Set(Player player, string key, PseudoGUIPosition type, string content, float duration)
         {
             Set(player, key, type, content);
             Timing.CallDelayed(duration, () => Set(player, key, type, null));
         }
 
-        internal static void Set(MPlayer player, string key, PseudoGUIPosition type, string content)
+        internal static void Set(Player player, string key, PseudoGUIPosition type, string content)
         {
             if (player == null)
             {
@@ -95,12 +96,12 @@ namespace Mistaken.API.GUI
                 ToUpdate.Add(player);
         }
 
-        private static readonly Dictionary<MPlayer, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new();
+        private static readonly Dictionary<Player, Dictionary<string, (string Content, PseudoGUIPosition Type)>> CustomInfo = new();
         private static readonly object ToUpdateLock = new();
-        private static readonly HashSet<MPlayer> ToUpdate = new();
+        private static readonly HashSet<Player> ToUpdate = new();
         private static readonly object ToIgnoreLock = new();
-        private static readonly HashSet<MPlayer> ToIgnore = new();
-        private readonly ConcurrentDictionary<MPlayer, string> constructedStrings = new();
+        private static readonly HashSet<Player> ToIgnore = new();
+        private readonly ConcurrentDictionary<Player, string> constructedStrings = new();
         private int frames;
         private bool active = true;
 
@@ -148,7 +149,7 @@ namespace Mistaken.API.GUI
                             continue;
                         }
 
-                        MPlayer[] toUpdate;
+                        Player[] toUpdate;
                         lock (ToUpdateLock)
                         {
                             toUpdate = ToUpdate.ToArray();
@@ -230,7 +231,7 @@ namespace Mistaken.API.GUI
             }
         }
 
-        private void ConstructString(MPlayer player)
+        private void ConstructString(Player player)
         {
             if (!CustomInfo.ContainsKey(player))
                 CustomInfo[player] = new();
@@ -298,7 +299,7 @@ namespace Mistaken.API.GUI
             this.constructedStrings[player] = $"<size=75%><color=#FFFF>{toWrite}</color><br><br><br><br><br><br><br><br><br><br></size>";
         }
 
-        private void UpdateGui(MPlayer player)
+        private void UpdateGui(Player player)
         {
             if (!this.constructedStrings.TryGetValue(player, out var text))
                 return;

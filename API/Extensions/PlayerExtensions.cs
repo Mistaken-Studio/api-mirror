@@ -5,8 +5,12 @@
 // -----------------------------------------------------------------------
 
 using CommandSystem;
+using Mistaken.API.GUI;
+using PlayerRoles.Spectating;
+using PlayerStatsSystem;
 using PluginAPI.Core;
 using RemoteAdmin;
+using System.Linq;
 
 namespace Mistaken.API.Extensions
 {
@@ -20,14 +24,16 @@ namespace Mistaken.API.Extensions
         /// </summary>
         /// <param name="sender">Potently player.</param>
         /// <returns>Player.</returns>
-        public static MPlayer GetPlayer(this CommandSender sender) => sender is PlayerCommandSender player ? Player.Get<MPlayer>(player.ReferenceHub) : null;
+        public static T GetPlayer<T>(this CommandSender sender) where T : Player
+            => sender is PlayerCommandSender player ? Player.Get<T>(player.ReferenceHub) : null;
 
         /// <summary>
         /// Returns player.
         /// </summary>
         /// <param name="sender">Potently player.</param>
         /// <returns>Player.</returns>
-        public static MPlayer GetPlayer(this ICommandSender sender) => GetPlayer(sender as CommandSender);
+        public static T GetPlayer<T>(this ICommandSender sender) where T : Player
+            => GetPlayer<T>(sender as CommandSender);
 
         /// <summary>
         /// Returns true if <paramref name="sender"/> is Player.
@@ -102,5 +108,239 @@ namespace Mistaken.API.Extensions
         }
 
         private static readonly RaycastHit[] CachedFindParentRoomRaycast = new RaycastHit[1];*/
+
+        /// <summary>
+        /// Get's spectated player.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <returns>Spectated player or null if not spectating anyone.</returns>
+        public static T GetSpectatedPlayer<T>(this T player) where T : Player
+            => player.ReferenceHub.roleManager.CurrentRole is SpectatorRole spectator ? Player.Get<T>(spectator.SyncedSpectatedNetId) : null;
+
+        /// <summary>
+        /// Checks if player has base game permission.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="perms">Permission.</param>
+        /// <returns>If has permission.</returns>
+        public static bool CheckPermissions(this Player player, PlayerPermissions perms)
+            => PermissionsHandler.IsPermitted(player.ReferenceHub.serverRoles.Permissions, perms);
+
+        /// <summary>
+        /// If player is Dev.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <returns>Is Dev.</returns>
+        public static bool IsDev(this Player player)
+            => player.UserId.IsDevUserId();
+
+        /// <summary>
+        /// Returns <see cref="Player.DisplayNickname"/> or <see cref="Player.Nickname"/> if first is null or "NULL" if player is null.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <returns>Name.</returns>
+        public static string GetDisplayName(this Player player)
+            => player is null ? "NULL" : player.DisplayNickname ?? player.Nickname;
+
+        /// <summary>
+        /// Checks if player is really connected to the server.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <returns>True if player is connected. Otherwise false.</returns>
+        public static bool IsConnected(this Player player)
+            => player.GameObject != null && player.Connection is not null;
+
+        /// <summary>
+        /// Converts player to string.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="userId">If userId should be shown.</param>
+        /// <returns>String version of player.</returns>
+        public static string ToString(this Player player, bool userId)
+        {
+            return userId ?
+                $"({player.PlayerId}) {player.GetDisplayName()} | {player.UserId}"
+                :
+                $"({player.PlayerId}) {player.GetDisplayName()}";
+        }
+
+        #region SessionVarsExtensions
+        /// <summary>
+        /// Returns SessionVarValue or <paramref name="defaultValue"/> if was not found.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="player">Player.</param>
+        /// <param name="type">Session Var.</param>
+        /// <param name="defaultValue">Default Value.</param>
+        /// <returns>Value.</returns>
+        public static T GetSessionVariable<T>(this Player player, SessionVarType type, T defaultValue = default)
+            => player.GetSessionVariable(type.ToString(), defaultValue);
+
+        /// <summary>
+        /// Returns SessionVarValue or <paramref name="defaultValue"/> if was not found.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="player">Player.</param>
+        /// <param name="name">Session Var.</param>
+        /// <param name="defaultValue">Default Value.</param>
+        /// <returns>Value.</returns>
+        public static T GetSessionVariable<T>(this Player player, string name, T defaultValue = default)
+        {
+            if (player.TryGetSessionVariable(name, out T value))
+                return value;
+
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// If SessionVar was found.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="player">Player.</param>
+        /// <param name="name">Session Var.</param>
+        /// <param name="value">Value.</param>
+        /// <returns>If session var was found.</returns>
+        public static bool TryGetSessionVariable<T>(this Player player, string name, out T value)
+        {
+            value = default;
+
+            if (!player.TemporaryData.StoredData.TryGetValue(name, out var val))
+                return false;
+
+            if (val is T t)
+            {
+                value = t;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// If SessionVar was found.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="player">Player.</param>
+        /// <param name="type">Session Var.</param>
+        /// <param name="value">Value.</param>
+        /// <returns>If session var was found.</returns>
+        public static bool TryGetSessionVariable<T>(this Player player, SessionVarType type, out T value)
+            => player.TryGetSessionVariable(type.ToString(), out value);
+
+        /// <summary>
+        /// Sets SessionVarValue.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="type">Session Var.</param>
+        /// <param name="value">Value.</param>
+        public static void SetSessionVariable(this Player player, SessionVarType type, object value)
+            => player.SetSessionVariable(type.ToString(), value);
+
+        /// <summary>
+        /// Sets SessionVarValue.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="name">Session Var.</param>
+        /// <param name="value">Value.</param>
+        public static void SetSessionVariable(this Player player, string name, object value)
+            => player.TemporaryData.StoredData[name] = value;
+
+        /// <summary>
+        /// Removes SessionVar.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="type">Session Var.</param>
+        public static void RemoveSessionVariable(this Player player, SessionVarType type)
+            => player.RemoveSessionVariable(type.ToString());
+
+        /// <summary>
+        /// Removes SessionVar.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="name">Session Var.</param>
+        public static void RemoveSessionVariable(this Player player, string name)
+            => player.TemporaryData.StoredData.Remove(name);
+        #endregion
+
+        #region PseudoGUIExtensions
+        /// <summary>
+        /// Sets GUI Element.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="key">key.</param>
+        /// <param name="type">position.</param>
+        /// <param name="content">content.</param>
+        /// <param name="duration">duration.</param>
+        public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content, float duration) =>
+            PseudoGUIHandler.Set(player, key, type, content, duration);
+
+        /// <summary>
+        /// Sets GUI Element.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="key">key.</param>
+        /// <param name="type">position.</param>
+        /// <param name="content">content.</param>
+        public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content) =>
+            PseudoGUIHandler.Set(player, key, type, content);
+        #endregion
+
+        #region DamageExtensions
+        /// <summary>
+        /// Returns if player will die because of damage caused by <paramref name="handler"/>.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="handler">Damage Cause.</param>
+        /// <returns>If player will die because of this damage.</returns>
+        public static bool WillDie(this Player player, StandardDamageHandler handler)
+        {
+            var tmp = ((AhpStat)player.ReferenceHub.playerStats.StatModules[1])._activeProcesses.Select(x => new { Process = x, x.CurrentAmount });
+            var hp = player.Health;
+            var damage = handler.Damage;
+            var death = handler.ApplyDamage(player.ReferenceHub) == DamageHandlerBase.HandlerOutput.Death;
+            handler.Damage = damage;
+            player.Health = hp;
+
+            foreach (var item in tmp)
+                item.Process.CurrentAmount = item.CurrentAmount;
+
+            return death;
+        }
+
+        /// <summary>
+        /// Returns real dealt damage to the player.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="handler">Damage Cause.</param>
+        /// <param name="dealtHealthDamage">Damage Absorbed by HP.</param>
+        /// <param name="absorbedAhpDamage">Damage Absorbed by AHP.</param>
+        /// <returns>Real dealt damage, damage absorbed by AHP and damage absorbed by HP.</returns>
+        public static float GetRealDamageAmount(this Player player, StandardDamageHandler handler, out float dealtHealthDamage, out float absorbedAhpDamage)
+        {
+            var tmp = ((AhpStat)player.ReferenceHub.playerStats.StatModules[1])._activeProcesses.Select(x => new { Process = x, x.CurrentAmount });
+            var hp = player.Health;
+            var damage = handler.Damage;
+            handler.ApplyDamage(player.ReferenceHub);
+            var realDamage = handler.Damage;
+            absorbedAhpDamage = handler.AbsorbedAhpDamage;
+            dealtHealthDamage = handler.DealtHealthDamage;
+            handler.Damage = damage;
+            player.Health = hp;
+
+            foreach (var item in tmp)
+                item.Process.CurrentAmount = item.CurrentAmount;
+
+            return realDamage;
+        }
+
+        /// <summary>
+        /// Returns real dealt damage to the player.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="handler">Damage Cause.</param>
+        /// <returns>Real dealt damage.</returns>
+        public static float GetRealDamageAmount(this Player player, StandardDamageHandler handler)
+            => player.GetRealDamageAmount(handler, out _, out _);
+        #endregion
     }
 }

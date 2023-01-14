@@ -9,7 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommandSystem;
+using MapGeneration;
 using Mistaken.API.Extensions;
+using PlayerRoles;
+using PluginAPI.Core;
 using Utils;
 
 namespace Mistaken.API.Commands
@@ -59,7 +62,7 @@ namespace Mistaken.API.Commands
 
             var bc = false;
             var argsString = string.Join(" ", arguments.Array!);
-            var playerId = sender.IsPlayer() ? sender.GetPlayer().PlayerId : 1;
+            var playerId = sender.IsPlayer() ? sender.GetPlayer<Player>().PlayerId : 1;
             if (argsString.Contains("@me"))
                 argsString = argsString.Replace("@me", playerId.ToString());
 
@@ -71,7 +74,7 @@ namespace Mistaken.API.Commands
                 switch (item)
                 {
                     case "@-cbc":
-                        sender.GetPlayer().ClearBroadcasts();
+                        sender.GetPlayer<Player>().ClearBroadcasts();
                         break;
                     case "@-bc":
                         bc = true;
@@ -86,11 +89,11 @@ namespace Mistaken.API.Commands
                 {
                     newQuery = argsString.Replace(
                         "@!me",
-                        string.Join(".", RealPlayers.List.Where(p => p.Id != playerId).Select(p => p.Id)));
+                        string.Join(".", Player.GetPlayers().Where(p => p.PlayerId != playerId).Select(p => p.PlayerId)));
                 }
 
                 if (argsString.Contains("@all"))
-                    newQuery = argsString.Replace("@all", string.Join(".", RealPlayers.List.Select(p => p.Id)));
+                    newQuery = argsString.Replace("@all", string.Join(".", Player.GetPlayers().Select(p => p.PlayerId)));
                 if (argsString.Contains("@team:"))
                 {
                     foreach (var item in args.Where(arg => arg.StartsWith("@team:")))
@@ -103,7 +106,7 @@ namespace Mistaken.API.Commands
                         {
                             newQuery = argsString.Replace(
                                 "@team:" + value,
-                                string.Join(".", RealPlayers.Get(teamType).Select(p => p.Id)));
+                                string.Join(".", Player.GetPlayers().Where(x => x.ReferenceHub.GetTeam() == teamType).Select(p => p.PlayerId)));
                         }
                     }
                 }
@@ -122,9 +125,9 @@ namespace Mistaken.API.Commands
                                 "@!team:" + value,
                                 string.Join(
                                     ".",
-                                    RealPlayers.List
-                                        .Where(x => x.Role.Team != teamType)
-                                        .Select(p => p.Id)));
+                                    Player.GetPlayers()
+                                        .Where(x => x.ReferenceHub.GetTeam() != teamType)
+                                        .Select(p => p.PlayerId)));
                         }
                     }
                 }
@@ -137,11 +140,11 @@ namespace Mistaken.API.Commands
                         if (values.Length <= 0)
                             continue;
                         var value = values[1];
-                        if (Enum.TryParse<RoleType>(value, true, out var roleType))
+                        if (Enum.TryParse<RoleTypeId>(value, true, out var roleType))
                         {
                             newQuery = argsString.Replace(
                                 "@role:" + value,
-                                string.Join(".", RealPlayers.Get(roleType).Select(p => p.Id)));
+                                string.Join(".", Player.GetPlayers().Where(x => x.Role == roleType).Select(p => p.PlayerId)));
                         }
                     }
                 }
@@ -154,20 +157,20 @@ namespace Mistaken.API.Commands
                         if (values.Length <= 0)
                             continue;
                         var value = values[1];
-                        if (Enum.TryParse<RoleType>(value, true, out var roleType))
+                        if (Enum.TryParse<RoleTypeId>(value, true, out var roleType))
                         {
                             newQuery = argsString.Replace(
                                 "@!role:" + value,
                                 string.Join(
                                     ".",
-                                    RealPlayers.List
-                                        .Where(p => p.Role.Type != roleType)
-                                        .Select(p => p.Id)));
+                                    Player.GetPlayers()
+                                        .Where(x => x.Role != roleType)
+                                        .Select(p => p.PlayerId)));
                         }
                     }
                 }
 
-                if (argsString.Contains("@zone:"))
+                /*if (argsString.Contains("@zone:"))
                 {
                     foreach (var item in args.Where(arg => arg.StartsWith("@zone:")))
                     {
@@ -175,13 +178,13 @@ namespace Mistaken.API.Commands
                         if (values.Length <= 0)
                             continue;
                         var value = values[1];
-                        if (Enum.TryParse<ZoneType>(value, true, out var zoneType))
+                        if (Enum.TryParse<FacilityZone>(value, true, out var zoneType))
                         {
                             newQuery = argsString.Replace(
                                 "@zone:" + value,
                                 string.Join(
                                     ".",
-                                    RealPlayers.List
+                                    Player.GetPlayers()
                                         .Where(x => x.CurrentRoom.Zone == zoneType)
                                         .Select(p => p.Id)));
                         }
@@ -207,14 +210,14 @@ namespace Mistaken.API.Commands
                                         .Select(p => p.Id)));
                         }
                     }
-                }
+                }*/
 
                 newQuery = Regex.Replace(newQuery, RAUtils.PlayerNameRegex, (match) =>
                 {
                     if (!match.Success)
                         return match.Value;
 
-                    foreach (var player in RealPlayers.List)
+                    foreach (var player in Player.GetPlayers())
                     {
                         if (match.Value != player.Nickname && match.Value != player.DisplayNickname)
                             continue;
@@ -238,7 +241,7 @@ namespace Mistaken.API.Commands
                         .ToArray(),
                     out var successful));
             if (bc)
-                sender.GetPlayer().Broadcast(this.Command, 10, string.Join("\n", response));
+                sender.GetPlayer<Player>().SendBroadcast(this.Command, 10, string.Join("\n", response));
 
             NorthwoodLib.Pools.ListPool<string>.Shared.Return(args);
             Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);

@@ -74,7 +74,7 @@ namespace Mistaken.API
             GUI.PseudoGUIHandler.Initialize();
             Utilities.ThreadDispatcher.Initialize();
             RoundPlus.IncRoundId();
-            Utilities.Room.Reload();
+            // Utilities.Room.Reload();
         }
 
         [UsedImplicitly]
