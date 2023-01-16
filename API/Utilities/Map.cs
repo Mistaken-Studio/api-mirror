@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using MEC;
 using PluginAPI.Core;
+using System;
+using System.Collections.Generic;
 
 namespace Mistaken.API.Utilities
 {

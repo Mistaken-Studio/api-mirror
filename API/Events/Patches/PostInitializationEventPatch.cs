@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Reflection.Emit;
-using HarmonyLib;
+﻿using HarmonyLib;
 using JetBrains.Annotations;
 using NorthwoodLib.Pools;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 
 namespace Mistaken.API.Events.Patches
 {

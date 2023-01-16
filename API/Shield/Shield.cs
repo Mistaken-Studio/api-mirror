@@ -168,7 +168,7 @@ namespace Mistaken.API.Shield
                 return;
 
             // if (!ev.IsAllowed)
-                // return;
+            // return;
 
             Destroy(this);
         }
@@ -180,7 +180,7 @@ namespace Mistaken.API.Shield
                 return;
 
             // if (!ev.IsAllowed)
-                // return;
+            // return;
 
             this.InternalTimeUntilShieldRecharge = this.TimeUntilShieldRecharge;
         }

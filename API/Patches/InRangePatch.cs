@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Linq;
 using HarmonyLib;
 using JetBrains.Annotations;
 using Scp914;
+using System.Linq;
 using UnityEngine;
 
 #pragma warning disable IDE0060

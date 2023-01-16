@@ -10,8 +10,6 @@ using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using PluginAPI.Events;
-using Respawning;
-using System.Runtime.CompilerServices;
 
 namespace Mistaken.API.Utilities
 {

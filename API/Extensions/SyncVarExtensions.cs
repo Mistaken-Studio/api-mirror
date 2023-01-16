@@ -4,15 +4,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
-using Mirror;
-using PlayerRoles;
-using PluginAPI.Core;
-
 namespace Mistaken.API.Extensions
 {
     /// <summary>

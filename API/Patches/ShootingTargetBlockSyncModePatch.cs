@@ -4,10 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Reflection.Emit;
 using HarmonyLib;
 using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 

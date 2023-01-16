@@ -4,8 +4,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using HarmonyLib;
-
 namespace Mistaken.API.Events.Patches
 {
     // [HarmonyPatch(typeof(Exiled.Events.Handlers.Server), nameof(Exiled.Events.Handlers.Server.OnWaitingForPlayers))]

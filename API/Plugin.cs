@@ -62,7 +62,6 @@ namespace Mistaken.API
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         private void OnWaitingForPlayers()
         {
-            GUI.PseudoGUIHandler.Initialize();
             Utilities.ThreadDispatcher.Initialize();
             RoundPlus.IncRoundId();
             // Utilities.Room.Reload();

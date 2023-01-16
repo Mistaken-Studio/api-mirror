@@ -85,8 +85,6 @@
     <Compile Include="Extensions\SyncVarExtensions.cs" />
     <Compile Include="Handlers\InfiniteAmmoHandler.cs" />
     <Compile Include="Handlers\DoorPermissionsHandler.cs" />
-    <Compile Include="GUI\PseudoGUIHandler.cs" />
-    <Compile Include="GUI\PseudoGUIPosition.cs" />
     <Compile Include="MPlayerFactory.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />

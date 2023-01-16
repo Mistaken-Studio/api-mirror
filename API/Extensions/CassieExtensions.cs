@@ -4,11 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Text;
 using JetBrains.Annotations;
 using NorthwoodLib.Pools;
 using Respawning;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Mistaken.API.Extensions
 {

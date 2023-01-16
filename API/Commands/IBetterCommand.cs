@@ -4,15 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using CommandSystem;
+using Mistaken.API.Extensions;
+using PlayerRoles;
+using PluginAPI.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CommandSystem;
-using MapGeneration;
-using Mistaken.API.Extensions;
-using PlayerRoles;
-using PluginAPI.Core;
 using Utils;
 
 namespace Mistaken.API.Commands

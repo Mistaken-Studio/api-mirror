@@ -5,13 +5,10 @@
 // -----------------------------------------------------------------------
 
 using CommandSystem;
-using Mistaken.API.GUI;
-using Mistaken.API.Handlers;
 using PlayerRoles.Spectating;
 using PlayerStatsSystem;
 using PluginAPI.Core;
 using RemoteAdmin;
-using System;
 using System.Linq;
 
 namespace Mistaken.API.Extensions
@@ -266,29 +263,6 @@ namespace Mistaken.API.Extensions
         /// <param name="name">Session Var.</param>
         public static void RemoveSessionVariable(this Player player, string name)
             => player.TemporaryData.StoredData.Remove(name);
-        #endregion
-
-        #region PseudoGUIExtensions
-        /// <summary>
-        /// Sets GUI Element.
-        /// </summary>
-        /// <param name="player">Player.</param>
-        /// <param name="key">key.</param>
-        /// <param name="type">position.</param>
-        /// <param name="content">content.</param>
-        /// <param name="duration">duration.</param>
-        public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content, float duration) =>
-            PseudoGUIHandler.Set(player, key, type, content, duration);
-
-        /// <summary>
-        /// Sets GUI Element.
-        /// </summary>
-        /// <param name="player">Player.</param>
-        /// <param name="key">key.</param>
-        /// <param name="type">position.</param>
-        /// <param name="content">content.</param>
-        public static void SetGUI(this Player player, string key, PseudoGUIPosition type, string content) =>
-            PseudoGUIHandler.Set(player, key, type, content);
         #endregion
 
         #region DamageExtensions

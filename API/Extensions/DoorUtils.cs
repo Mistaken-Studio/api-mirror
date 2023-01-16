@@ -4,14 +4,11 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using Interactables.Interobjects.DoorUtils;
 using JetBrains.Annotations;
 using MapGeneration;
-using Mirror;
-using PluginAPI.Core.Zones;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 namespace Mistaken.API.Extensions
 {

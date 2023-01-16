@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PluginAPI.Core;
+using System;
 using System.Collections.Generic;
-using PluginAPI.Core;
 
 namespace Mistaken.API
 {

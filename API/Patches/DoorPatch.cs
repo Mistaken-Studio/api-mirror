@@ -7,13 +7,13 @@
 #pragma warning disable SA1119 // Statement should not use unnecessary parenthesis
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-using System;
-using System.Collections.Generic;
 using CommandSystem;
 using CommandSystem.Commands.RemoteAdmin.Doors;
 using HarmonyLib;
 using Interactables.Interobjects.DoorUtils;
 using JetBrains.Annotations;
+using System;
+using System.Collections.Generic;
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable RedundantAssignment
