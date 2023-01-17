@@ -151,7 +151,7 @@ namespace Mistaken.API.Extensions
         /// <param name="player">Player.</param>
         /// <returns>True if player is connected. Otherwise false.</returns>
         public static bool IsConnected(this Player player)
-            => player.GameObject != null && player.Connection is not null;
+            => player?.GameObject != null && player.Connection is not null;
 
         /// <summary>
         /// Converts player to string.
