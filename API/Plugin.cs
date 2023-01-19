@@ -31,7 +31,7 @@ namespace Mistaken.API
 
             // Exiled.Events.Handlers.Server.WaitingForPlayers += Module.TerminateAllCoroutines;
 
-            _harmony.PatchAll();
+            //_harmony.PatchAll();
             // Patches.Vars.EnableVarPatch.Patch();
 
             // Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
@@ -53,7 +53,7 @@ namespace Mistaken.API
 
             // Exiled.Events.Handlers.Server.WaitingForPlayers -= Module.TerminateAllCoroutines;
             EventManager.UnregisterEvents(this);
-            _harmony.UnpatchAll();
+            //_harmony.UnpatchAll();
 
             // Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
         }
@@ -62,7 +62,6 @@ namespace Mistaken.API
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         private void OnWaitingForPlayers()
         {
-            Utilities.ThreadDispatcher.Initialize();
             RoundPlus.IncRoundId();
             // Utilities.Room.Reload();
         }

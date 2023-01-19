@@ -10,6 +10,7 @@ using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using PluginAPI.Events;
+using Respawning;
 
 namespace Mistaken.API.Utilities
 {
@@ -51,7 +52,7 @@ namespace Mistaken.API.Utilities
         }
 
         [PluginEvent(ServerEventType.TeamRespawn)]
-        private bool OnTeamRespawn()
+        private bool OnTeamRespawn(SpawnableTeamType type)
             => !Map.RespawnLock;
 
         /*private void Server_RespawningTeam(Exiled.Events.EventArgs.RespawningTeamEventArgs ev)
