@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <LangVersion>11.0</LangVersion>
     <PlatformTarget>x64</PlatformTarget>
-	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -114,6 +114,7 @@
     <Compile Include="SessionVarType.cs" />
     <Compile Include="Shield\Shield.cs" />
     <Compile Include="StructureType.cs" />
+    <Compile Include="Utilities\Item.cs" />
     <Compile Include="Utilities\Map.Blackout.cs" />
     <Compile Include="Utilities\Map.cs" />
     <Compile Include="Utilities\Map.Overheat.cs" />
