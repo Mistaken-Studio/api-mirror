@@ -10,6 +10,7 @@ using PlayerStatsSystem;
 using PluginAPI.Core;
 using RemoteAdmin;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 
 namespace Mistaken.API.Extensions
 {
@@ -165,6 +166,30 @@ namespace Mistaken.API.Extensions
                 $"({player.PlayerId}) {player.GetDisplayName()} | {player.UserId}"
                 :
                 $"({player.PlayerId}) {player.GetDisplayName()}";
+        }
+
+        /// <summary>
+        /// Converts player to string for use in round logs.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <returns>String version of player.</returns>
+        public static string ToStringLogs(this Player player)
+            => $"{player.Nickname} ({player.UserId}) as {player.Role}";
+
+        public static string GetFormatedUserId(this Player player)
+        {
+            if (player is null)
+                return "NONE";
+
+            var split = player.UserId.Split('@');
+
+            return split[1] switch
+            {
+                "steam" => $"[{player.Nickname}](https://steamcommunity.com/profiles/{split[0]})",
+                "discord" => $"{player.Nickname} (<@{split[0]}>)",
+                "server" => "Server",
+                _ => player.UserId
+            };
         }
 
         #region SessionVarsExtensions
