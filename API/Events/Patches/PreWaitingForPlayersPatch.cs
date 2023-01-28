@@ -1,18 +1,11 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="PreWaitingForPlayersPatch.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
+﻿namespace Mistaken.API.Events.Patches;
 
-namespace Mistaken.API.Events.Patches
+// [HarmonyPatch(typeof(Exiled.Events.Handlers.Server), nameof(Exiled.Events.Handlers.Server.OnWaitingForPlayers))]
+internal static class PreWaitingForPlayersPatch
 {
-    // [HarmonyPatch(typeof(Exiled.Events.Handlers.Server), nameof(Exiled.Events.Handlers.Server.OnWaitingForPlayers))]
-    internal static class PreWaitingForPlayersPatch
+    internal static bool Prefix()
     {
-        internal static bool Prefix()
-        {
-            Events.OnPreWaitingForPlayers();
-            return true;
-        }
+        Events.OnPreWaitingForPlayers();
+        return true;
     }
 }

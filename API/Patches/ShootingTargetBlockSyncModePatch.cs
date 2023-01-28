@@ -1,20 +1,10 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="ShootingTargetBlockSyncModePatch.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using HarmonyLib;
-using JetBrains.Annotations;
+﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
-#pragma warning disable SA1118 // Parameter should not span multiple lines
-
 namespace Mistaken.API.Patches
 {
-    [UsedImplicitly]
-    [HarmonyPatch(typeof(AdminToys.ShootingTarget), nameof(AdminToys.ShootingTarget.ServerInteract))]
+    // [HarmonyPatch(typeof(AdminToys.ShootingTarget), nameof(AdminToys.ShootingTarget.ServerInteract))]
     internal static class ShootingTargetBlockSyncModePatch
     {
         internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)

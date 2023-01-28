@@ -59,6 +59,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnnonymousEvents.cs" />
+    <Compile Include="EventArgs\RagdollSpawnedEventArgs.cs" />
+    <Compile Include="EventArgs\RagdollSpawningEventArgs.cs" />
+    <Compile Include="Events\Patches\RagdollManagerPatch.cs" />
+    <Compile Include="Events\Ragdoll.cs" />
+    <Compile Include="Extensions\MiscellaneousMethods.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Handlers\BlockInventoryInteractionHandler.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
@@ -84,6 +89,7 @@
     <Compile Include="Handlers\DoorPermissionsHandler.cs" />
     <Compile Include="MPlayerFactory.cs" />
     <Compile Include="Patches\DoorLockPatch.cs" />
+    <Compile Include="Patches\RagdollSpawningPatches.cs" />
     <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
     <Compile Include="Patches\InRangePatch.cs" />
     <Compile Include="Patches\Vars\BypassPatch.cs" />

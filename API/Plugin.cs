@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Mirror;
 using Mistaken.API.Handlers;
 using Mistaken.API.Utilities;
+using PlayerRoles;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
@@ -31,7 +32,7 @@ namespace Mistaken.API
 
             // Exiled.Events.Handlers.Server.WaitingForPlayers += Module.TerminateAllCoroutines;
 
-            //_harmony.PatchAll();
+            _harmony.PatchAll();
             // Patches.Vars.EnableVarPatch.Patch();
 
             // Diagnostics.Patches.GenericInvokeSafelyPatch.PatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
@@ -53,7 +54,7 @@ namespace Mistaken.API
 
             // Exiled.Events.Handlers.Server.WaitingForPlayers -= Module.TerminateAllCoroutines;
             EventManager.UnregisterEvents(this);
-            //_harmony.UnpatchAll();
+            _harmony.UnpatchAll();
 
             // Diagnostics.Patches.GenericInvokeSafelyPatch.UnpatchEvents(this.Harmony, typeof(Exiled.Events.Extensions.Event));
         }

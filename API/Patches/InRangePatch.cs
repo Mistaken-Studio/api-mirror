@@ -1,28 +1,16 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="InRangePatch.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
-
-using HarmonyLib;
-using JetBrains.Annotations;
+﻿using HarmonyLib;
 using Scp914;
 using System.Linq;
 using UnityEngine;
 
-#pragma warning disable IDE0060
 
-// ReSharper disable UnusedParameter.Local
-// ReSharper disable UnusedParameter.Global
-namespace Mistaken.API.Patches
+namespace Mistaken.API.Patches;
+
+// [HarmonyPatch(typeof(Scp914Upgrader), nameof(Scp914Upgrader.Upgrade))]
+internal static class InRangePatch
 {
-    [UsedImplicitly]
-    [HarmonyPatch(typeof(Scp914Upgrader), nameof(Scp914Upgrader.Upgrade))]
-    internal static class InRangePatch
+    internal static void Prefix(ref Collider[] intake, Vector3 moveVector, Scp914Mode mode, Scp914KnobSetting setting)
     {
-        internal static void Prefix(ref Collider[] intake, Vector3 moveVector, Scp914Mode mode, Scp914KnobSetting setting)
-        {
-            intake = intake.Where(x => x.GetComponent<Components.InRange>() == null && x.GetComponent<Components.InRangeBall>() == null).ToArray();
-        }
+        intake = intake.Where(x => x.GetComponent<Components.InRange>() == null && x.GetComponent<Components.InRangeBall>() == null).ToArray();
     }
 }
