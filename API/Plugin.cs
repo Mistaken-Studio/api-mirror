@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Mirror;
 using Mistaken.API.Handlers;
 using Mistaken.API.Utilities;
-using PlayerRoles;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
@@ -72,6 +71,7 @@ namespace Mistaken.API
         private void OnRoundRestart()
         {
             MapPlus.PostRoundCleanup();
+            Utilities.Map.ragdolls.Clear();
 
             if (ServerStatic.StopNextRound != ServerStatic.NextRoundAction.Restart)
                 return;

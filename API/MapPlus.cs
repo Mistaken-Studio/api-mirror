@@ -47,8 +47,8 @@ namespace Mistaken.API
         {
             get
             {
-                recontainer ??= Object.FindObjectOfType<Scp079Recontainer>();
-                return recontainer;
+                _recontainer ??= Object.FindObjectOfType<Scp079Recontainer>();
+                return _recontainer;
             }
         }
 
@@ -160,7 +160,7 @@ namespace Mistaken.API
 
         internal static void PostRoundCleanup()
         {
-            recontainer = null;
+            _recontainer = null;
         }
 
         private static readonly Dictionary<StructureType, Guid> StructurePrefabs = new()
@@ -181,6 +181,6 @@ namespace Mistaken.API
             { StructureType.Workstation, new("ad8a455f-062d-dea4-5b47-ac9217d4c58b") },
         };
 
-        private static Scp079Recontainer recontainer;
+        private static Scp079Recontainer _recontainer;
     }
 }

@@ -3,6 +3,7 @@ using MEC;
 using PluginAPI.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Mistaken.API.Utilities
 {
@@ -21,6 +22,12 @@ namespace Mistaken.API.Utilities
         /// Gets or sets a value indicating whether respawn should be locked or not.
         /// </summary>
         public static bool RespawnLock { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static ReadOnlyCollection<BasicRagdoll> Ragdolls
+            => ragdolls.AsReadOnly();
 
         /// <summary>
         /// Gets or sets tesla mode.
@@ -65,6 +72,8 @@ namespace Mistaken.API.Utilities
         /// </summary>
         public static void RestartDoors()
             => Timing.RunCoroutine(RestartDoorsMec(), nameof(RestartDoorsMec));
+
+        internal static readonly List<BasicRagdoll> ragdolls = new();
 
         internal static void Restart()
         {
