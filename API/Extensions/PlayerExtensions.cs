@@ -350,7 +350,7 @@ public static class PlayerExtensions
     /// <param name="player">Player.</param>
     /// <param name="key">Key.</param>
     /// <param name="value">Value.</param>
-    public static void Set(this Player player, string key, string value)
+    public static void SetCustomInfo(this Player player, string key, string value)
     {
         if (!CustomInfoHandler.CustomInfo.ContainsKey(player))
             CustomInfoHandler.CustomInfo[player] = new();
@@ -373,7 +373,7 @@ public static class PlayerExtensions
     /// <param name="key">Key.</param>
     /// <param name="value">Value.</param>
     /// <param name="selector">Func which selects players maching criteria.</param>
-    public static void SetTargets(this Player player, string key, string value, Func<Player, bool> selector)
+    public static void SetCustomInfoForTargets(this Player player, string key, string value, Func<Player, bool> selector)
     {
         var players = Player.GetPlayers().Where(selector).ToArray();
         if (players.Length == 0)
@@ -410,7 +410,7 @@ public static class PlayerExtensions
     /// <param name="key">Key.</param>
     /// <param name="value">Value.</param>
     /// <param name="target">Target.</param>
-    public static void SetTarget(this Player player, string key, string value, Player target)
+    public static void SetCustomInfoForTarget(this Player player, string key, string value, Player target)
     {
         if (!CustomInfoHandler.CustomInfoTargeted.ContainsKey(player))
             CustomInfoHandler.CustomInfoTargeted[player] = new();
