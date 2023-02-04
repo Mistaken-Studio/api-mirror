@@ -19,22 +19,6 @@ public static class PlayerExtensions
         => player.SendBroadcast($"<color=orange>[<color=green>{tag}</color>]</color> {message}", duration, flags);
 
     /// <summary>
-    /// Returns player.
-    /// </summary>
-    /// <param name="sender">Potently player.</param>
-    /// <returns>Player.</returns>
-    public static T GetPlayer<T>(this CommandSender sender) where T : Player
-        => sender is PlayerCommandSender player ? Player.Get<T>(player.ReferenceHub) : null;
-
-    /// <summary>
-    /// Returns player.
-    /// </summary>
-    /// <param name="sender">Potently player.</param>
-    /// <returns>Player.</returns>
-    public static T GetPlayer<T>(this ICommandSender sender) where T : Player
-        => GetPlayer<T>(sender as CommandSender);
-
-    /// <summary>
     /// Returns true if <paramref name="sender"/> is Player.
     /// </summary>
     /// <param name="sender">To Check.</param>

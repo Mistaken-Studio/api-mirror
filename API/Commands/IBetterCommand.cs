@@ -63,7 +63,7 @@ namespace Mistaken.API.Commands
 
             var bc = false;
             var argsString = string.Join(" ", arguments.Array!);
-            var playerId = sender.IsPlayer() ? sender.GetPlayer<Player>().PlayerId : 1;
+            var playerId = sender.IsPlayer() ? Player.Get(sender).PlayerId : 1;
             if (argsString.Contains("@me"))
                 argsString = argsString.Replace("@me", playerId.ToString());
 
@@ -75,7 +75,7 @@ namespace Mistaken.API.Commands
                 switch (item)
                 {
                     case "@-cbc":
-                        sender.GetPlayer<Player>().ClearBroadcasts();
+                        Player.Get(sender).ClearBroadcasts();
                         break;
                     case "@-bc":
                         bc = true;
@@ -242,7 +242,7 @@ namespace Mistaken.API.Commands
                         .ToArray(),
                     out var successful));
             if (bc)
-                sender.GetPlayer<Player>().BroadcastWithTag(this.Command, string.Join("\n", response), 10);
+                Player.Get(sender).BroadcastWithTag(this.Command, string.Join("\n", response), 10);
 
             NorthwoodLib.Pools.ListPool<string>.Shared.Return(args);
             // Diagnostics.MasterHandler.LogTime("Command", this.Command, start, DateTime.Now);
