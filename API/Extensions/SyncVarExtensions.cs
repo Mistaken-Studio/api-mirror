@@ -1,45 +1,41 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="SyncVarExtensions.cs" company="Mistaken">
-// Copyright (c) Mistaken. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
+﻿using PlayerRoles;
+using PluginAPI.Core;
 
-namespace Mistaken.API.Extensions
+namespace Mistaken.API.Extensions;
+
+/// <summary>
+/// SyncVar Extensions.
+/// </summary>
+public static class SyncVarExtensions
 {
     /// <summary>
-    /// SyncVar Extensions.
+    /// Changes <paramref name="player"/> role for <paramref name="target"/>.
     /// </summary>
-    public static class SyncVarExtensions
+    /// <param name="player">Player to change rank for.</param>
+    /// <param name="target">Target that will see change.</param>
+    /// <param name="name">Name.</param>
+    /// <param name="color">Color.</param>
+    public static void TargetSetBadge(this Player player, Player target, string name, string color)
     {
-        /*/// <summary>
-        /// Changes <paramref name="player"/> role for <paramref name="target"/>.
-        /// </summary>
-        /// <param name="player">Player to change rank for.</param>
-        /// <param name="target">Target that will see change.</param>
-        /// <param name="name">Name.</param>
-        /// <param name="color">Color.</param>
-        public static void TargetSetBadge(this Player player, Player target, string name, string color)
-        {
-            SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myText), name);
-            SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myColor), color);
-        }
-
-        /// <summary>
-        /// Changes Nickname.
-        /// </summary>
-        /// <param name="player">Player to change nickname for.</param>
-        /// <param name="target">Player that will see change.</param>
-        /// <param name="nickname">Nickname.</param>
-        public static void TargetSetNickname(this Player player, Player target, string nickname)
-            => SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(NicknameSync), nameof(NicknameSync.Network_displayName), nickname);
-
-        /// <summary>
-        /// Changes Appeareance.
-        /// </summary>
-        /// <param name="player">Player to change role for.</param>
-        /// <param name="target">Player that will see change.</param>
-        /// <param name="type">Role.</param>
-        public static void ChangeAppearance(this Player player, Player target, RoleTypeId type)
-            => SendFakeSyncVar(target, player.ReferenceHub.networkIdentity, typeof(CharacterClassManager), nameof(CharacterClassManager.NetworkCurClass), (sbyte)type);*/
+        target.SendFakeSyncVar(player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myText), name);
+        target.SendFakeSyncVar(player.ReferenceHub.networkIdentity, typeof(ServerRoles), nameof(ServerRoles.Network_myColor), color);
     }
+
+    /// <summary>
+    /// Changes Nickname.
+    /// </summary>
+    /// <param name="player">Player to change nickname for.</param>
+    /// <param name="target">Player that will see change.</param>
+    /// <param name="nickname">Nickname.</param>
+    public static void TargetSetNickname(this Player player, Player target, string nickname)
+        => target.SendFakeSyncVar(player.ReferenceHub.networkIdentity, typeof(NicknameSync), nameof(NicknameSync.Network_displayName), nickname);
+
+    /// <summary>
+    /// Changes Appeareance.
+    /// </summary>
+    /// <param name="player">Player to change role for.</param>
+    /// <param name="target">Player that will see change.</param>
+    /// <param name="type">Role.</param>
+    public static void ChangeAppearance(this Player player, Player target, RoleTypeId type)
+        => target.Connection.Send(new RoleSyncInfo(player.ReferenceHub, type, target.ReferenceHub));
 }
