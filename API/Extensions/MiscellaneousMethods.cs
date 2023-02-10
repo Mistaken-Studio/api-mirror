@@ -15,7 +15,7 @@ public static class MiscellaneousMethods
 
     private static readonly Dictionary<ushort, string> _serverNames = new()
     {
-        { 7777, "#1 RP Vanilla" },
+        { 7777, "#1 Ranked" },
         { 7778, "#2 RP" },
         { 7779, "#3 Casual" },
         { 7780, "#4 Memes" },
