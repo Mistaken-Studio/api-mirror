@@ -3,23 +3,19 @@
 namespace Mistaken.API.Events;
 
 /// <summary>
-/// Mistaken Ragdoll events.
+/// Mistaken ragdoll events.
 /// </summary>
 public static class Ragdoll
 {
-    public delegate void OnSpawned(RagdollSpawnedEventArgs ev);
-
-    public delegate void OnSpawning(RagdollSpawningEventArgs ev);
-
     /// <summary>
     /// Invoked when Ragdoll was spawned.
     /// </summary>
-    public static event OnSpawned Spawned;
+    public static event CustomEventHandler<RagdollSpawnedEventArgs> Spawned;
 
     /// <summary>
     /// Invoked before spawning Ragdoll.
     /// </summary>
-    public static event OnSpawning Spawning;
+    public static event CustomEventHandler<RagdollSpawningEventArgs> Spawning;
 
     internal static void RagdollSpawn(RagdollSpawnedEventArgs ev)
         => Spawned?.Invoke(ev);

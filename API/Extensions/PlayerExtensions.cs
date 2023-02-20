@@ -1,10 +1,11 @@
 ﻿using CommandSystem;
-using Mistaken.API.Handlers;
+using Mistaken.API.Enums;
+using Mistaken.API.Utilities;
 using PlayerRoles.Spectating;
 using PlayerStatsSystem;
 using PluginAPI.Core;
 using RemoteAdmin;
-using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Mistaken.API.Extensions;
@@ -14,8 +15,8 @@ namespace Mistaken.API.Extensions;
 /// </summary>
 public static class PlayerExtensions
 {
-    /// <inheritdoc cref="Player.SendBroadcast(string, ushort, global::Broadcast.BroadcastFlags, bool)"/>
-    public static void BroadcastWithTag(this Player player, string tag, string message, ushort duration, Broadcast.BroadcastFlags flags = global::Broadcast.BroadcastFlags.Normal)
+    /// <inheritdoc cref="Player.SendBroadcast(string, ushort, Broadcast.BroadcastFlags, bool)"/>
+    public static void BroadcastWithTag(this Player player, string tag, string message, ushort duration, Broadcast.BroadcastFlags flags = Broadcast.BroadcastFlags.Normal)
         => player.SendBroadcast($"<color=orange>[<color=green>{tag}</color>]</color> {message}", duration, flags);
 
     /// <summary>
@@ -131,7 +132,7 @@ public static class PlayerExtensions
     /// <param name="player">Player.</param>
     /// <returns>True if player is connected. Otherwise false.</returns>
     public static bool IsConnected(this Player player)
-        => player?.GameObject != null && player.Connection is not null;
+        => player?.ReferenceHub != null && player?.GameObject != null && player.Connection is not null;
 
     /// <summary>
     /// Converts player to string.
@@ -161,7 +162,6 @@ public static class PlayerExtensions
             return "NONE";
 
         var split = player.UserId.Split('@');
-
         return split[1] switch
         {
             "steam" => $"[{player.Nickname}](https://steamcommunity.com/profiles/{split[0]})",
@@ -335,20 +335,7 @@ public static class PlayerExtensions
     /// <param name="key">Key.</param>
     /// <param name="value">Value.</param>
     public static void SetCustomInfo(this Player player, string key, string value)
-    {
-        if (!CustomInfoHandler.CustomInfo.ContainsKey(player))
-            CustomInfoHandler.CustomInfo[player] = new();
-
-        if (string.IsNullOrWhiteSpace(value))
-            CustomInfoHandler.CustomInfo[player].Remove(key);
-
-        else if (!CustomInfoHandler.CustomInfo[player].TryGetValue(key, out var oldValue) || oldValue != value)
-            CustomInfoHandler.CustomInfo[player][key] = value;
-        else
-            return;
-
-        CustomInfoHandler.ToUpdate.Add(player);
-    }
+        => CustomInfo.SetCustomInfoInternal(player, key, value);
 
     /// <summary>
     /// Sets CustomInfo for players maching criteria.
@@ -356,36 +343,9 @@ public static class PlayerExtensions
     /// <param name="player">Player.</param>
     /// <param name="key">Key.</param>
     /// <param name="value">Value.</param>
-    /// <param name="selector">Func which selects players maching criteria.</param>
-    public static void SetCustomInfoForTargets(this Player player, string key, string value, Func<Player, bool> selector)
-    {
-        var players = Player.GetPlayers().Where(selector).ToArray();
-        if (players.Length == 0)
-            return;
-
-        if (!CustomInfoHandler.CustomInfoTargeted.ContainsKey(player))
-            CustomInfoHandler.CustomInfoTargeted[player] = new();
-
-        var changedAny = false;
-        foreach (var target in players)
-        {
-            if (!CustomInfoHandler.CustomInfoTargeted[player].ContainsKey(target))
-                CustomInfoHandler.CustomInfoTargeted[player][target] = new();
-
-            if (string.IsNullOrWhiteSpace(value))
-                CustomInfoHandler.CustomInfoTargeted[player][target].Remove(key);
-
-            else if (!CustomInfoHandler.CustomInfoTargeted[player][target].TryGetValue(key, out var oldValue) || oldValue != value)
-                CustomInfoHandler.CustomInfoTargeted[player][target][key] = value;
-            else
-                continue;
-
-            changedAny = true;
-        }
-
-        if (changedAny)
-            CustomInfoHandler.ToUpdate.Add(player);
-    }
+    /// <param name="players">Player's for which CustomInfo will be displayed.</param>
+    public static void SetCustomInfoForTargets(this Player player, string key, string value, IEnumerable<Player> players)
+        => CustomInfo.SetCustomInfoForTargetsInternal(player, key, value, players);
 
     /// <summary>
     /// Sets CustomInfo for specific player.
@@ -395,22 +355,6 @@ public static class PlayerExtensions
     /// <param name="value">Value.</param>
     /// <param name="target">Target.</param>
     public static void SetCustomInfoForTarget(this Player player, string key, string value, Player target)
-    {
-        if (!CustomInfoHandler.CustomInfoTargeted.ContainsKey(player))
-            CustomInfoHandler.CustomInfoTargeted[player] = new();
-
-        if (!CustomInfoHandler.CustomInfoTargeted[player].ContainsKey(target))
-            CustomInfoHandler.CustomInfoTargeted[player][target] = new();
-
-        if (string.IsNullOrWhiteSpace(value))
-            CustomInfoHandler.CustomInfoTargeted[player][target].Remove(key);
-
-        else if (!CustomInfoHandler.CustomInfoTargeted[player][target].TryGetValue(key, out var oldValue) || oldValue != value)
-            CustomInfoHandler.CustomInfoTargeted[player][target][key] = value;
-        else
-            return;
-
-        CustomInfoHandler.ToUpdate.Add(player);
-    }
+        => CustomInfo.SetCustomInfoForTargetInternal(player, key, value, target);
     #endregion
 }

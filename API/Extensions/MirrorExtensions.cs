@@ -14,17 +14,12 @@ using System;
 using UnityEngine;
 using System.Text;
 using MapGeneration;
+using PluginAPI.Core.Zones;
 
 namespace Mistaken.API.Extensions;
 
 public static class MirrorExtensions
 {
-    public static MethodInfo SetDirtyBitsMethodInfo
-        => setDirtyBitsMethodInfoValue ??= typeof(NetworkBehaviour).GetMethod("SetDirtyBit");
-
-    public static MethodInfo SendSpawnMessageMethodInfo
-        => sendSpawnMessageMethodInfoValue ??= typeof(NetworkServer).GetMethod("SendSpawnMessage", BindingFlags.Static | BindingFlags.NonPublic);
-
     public static void PlayBeepSound(this Player player)
         => SendFakeTargetRpc(player, ReferenceHub.HostHub.networkIdentity, typeof(AmbientSoundPlayer), "RpcPlaySound", 7);
 
@@ -42,10 +37,12 @@ public static class MirrorExtensions
         player.Connection.Send(msg);
     }
 
-    public static void SetRoomColorForTargetOnly(this RoomIdentifier room, Player target, Color color)
+    public static void SetRoomColorForTargetOnly(this FacilityRoom room, Player target, Color color)
     {
-        SendFakeSyncVar(target, room.GetComponentInChildren<FlickerableLightController>().netIdentity, typeof(FlickerableLightController), "Network_warheadLightColor", color);
-        SendFakeSyncVar(target, room.GetComponentInChildren<FlickerableLightController>().netIdentity, typeof(FlickerableLightController), "Network_warheadLightOverride", true);
+        SendFakeSyncVar(target, room.Identifier.GetComponentInChildren<FlickerableLightController>().netIdentity,
+            typeof(FlickerableLightController), "Network_warheadLightColor", color);
+        SendFakeSyncVar(target, room.Identifier.GetComponentInChildren<FlickerableLightController>().netIdentity,
+            typeof(FlickerableLightController), "Network_warheadLightOverride", true);
     }
 
     public static void SetRoomLightIntensityForTargetOnly(this RoomIdentifier room, Player target, float multiplier)
@@ -104,7 +101,7 @@ public static class MirrorExtensions
     }
 
     public static void ResyncSyncVar(NetworkIdentity behaviorOwner, Type targetType, string propertyName)
-        => SetDirtyBitsMethodInfo.Invoke(behaviorOwner.gameObject.GetComponent(targetType), new object[1] { SyncVarDirtyBits[propertyName ?? ""] });
+        => (behaviorOwner.gameObject.GetComponent(targetType) as NetworkBehaviour).SetDirtyBit(SyncVarDirtyBits[propertyName ?? ""]);
 
     public static void SendFakeTargetRpc(Player target, NetworkIdentity behaviorOwner, Type targetType, string rpcName, params object[] values)
     {
@@ -145,7 +142,7 @@ public static class MirrorExtensions
         foreach (Player item in Player.GetPlayers())
         {
             item.Connection.Send(msg);
-            SendSpawnMessageMethodInfo.Invoke(null, new object[2] { identity, item.Connection });
+            NetworkServer.SendSpawnMessage(identity, item.Connection);
         }
     }
 
@@ -274,8 +271,4 @@ public static class MirrorExtensions
     private static readonly ReadOnlyDictionary<Type, MethodInfo> ReadOnlyWriterExtensionsValue = new(WriterExtensionsValue);
 
     private static readonly ReadOnlyDictionary<string, ulong> ReadOnlySyncVarDirtyBitsValue = new(SyncVarDirtyBitsValue);
-
-    private static MethodInfo setDirtyBitsMethodInfoValue;
-
-    private static MethodInfo sendSpawnMessageMethodInfoValue;
 }

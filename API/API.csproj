@@ -45,7 +45,7 @@
     <Reference Include="UnityEngine.CoreModule" HintPath="$(MISTAKEN_REFERENCES)\UnityEngine.CoreModule.dll" />
     <Reference Include="UnityEngine.PhysicsModule" HintPath="$(MISTAKEN_REFERENCES)\UnityEngine.PhysicsModule.dll" />
     <Reference Include="UnityEngine" HintPath="$(MISTAKEN_REFERENCES)\UnityEngine.dll" />
-    <Reference Include="Mirror" HintPath="$(MISTAKEN_REFERENCES)\Mirror.dll" />
+    <Reference Include="Mirror-Publicized" HintPath="$(MISTAKEN_REFERENCES)\Mirror-Publicized.dll" />
     <Reference Include="NorthwoodLib" HintPath="$(MISTAKEN_REFERENCES)\NorthwoodLib.dll" />
     <Reference Include="CommandSystem.Core" HintPath="$(MISTAKEN_REFERENCES)\CommandSystem.Core.dll" />
     <Reference Include="System" />
@@ -58,78 +58,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnnonymousEvents.cs" />
+    <Compile Include="Core\Structure.cs" />
+    <Compile Include="Enums\CustomDoorLockReason.cs" />
+    <Compile Include="Enums\CustomDoorType.cs" />
     <Compile Include="EventArgs\RagdollSpawnedEventArgs.cs" />
     <Compile Include="EventArgs\RagdollSpawningEventArgs.cs" />
-    <Compile Include="Events\Patches\RagdollManagerPatch.cs" />
+    <Compile Include="Events\CustomEventHandler.cs" />
     <Compile Include="Events\Ragdoll.cs" />
     <Compile Include="Extensions\MirrorExtensions.cs" />
     <Compile Include="Extensions\MiscellaneousMethods.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
-    <Compile Include="Handlers\BlockInventoryInteractionHandler.cs" />
-    <Compile Include="Commands\VersionCommand.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="Events\Events.cs" />
-    <Compile Include="Events\Patches\PostInitializationEventPatch.cs" />
-    <Compile Include="Events\Patches\PreWaitingForPlayersPatch.cs" />
-    <Compile Include="Handlers\ExperimentalHandler.cs" />
-    <Compile Include="Diagnostics\Analyzer.cs" />
-    <Compile Include="Diagnostics\DeltaTimeChecker.cs" />
-    <Compile Include="Diagnostics\MasterHandler.Entry.cs" />
-    <Compile Include="Diagnostics\Patches\GenericInvokeSafelyPatch.cs" />
-    <Compile Include="Diagnostics\Patches\InvokeSafelyPatch.cs" />
-    <Compile Include="Diagnostics\Patches\Utilities.cs" />
+    <Compile Include="Events\PluginLoading.cs" />
     <Compile Include="Extensions\CassieExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
-    <Compile Include="Extensions\PermissionsExtensions.cs" />
     <Compile Include="Extensions\PlayerExtensions.cs" />
     <Compile Include="Extensions\ProjectileExtensions.cs" />
     <Compile Include="Extensions\RoomExtensions.cs" />
     <Compile Include="Extensions\SyncVarExtensions.cs" />
-    <Compile Include="Handlers\InfiniteAmmoHandler.cs" />
-    <Compile Include="Handlers\DoorPermissionsHandler.cs" />
-    <Compile Include="MPlayerFactory.cs" />
-    <Compile Include="Patches\DoorLockPatch.cs" />
-    <Compile Include="Patches\RagdollSpawningPatches.cs" />
-    <Compile Include="Patches\ShootingTargetBlockSyncModePatch.cs" />
-    <Compile Include="Patches\InRangePatch.cs" />
-    <Compile Include="Patches\Vars\BypassPatch.cs" />
-    <Compile Include="Patches\Vars\EnableVarPatch.cs" />
-    <Compile Include="Patches\Vars\GodModePatch.cs" />
-    <Compile Include="Patches\Vars\NicknamePatch.cs" />
-    <Compile Include="Patches\Vars\NoClipPatch.cs" />
-    <Compile Include="Patches\Vars\OverwatchPatch.cs" />
-    <Compile Include="PlayerPreferences.cs" />
-    <Compile Include="Plugin.cs" />
-    <Compile Include="Handlers\BetterWarheadHandler.cs" />
-    <Compile Include="Handlers\CustomInfoHandler.cs" />
-    <Compile Include="Diagnostics\Exception.cs" />
-    <Compile Include="Diagnostics\MasterHandler.cs" />
-    <Compile Include="Diagnostics\ModuleLogger.cs" />
-    <Compile Include="Diagnostics\Status.cs" />
-    <Compile Include="Patches\DoorPatch.cs" />
-    <Compile Include="Diagnostics\Module.cs" />
-    <Compile Include="Extensions\DoorUtils.cs" />
+    <Compile Include="Core\MPlayerFactory.cs" />
+    <Compile Include="Enums\PlayerPreferences.cs" />
+    <Compile Include="Utilities\Blackout.cs" />
+    <Compile Include="Utilities\CustomInfo.cs" />
+    <Compile Include="Core\Door.cs" />
     <Compile Include="Commands\IBetterCommand.cs" />
     <Compile Include="Commands\IPermissionLocked.cs" />
     <Compile Include="Components\InRange.cs" />
     <Compile Include="Components\InRangeBall.cs" />
-    <Compile Include="MapPlus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MPlayer.cs" />
-    <Compile Include="RoundPlus.cs" />
-    <Compile Include="SessionVarType.cs" />
-    <Compile Include="Shield\Shield.cs" />
-    <Compile Include="StructureType.cs" />
-    <Compile Include="Utilities\Item.cs" />
-    <Compile Include="Utilities\Map.Blackout.cs" />
-    <Compile Include="Utilities\Map.cs" />
-    <Compile Include="Utilities\Map.Overheat.cs" />
-    <Compile Include="Utilities\OverheatLevel.cs" />
-    <Compile Include="Utilities\Room.cs" />
-    <Compile Include="Utilities\TeslaMode.cs" />
-    <Compile Include="Utilities\UtilitiesHandler.cs" />
-    <Compile Include="Handlers\VanishHandler.cs" />
+    <Compile Include="Core\MPlayer.cs" />
+    <Compile Include="Core\Round.cs" />
+    <Compile Include="Enums\SessionVarType.cs" />
+    <Compile Include="Components\Shield.cs" />
+    <Compile Include="Enums\StructureType.cs" />
+    <Compile Include="Core\Item.cs" />
+    <Compile Include="Core\Map.cs" />
+    <Compile Include="Core\Room.cs" />
+    <Compile Include="Enums\TeslaMode.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

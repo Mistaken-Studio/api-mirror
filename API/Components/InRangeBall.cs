@@ -15,7 +15,7 @@ namespace Mistaken.API.Components;
 /// Component used to detect players.
 /// </summary>
 [PublicAPI]
-public class InRangeBall : MonoBehaviour
+public sealed class InRangeBall : MonoBehaviour
 {
     /// <summary>
     /// Spawns <see cref="InRangeBall"/>.
@@ -37,8 +37,7 @@ public class InRangeBall : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Log.Error(ex.Message);
-            Log.Error(ex.StackTrace);
+            Log.Error(ex.ToString());
             return null;
         }
     }
@@ -66,8 +65,7 @@ public class InRangeBall : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Log.Error(ex.Message);
-            Log.Error(ex.StackTrace);
+            Log.Error(ex.ToString());
             return null;
         }
     }
@@ -93,24 +91,24 @@ public class InRangeBall : MonoBehaviour
     // ReSharper disable once InconsistentNaming
     public bool AllowNPCs { get; set; }
 
-    private static readonly int Layer = LayerMask.GetMask("TransparentFX", "Ignore Raycast");
-    private static GameObject prefab;
+    private static readonly int _layer = LayerMask.GetMask("TransparentFX", "Ignore Raycast");
+    private static GameObject _prefab;
 
     private static GameObject Prefab
     {
         get
         {
-            if (prefab == null)
+            if (_prefab == null)
             {
-                prefab = new(nameof(InRangeBall), typeof(InRangeBall), typeof(CapsuleCollider))
+                _prefab = new(nameof(InRangeBall), typeof(InRangeBall), typeof(CapsuleCollider))
                 {
-                    layer = Layer,
+                    layer = _layer,
                 };
-                var collider = prefab.GetComponent<CapsuleCollider>();
+                var collider = _prefab.GetComponent<CapsuleCollider>();
                 collider.isTrigger = true;
             }
 
-            return prefab;
+            return _prefab;
         }
     }
 
@@ -131,8 +129,8 @@ public class InRangeBall : MonoBehaviour
         if (player is null)
             return;
 
-        this.OnExit?.Invoke(player);
-        this.ColliderInArea.Remove(player.GameObject);
+        OnExit?.Invoke(player);
+        ColliderInArea.Remove(player.GameObject);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -145,20 +143,20 @@ public class InRangeBall : MonoBehaviour
         if (!player?.IsAlive ?? true)
             return;
 
-        if (player.GetSessionVariable<bool>("IsNPC") && !this.AllowNPCs)
+        if (player.GetSessionVariable<bool>("IsNPC") && !AllowNPCs)
             return;
 
-        this.ColliderInArea.Add(other.gameObject);
-        this.OnEnter?.Invoke(player);
+        ColliderInArea.Add(other.gameObject);
+        OnEnter?.Invoke(player);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!this.ColliderInArea.Contains(other.gameObject))
+        if (!ColliderInArea.Contains(other.gameObject))
             return;
 
-        this.ColliderInArea.Remove(other.gameObject);
+        ColliderInArea.Remove(other.gameObject);
         var player = Player.Get(other.gameObject);
-        this.OnExit?.Invoke(player);
+        OnExit?.Invoke(player);
     }
 }
